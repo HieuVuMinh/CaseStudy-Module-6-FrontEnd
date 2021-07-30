@@ -11,7 +11,7 @@
 
     <div class="board-wrapper">
 
-      <div class="board-columns">
+      <div class="board-columns" cdkDropListGroup>
         <!--column-->
         <div class="board-column"
              cdkDropList
@@ -22,12 +22,12 @@
           <div class="column-title">To Do</div>
 
           <div class="tasks-container">
-            <div class="task">
+            <div class="task" cdkDrag>
             </div>
           </div>
 
           <div class="tasks-container">
-            <div class="task">
+            <div class="task" cdkDrag>
             </div>
           </div>
 
@@ -35,12 +35,12 @@
 
         <div class="board-column" cdkDropList
              #doneList="cdkDropList"
-             )[cdkDropListData]="done"
-        [cdkDropListConnectedTo]="[todoList]"
-        (cdkDropListDropped)="drop($event">
+             [cdkDropListData]="done"
+             [cdkDropListConnectedTo]="[todoList]"
+             (cdkDropListDropped)="drop($event)">
           <div class="column-title">Doing</div>
           <div class="tasks-container">
-            <div class="task">
+            <div class="task" cdkDrag>
             </div>
           </div>
         </div>
