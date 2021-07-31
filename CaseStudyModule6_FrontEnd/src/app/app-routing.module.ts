@@ -6,9 +6,9 @@ import {AuthGuard} from "./helper/auth-guard";
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'trello',
     canActivate: [AuthGuard],
-    component: TrelloViewComponent
+    loadChildren: () => import('./trello/trello.module').then(module => module.TrelloModule)
   },
   {
     path: 'login',
