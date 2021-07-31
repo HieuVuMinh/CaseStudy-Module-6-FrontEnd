@@ -1,0 +1,21 @@
+<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+  <div class="sb-sidenav-menu">
+    <div class="nav">
+      <div class="sb-sidenav-menu-heading">Data</div>
+      <a class="nav-link" routerLink="/products">
+        <div class="sb-nav-link-icon"><i class="fas fa-list-alt"></i></div>
+        List Product
+      </a>
+
+      <div class="sb-sidenav-menu-heading">Feature</div>
+      <a class="nav-link" routerLink="/products/create">
+        <div class="sb-nav-link-icon"><i class="fas fa-plus-circle"></i></div>
+        Create Product
+      </a>
+    </div>
+  </div>
+  <div class="sb-sidenav-footer" *ngIf="currentUser">
+    <div class="small">Logged in as:</div>
+    {{currentUser.userName}}
+  </div>
+</nav>
