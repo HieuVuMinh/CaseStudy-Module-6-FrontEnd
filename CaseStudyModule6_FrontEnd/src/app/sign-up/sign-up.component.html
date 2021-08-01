@@ -1,7 +1,7 @@
 <div class="container" id="container">
 
   <div class="form-container sign-up-container">
-    <form action="#">
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
       <h1>Create Account</h1>
       <div class="social-container">
         <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
@@ -9,9 +9,13 @@
         <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
       </div>
       <span>or use your email for registration</span>
-      <input type="text" placeholder="User Name" />
-      <input type="password" placeholder="Password" />
-      <input type="text" placeholder="Nick Name" />
+      <input type="text" formControlName="username" placeholder="User Name" />
+      <div class="col alert alert-danger" role="alert"
+           *ngIf="username?.errors?.minlength">
+        Name must be at least 6 characters long!
+      </div>
+      <input type="password" formControlName="password" placeholder="Password" />
+      <input type="text" formControlName="nickname" placeholder="Nick Name" />
       <button>Sign Up</button>
     </form>
   </div>

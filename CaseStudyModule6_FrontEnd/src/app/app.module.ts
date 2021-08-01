@@ -6,23 +6,26 @@ import { AppComponent } from './app.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { LoginComponent } from './login/login.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {JwtInterceptor} from "./helper/jwt-interceptor";
 import {ErrorInterceptor} from "./helper/error-interceptor";
 import { SignUpComponent } from './sign-up/sign-up.component';
+import {ShareModule} from "./share/share.module";
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     SignUpComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    DragDropModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        DragDropModule,
+        HttpClientModule,
+        ReactiveFormsModule,
+        ShareModule,
+        FormsModule
+    ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
