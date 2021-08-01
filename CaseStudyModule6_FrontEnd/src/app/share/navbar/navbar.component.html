@@ -1,44 +1,66 @@
-<h1>Click the burger menu to see the magic.</h1>
-<input type="checkbox" id="burger-toggle">
-<label for="burger-toggle" class="burger-menu">
-  <div class="line"></div>
-  <div class="line"></div>
-  <div class="line"></div>
-</label>
-<div class="menu">
-  <div class="menu-inner">
-    <ul class="menu-nav">
-      <li class="menu-nav-item"><a class="menu-nav-link" href="#"><span>
-            <div>Home</div>
-          </span></a></li>
-      <li class="menu-nav-item"><a class="menu-nav-link" href="#"><span>
-            <div>About</div>
-          </span></a></li>
-      <li class="menu-nav-item"><a class="menu-nav-link" href="#"><span>
-            <div>Service</div>
-          </span></a></li>
-      <li class="menu-nav-item"><a class="menu-nav-link" href="#"><span>
-            <div>Team</div>
-          </span></a></li>
-    </ul>
-    <div class="gallery">
-      <div class="title">
-        <p>Sora Gallery</p>
-      </div>
-      <div class="images">
-        <a class="image-link" href="#">
-          <div class="image" data-label="Star"><img src="https://i.loli.net/2019/11/23/cnKl1Ykd5rZCVwm.jpg" alt=""></div>
-        </a>
-        <a class="image-link" href="#">
-          <div class="image" data-label="Sun"><img src="https://i.loli.net/2019/11/16/FLnzi5Kq4tkRZSm.jpg" alt=""></div>
-        </a>
-        <a class="image-link" href="#">
-          <div class="image" data-label="Tree"><img src="https://i.loli.net/2019/10/18/uXF1Kx7lzELB6wf.jpg" alt=""></div>
-        </a>
-        <a class="image-link" href="#">
-          <div class="image" data-label="Sky"><img src="https://i.loli.net/2019/10/18/buDT4YS6zUMfHst.jpg" alt=""></div>
-        </a>
-      </div>
+<div class="nav">
+
+    <span class="icon-item">
+      <a href="#" class="icon-link"><i class="fas fa-bars"></i></a>
+    </span>
+  <span class="icon-item">
+      <a href="#" class="icon-link"><i class="fas fa-home"></i></a>
+    </span>
+  <span class="icon-item">
+      <a href="#" class="icon-link">
+        <svg class="fa-board" role="presentation" focusable="false" viewBox="0 0 24 24"
+             xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046
+           20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5ZM5 6C5 5.44772 5.44772 5 6 5H10C10.5523 5 11 5.44772 11 6V16C11 16.5523
+           10.5523 17 10 17H6C5.44772 17 5 16.5523 5 16V6ZM14 5C13.4477 5 13 5.44772 13 6V12C13 12.5523 13.4477 13 14 13H18C18.5523
+            13 19 12.5523 19 12V6C19 5.44772 18.5523 5 18 5H14Z" fill="currentColor">
+          </path>
+        </svg>
+      </a>
+    </span>
+
+  <div class="nav-brand-start">
+    <div class="nav-item-start">
+      <h1 class="app-name has-gradient-text">Trello Hope</h1>
     </div>
   </div>
+
+  <span class="icon-item" *ngIf="currentUser">
+      <a href="#" class="icon-link"><i class="fas fa-plus"></i></a>
+    </span>
+  <span class="icon-item" *ngIf="currentUser">
+      <a href="#" class="icon-link"><i class="fab fa-plus"></i></a>
+    </span>
+  <span class="icon-item" *ngIf="currentUser">
+      <a href="#" class="icon-link"><i class="fas fa-bell"></i></a>
+    </span>
+  <span class="icon-item" *ngIf="currentUser">
+        <div class="dropdown is-hoverable is-right">
+          <div class="dropdown-trigger">
+            <a href="#" class="icon-link" aria-haspopup="true" aria-controls="dropdown-menu4">
+              <img src="favicon.ico" class="img-circle"/></a>
+          </div>
+        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+          <div class="dropdown-content">
+            <a href="#" class="dropdown-item">
+              {{currentUser.username}}
+            </a>
+            <a href="#" class="dropdown-item">
+              Modifiers
+            </a>
+            <a href="#" class="dropdown-item">
+              Components
+            </a>
+            <a  class="dropdown-item">
+              Layout
+            </a>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item"  (click)="logout()">
+              Logout
+            </a>
+          </div>
+          </div>
+        </div>
+    </span>
+
 </div>
