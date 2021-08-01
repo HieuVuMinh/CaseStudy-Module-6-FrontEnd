@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
+import {UserToken} from "../../model/user-token";
+import {AuthenticationService} from "../../service/authentication/authentication.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-trello-view',
@@ -7,8 +10,12 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag
   styleUrls: ['./trello-view.component.scss']
 })
 export class TrelloViewComponent implements OnInit {
+  currentUser: UserToken = {};
 
-  constructor() { }
+  constructor(private authenticationService: AuthenticationService,
+              private router: Router) {
+    this.currentUser = this.authenticationService.getCurrentUserValue();
+  }
 
   ngOnInit(): void {
   }
@@ -37,5 +44,10 @@ export class TrelloViewComponent implements OnInit {
         event.previousIndex,
         event.currentIndex);
     }
+  }
+
+  logout() {
+    this.authenticationService.logout();
+    this.router.navigateByUrl('/login');
   }
 }

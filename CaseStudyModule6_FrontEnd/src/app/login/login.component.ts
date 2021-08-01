@@ -27,4 +27,8 @@ export class LoginComponent implements OnInit {
       alert("Success!")
     });
   }
+
+  register() {
+    this.router.navigateByUrl('/register');
+  }
 }

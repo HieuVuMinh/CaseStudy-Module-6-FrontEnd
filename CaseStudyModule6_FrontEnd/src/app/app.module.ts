@@ -9,10 +9,12 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {ReactiveFormsModule} from "@angular/forms";
 import {JwtInterceptor} from "./helper/jwt-interceptor";
 import {ErrorInterceptor} from "./helper/error-interceptor";
+import { SignUpComponent } from './sign-up/sign-up.component';
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    SignUpComponent,
   ],
   imports: [
     BrowserModule,
