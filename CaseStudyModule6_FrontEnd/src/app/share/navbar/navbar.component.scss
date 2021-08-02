@@ -35,19 +35,21 @@
 .fa-bell {
   margin: 9px auto auto;
 }
+
 .fa-bars {
   font-size: 22px;
   margin: 12px auto auto;
 }
+
 .fa-home {
   font-size: 22px;
   margin: 12px auto auto;
 }
+
 .fa-board {
   font-size: 20px;
   margin: 11px 5px 5px;
 }
-
 
 
 .nav {
@@ -109,3 +111,25 @@ h1.app-name {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+.dropdown-item {
+  display: flex;
+}
+
+.user {
+  margin-left: 5px;
+}
+
+
+.nickname {
+  color: #6d6d6d;
+  font-size: 10px;
+}
+
+.user-img {
+  margin-top: 6px;
+  height: 35px;
+  width: 35px;
+}
+
+

@@ -21,7 +21,6 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    console.log(this.loginForm);
     this.authenticationService.login(this.loginForm.get('username')?.value, this.loginForm.get('password')?.value).subscribe(() => {
       this.router.navigateByUrl('/trello');
     });

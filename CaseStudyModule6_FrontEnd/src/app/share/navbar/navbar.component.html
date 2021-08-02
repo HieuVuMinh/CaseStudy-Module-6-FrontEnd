@@ -26,41 +26,51 @@
   </div>
 
   <div class="icon-item" *ngIf="currentUser">
-      <a href="#" class="icon-link"><i class="fas fa-plus"></i></a>
-    </div>
+    <a href="#" class="icon-link"><i class="fas fa-plus"></i></a>
+  </div>
   <div class="icon-item" *ngIf="currentUser">
-      <a href="#" class="icon-link"><i class="fab fa-plus"></i></a>
-    </div>
+    <a href="#" class="icon-link"><i class="fab fa-plus"></i></a>
+  </div>
   <div class="icon-item" *ngIf="currentUser">
-      <a href="#" class="icon-link"><i class="fas fa-bell"></i></a>
-    </div>
+    <a href="#" class="icon-link"><i class="fas fa-bell"></i></a>
+  </div>
   <div class="icon-item" *ngIf="currentUser">
-        <div class="dropdown is-hoverable is-right">
-          <div class="dropdown-trigger">
-            <a href="#" class="icon-link" aria-haspopup="true" aria-controls="dropdown-menu4">
-              <img src="favicon.ico" class="img-circle"/></a>
+    <div class="dropdown is-hoverable is-right">
+      <div class="dropdown-trigger">
+        <a href="#" class="icon-link" aria-haspopup="true" aria-controls="dropdown-menu4">
+          <img src="favicon.ico" class="img-circle"/></a>
+      </div>
+      <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+        <div class="dropdown-content">
+          <div href="#" class="dropdown-item">
+            <div>
+              <img src="favicon.ico" class="user-img img-circle"/>
+            </div>
+            <div class="user">
+              <div class="username">
+                {{currentUser.username}}
+              </div>
+              <span class="nickname">
+                {{user.nickname}}
+              </span>
+            </div>
           </div>
-        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-          <div class="dropdown-content">
-            <a href="#" class="dropdown-item">
-              {{currentUser.username}}
-            </a>
-            <a href="#" class="dropdown-item">
-              Modifiers
-            </a>
-            <a href="#" class="dropdown-item">
-              Components
-            </a>
-            <a  class="dropdown-item">
-              Layout
-            </a>
-            <hr class="dropdown-divider">
-            <a class="dropdown-item"  (click)="logout()">
-              Logout
-            </a>
-          </div>
-          </div>
+          <a href="#" class="dropdown-item">
+            Modifiers
+          </a>
+          <a href="#" class="dropdown-item">
+            Components
+          </a>
+          <a class="dropdown-item">
+            Layout
+          </a>
+          <hr class="dropdown-divider">
+          <a class="dropdown-item" (click)="logout()">
+            Logout
+          </a>
         </div>
+      </div>
     </div>
+  </div>
 
 </div>
