@@ -2,15 +2,16 @@
 
 @import "../node_modules/bulma/bulma.sass";
 @import url('https://fonts.googleapis.com/css?family=Nunito:400,700|Lato:400,800,900');
+@import url(https://fonts.googleapis.com/css?family=Courgette);
 
 $family-sans-serif: "Nunito", sans-serif;
+
 html, body {
   height: 100%;
 }
 
 html{
-  background-image: url("./assets/img/BackGround.jpg") ;
-  background-size: cover;
-
-  //overflow-y: auto !important;
+  //background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  //background-image: linear-gradient(to top, #00c6fb 0%, #005bea 100%);
+  background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
 }

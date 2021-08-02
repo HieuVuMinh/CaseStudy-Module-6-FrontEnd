@@ -9,7 +9,9 @@
 }
 
 .img-circle {
-  margin: auto;
+  margin-top: 3px;
+  height: 33px;
+  width: 33px;
   clip-path: circle(50%);
 }
 
@@ -41,20 +43,26 @@
 .fa-bell {
   margin: 9px auto auto;
 }
+
 .fa-bars {
   font-size: 22px;
   margin: 12px auto auto;
 }
+
 .fa-home {
   font-size: 22px;
   margin: 12px auto auto;
 }
+
 .fa-board {
   font-size: 20px;
   margin: 11px 5px 5px;
 }
 
-
+.board-header {
+  display: flex;
+  margin: inherit;
+}
 
 .nav {
   background: rgba(#ffffff, 0.07);
@@ -121,7 +129,7 @@ h1.app-name {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  height: 205%;
+  height: 210%;
 
   // Override Automatic Minimum Size
   // https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size
@@ -156,7 +164,7 @@ h1.app-name {
         }
 
         .column-title {
-          color: #352c2c;
+          color: #523535;
           font-size: 15px;
           font-weight: 800;
           font-family: 'Lato', sans-serif;
@@ -204,3 +212,10 @@ h1.app-name {
 .tasks-container.cdk-drop-list-dragging .task:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
+
+.icon-board {
+  background-color: #4c94be;
+  border-radius: 0.3rem;
+  transition: background-color 150ms;
+}
+
