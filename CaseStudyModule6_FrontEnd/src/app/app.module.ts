@@ -3,19 +3,35 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TrelloViewComponent } from './trello/trello-view/trello-view.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import { LoginComponent } from './login/login.component';
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {JwtInterceptor} from "./helper/jwt-interceptor";
+import {ErrorInterceptor} from "./helper/error-interceptor";
+import { SignUpComponent } from './sign-up/sign-up.component';
+import {ShareModule} from "./share/share.module";
+import { RecoverPasswordComponent } from './recoverPassword/recover-password.component';
 @NgModule({
   declarations: [
     AppComponent,
-    TrelloViewComponent
+    LoginComponent,
+    SignUpComponent,
+    RecoverPasswordComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    DragDropModule
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        DragDropModule,
+        HttpClientModule,
+        ReactiveFormsModule,
+        ShareModule,
+        FormsModule
+    ],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

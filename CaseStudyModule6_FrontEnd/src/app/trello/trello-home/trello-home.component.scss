@@ -219,3 +219,30 @@ h1.app-name {
   transition: background-color 150ms;
 }
 
+.section-board {
+  width: 80rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.main-content {
+  justify-content: space-between;
+  align-content: space-around;
+  height: auto;
+  margin: auto;
+}
+
+.card {
+  width: 230px;
+  margin: 35px;
+}
+
+.title-board {
+  margin-top: 30px;
+  margin-left: 35px;
+  font-size: 22px;
+}
+
+.fa-briefcase, .fa-clipboard {
+  margin-right: 5px;
+}

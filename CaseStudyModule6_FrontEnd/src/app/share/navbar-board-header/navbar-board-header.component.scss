@@ -1,0 +1,160 @@
+.icon-item {
+  list-style: none;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.img-circle {
+  margin-top: 4px;
+  height: 33px;
+  width: 33px;
+  clip-path: circle(50%);
+}
+
+.icon-link {
+  display: inline-flex;
+  font-size: 25px;
+  text-decoration: none;
+  color: var(--color-icon);
+  width: 55px;
+  height: 40px;
+  transition: 0.5s linear;
+  position: relative;
+  z-index: 1;
+  margin: auto;
+}
+
+.icon-link:hover {
+  color: #fff;
+}
+
+.icon-link i {
+  margin: auto;
+}
+
+.fa-plus {
+  margin: 9px auto auto;
+}
+
+.fa-bell {
+  margin: 9px auto auto;
+}
+
+.fa-bars {
+  font-size: 22px;
+  margin: 12px auto auto;
+}
+
+.fa-home {
+  font-size: 22px;
+  margin: 12px auto auto;
+}
+
+.fa-board {
+  font-size: 20px;
+  margin: 11px 5px 5px;
+}
+
+.nav-item-start{
+  font-family: "Courgette", cursive;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+
+.nav {
+  background: rgba(#ffffff, 0.5);
+  display: flex;
+  margin: inherit;
+}
+
+.nav-brand-start {
+  display: flex;
+  justify-content: flex-start;
+  height: 40px;
+  margin: auto auto auto;
+}
+
+.nav-brand-end {
+  margin-left: 1100px;
+  display: flex;
+  justify-content: flex-end;
+  height: 40px;
+  text-decoration: none;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+  color: #ffffff;
+  font-weight: bold;
+  line-height: 32px;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.nav-content {
+  display: inline-block;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.nav-item {
+  display: flex;
+  width: 32px;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  height: 40px;
+}
+
+h1.app-name {
+  padding: 4px;
+}
+
+.app-name {
+  font-size: 20px;
+  font-family: 'Lato', sans-serif;
+  font-weight: bold;
+}
+
+.has-gradient-text {
+  background: -webkit-linear-gradient(#ffffff, #efd0d0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dropdown-item {
+  display: flex;
+}
+
+.user {
+  margin-left: 5px;
+}
+
+
+.nickname {
+  color: #6d6d6d;
+  font-size: 10px;
+}
+
+.user-img {
+  margin-top: 6px;
+  height: 35px;
+  width: 35px;
+}
+
+.navbar{
+  background: rgba(#ffffff, 0);
+  position: inherit;
+}
+
+.fa-ellipsis-h{
+  margin-right: 5px;
+}
+.fa-user-plus{
+  margin-right: 5px;
+}
+
+.button.is-primary {
+  background: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.65);
+}

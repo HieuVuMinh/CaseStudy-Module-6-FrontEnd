@@ -1,62 +1,32 @@
+<app-navbar-board-header></app-navbar-board-header>
 <div class="root">
-  <div class="navbar">
-    <div class="navbar-brand">
-      <div class="navbar-item">
-        <h1 class="app-name has-gradient-text">Trello Hope</h1>
-      </div>
-    </div>
-  </div>
-
   <div class="board">
-
     <div class="board-wrapper">
-
       <div class="board-columns">
-        <!--column-->
-        <div class="board-column"
-             cdkDropList
-             #todoList="cdkDropList"
-             [cdkDropListData]="todo"
-             [cdkDropListConnectedTo]="[doneList]"
-             (cdkDropListDropped)="drop($event)">
-          <div class="column-title">To Do</div>
 
-          <div class="tasks-container">
-            <div class="task" cdkDrag>
+        <div cdkDropList
+             cdkDropListGroup
+             cdkDropListOrientation="horizontal" class="board-columns"
+             (cdkDropListDropped)="dropColumn($event)">
+          <div
+            cdkDragLockAxis="x" class="board-column"
+            *ngFor="let column of board.columns" cdkDrag>
+            <div class="column-title" cdkDragHandle>
+              {{ column.title }} - {{column.position}}
             </div>
-          </div>
-
-          <div class="tasks-container">
-            <div class="task" cdkDrag>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="board-column" cdkDropList
-             #doneList="cdkDropList"
-             [cdkDropListData]="done"
-             [cdkDropListConnectedTo]="[todoList]"
-             (cdkDropListDropped)="drop($event)">
-          <div class="column-title">Doing</div>
-          <div class="tasks-container">
-            <div class="task">
+            <div class="tasks-container"
+                 id="{{column.id}}"
+                 cdkDropList
+                 [cdkDropListData]="column.cards"
+                 (cdkDropListDropped)="dropCard($event)">
+              <div class="task" *ngFor="let item of column.cards" cdkDrag>
+                {{ item.title }} - {{item.position}}<br>
+                {{item.content}}
+              </div>
             </div>
           </div>
         </div>
-
-        <div class="board-column">
-          <div class="column-title">Done</div>
-          <div class="tasks-container">
-            <div class="task">
-            </div>
-          </div>
-        </div>
-
       </div>
-
     </div>
-
   </div>
-
 </div>
