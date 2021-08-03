@@ -1,59 +1,59 @@
- <!--  Board-->
-  <div class="board">
-    <div class="board-wrapper">
-      <div class="board-columns" cdkDropListGroup>
-        <!--column-->
-        <div class="board-column"
-             cdkDropList
-             #todoList="cdkDropList"
-             [cdkDropListData]="todo"
-             [cdkDropListConnectedTo]="[doneList]"
-             (cdkDropListDropped)="drop($event)">
-          <div class="column-title">To Do</div>
+<!--  Board-->
+<div class="board">
+  <div class="board-wrapper">
+    <div class="board-columns" cdkDropListGroup>
+      <!--column-->
+      <div class="board-column"
+           cdkDropList
+           #todoList="cdkDropList"
+           [cdkDropListData]="todo"
+           [cdkDropListConnectedTo]="[doneList]"
+           (cdkDropListDropped)="drop($event)">
+        <div class="column-title">To Do</div>
 
-          <div class="tasks-container">
-            <div class="task" cdkDrag>
-            </div>
-          </div>
-
-          <div class="tasks-container">
-            <div class="task" cdkDrag>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="board-column" cdkDropList
-             #doneList="cdkDropList"
-             [cdkDropListData]="done"
-             [cdkDropListConnectedTo]="[todoList]"
-             (cdkDropListDropped)="drop($event)">
-          <div class="column-title">Doing</div>
-          <div class="tasks-container">
-            <div class="task" cdkDrag>
-            </div>
+        <div class="tasks-container">
+          <div class="task" cdkDrag>
           </div>
         </div>
 
-        <div class="board-column">
-          <div class="column-title">hello</div>
-          <div class="tasks-container">
-            <div class="task" cdkDrag>
-            </div>
-          </div>
-        </div>
-
-        <div class="board-column">
-          <div class="column-title">hello</div>
-          <div class="tasks-container">
-            <div class="task" cdkDrag>
-            </div>
+        <div class="tasks-container">
+          <div class="task" cdkDrag>
           </div>
         </div>
 
       </div>
 
+      <div class="board-column" cdkDropList
+           #doneList="cdkDropList"
+           [cdkDropListData]="done"
+           [cdkDropListConnectedTo]="[todoList]"
+           (cdkDropListDropped)="drop($event)">
+        <div class="column-title">Doing</div>
+        <div class="tasks-container">
+          <div class="task" cdkDrag>
+          </div>
+        </div>
+      </div>
+
+      <div class="board-column">
+        <div class="column-title">hello</div>
+        <div class="tasks-container">
+          <div class="task" cdkDrag>
+          </div>
+        </div>
+      </div>
+
+      <div class="board-column">
+        <div class="column-title">hello</div>
+        <div class="tasks-container">
+          <div class="task" cdkDrag>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </div>
+
+</div>
 
