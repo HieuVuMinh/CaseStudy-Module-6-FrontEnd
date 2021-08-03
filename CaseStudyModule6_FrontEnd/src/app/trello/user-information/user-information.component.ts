@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from "../../service/user/user.service";
 import {User} from "../../model/user";
-import {ActivatedRoute} from "@angular/router";
 import {AngularFireStorage} from "@angular/fire/storage";
 import {finalize} from "rxjs/operators";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
@@ -14,32 +13,31 @@ import {AuthenticationService} from "../../service/authentication/authentication
 export class UserInformationComponent implements OnInit {
 
   user: User = {};
-  imgSrc: string | undefined;
+  imgSrc: any | undefined = 'https://newsmd1fr.keeng.net/tiin/archive/images/20210220/145211_facebook_doi_anh_dai_dien_2.jpgs ';
   selectedImage: any | undefined = null;
   isSubmitted = false;
+  id: any = {};
 
   constructor(private userService: UserService,
               private storage: AngularFireStorage,
               private authenticationService: AuthenticationService) {
-    const id = this.getCurrentUserId()
   }
 
   ngOnInit(): void {
-    this.imgSrc = this.user.image;
+    this.id = this.authenticationService.getCurrentUserValue().id;
+    this.getUserById();
   }
 
-  getUserById(id: any) {
-    this.userService.getUserById(id).subscribe(user => {
+  getUserById() {
+    this.id = this.authenticationService.getCurrentUserValue().id;
+    this.userService.getUserById(this.id).subscribe(user => {
       this.user = user;
+      this.imgSrc = this.user.image;
+      console.log("This imgSrc onInit: " + this.imgSrc)
     })
   }
 
-  getCurrentUserId() {
-    console.log(this.authenticationService.getCurrentUserValue().id)
-    return this.authenticationService.getCurrentUserValue().id;
-  }
-
-  updateUserInfo(id: any) {
+  updateUserInfo() {
     this.isSubmitted = true;
     if (this.selectedImage != null) {
       const filePath = `${this.selectedImage.name.split('.').slice(0, -1).join('.')}_${new Date().getTime()}`;
@@ -47,13 +45,13 @@ export class UserInformationComponent implements OnInit {
       this.storage.upload(filePath, this.selectedImage).snapshotChanges().pipe(
         finalize(() => {
           fileRef.getDownloadURL().subscribe(url => {
-            console.log(url);
+            console.log("Url: " + url);
             this.imgSrc = url;
-            console.log(this.imgSrc)
+            console.log("This img after upload: " + this.imgSrc)
             this.user.image = url;
-            this.userService.updateById(id, this.user);
+            this.userService.updateById(this.id, this.user).subscribe();
           });
-        }));
+        })).subscribe();
     }
   }
 

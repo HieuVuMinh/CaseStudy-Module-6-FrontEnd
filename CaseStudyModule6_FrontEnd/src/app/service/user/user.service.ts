@@ -22,7 +22,7 @@ export class UserService {
     return this.http.post<User>(API_URL + 'users/recoverpassword', {username, nickname})
   }
 
-  updateById(id: number, user: User): Observable<User> {
-    return this.http.put<User>(`${API_URL}users/${id}`, user);
+    updateById(id: number, user: User): Observable<any> {
+    return this.http.put<any>(`${API_URL}users/${id}`, user);
   }
 }
