@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Form, FormControl, FormGroup} from "@angular/forms";
 import {UserService} from "../service/user/user.service";
 import {User} from "../model/user";
-import {ActivatedRoute} from "@angular/router";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-forgot-password',
@@ -23,11 +23,8 @@ export class RecoverPasswordComponent implements OnInit {
 
 
   constructor(private userService: UserService,
-              private activatedRoute: ActivatedRoute) {
-    // activatedRoute.paramMap.subscribe(paramMap => {
-    //   const id = paramMap.get('id');
-    //   this.changeNewPassword(id);
-    // });
+              private router: Router) {
+
   }
 
   ngOnInit(): void {
@@ -51,6 +48,7 @@ export class RecoverPasswordComponent implements OnInit {
     console.log(this.newConFirmForm.value, id);
     this.userService.updateById(id, this.newConFirmForm.value).subscribe(()=> {
       alert("Change Success!")
+      this.router.navigateByUrl('/login')
     })
   }
 }

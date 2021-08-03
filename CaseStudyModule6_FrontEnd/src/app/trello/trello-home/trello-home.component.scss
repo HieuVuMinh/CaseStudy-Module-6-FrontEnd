@@ -233,8 +233,8 @@ h1.app-name {
 }
 
 .card {
-  width: 230px;
-  margin: 35px;
+  width: 255px;
+  margin: 20px;
 }
 
 .title-board {
@@ -245,4 +245,18 @@ h1.app-name {
 
 .fa-briefcase, .fa-clipboard {
   margin-right: 5px;
+}
+
+.fa-plus-circle{
+  font-size: 50px;
+  margin-top: 16px;
+}
+
+.img-circle-add-board{
+  margin: inherit;
+  text-align: center;
+}
+
+.modal{
+
 }

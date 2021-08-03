@@ -14,7 +14,7 @@ export class RegisterService {
   constructor(private http: HttpClient) { }
 
   createUser(user: User):Observable<User>{
-    return this.http.post<User>(API_URL + 'users', user)
+    return this.http.post<User>(`${API_URL}users`, user)
   }
 
 }

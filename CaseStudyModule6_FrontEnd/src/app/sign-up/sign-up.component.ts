@@ -1,7 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {RegisterService} from "../service/register/register.service";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormControl, FormGroup, Validators} from "@angular/forms";
+
+export function comparePassword(c: AbstractControl) {
+  const v = c.value;
+  return (v.password === v.confirmPassword) ? null : {
+    passwordnotmatch: true
+  };
+}
 
 @Component({
   selector: 'app-sign-up',
@@ -13,7 +20,7 @@ export class SignUpComponent implements OnInit {
   registerForm: FormGroup = new FormGroup({
     username: new FormControl('', [Validators.required, Validators.minLength(6)]),
     password: new FormControl('', [Validators.required]),
-    nickname: new FormControl()
+    nickname: new FormControl('', Validators.required)
   })
 
   constructor(private registerService: RegisterService,
@@ -34,8 +41,8 @@ export class SignUpComponent implements OnInit {
         alert("Create success!")
         this.registerForm = new FormGroup({
           username: new FormControl('', [Validators.required, Validators.minLength(6)]),
-          password: new FormControl('', [Validators.required]),
-          nickname: new FormControl()
+          password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$')]),
+          nickname: new FormControl('', Validators.required)
         });
       });
     } else {
@@ -45,5 +52,11 @@ export class SignUpComponent implements OnInit {
 
   get username() {
     return this.registerForm.get('username');
+  }
+  get password() {
+    return this.registerForm.get('password');
+  }
+  get nickname() {
+    return this.registerForm.get('nickname');
   }
 }
