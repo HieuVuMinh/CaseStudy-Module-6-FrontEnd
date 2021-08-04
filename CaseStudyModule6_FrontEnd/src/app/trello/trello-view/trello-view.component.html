@@ -1,61 +1,4 @@
-<<<<<<< HEAD
-<!--board-header-->
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-
-  <div id="navbarBasicExample" class="navbar-menu">
-    <div class="navbar-item">
-      <div class="buttons">
-        <button class="button is-primary">
-          Name Project
-        </button>
-
-        <button class="button is-primary">
-          Name WorkSpace
-        </button>
-
-        <button class="button is-primary">
-          <i class="far fa-star"></i>
-        </button>
-
-        <div>
-          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
-        </div>
-        <div>
-          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
-        </div>
-        <div>
-          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
-        </div>
-      </div>
-    </div>
-
-    <div class="navbar-end">
-      <div class="navbar-item">
-        <div class="buttons">
-          <button class="button is-primary"><i class="fas fa-ellipsis-h"></i>
-            Menu
-          </button>
-          <button class="button is-primary">
-            <i class="fas fa-user-plus"></i>
-            Invite
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
-
-=======
 <app-navbar-board-header [board]="board" [members]="members"></app-navbar-board-header>
->>>>>>> 2f14f1c2806b2db6b88bf3c26ab403a8d9f22fdf
 <!--main content-->
 <div class="root">
   <div class="board">
@@ -73,7 +16,7 @@
               {{ column.title }} - {{column.position}}
             </div>
             <div class="tasks-container"
-                 style="min-height: 50px"
+                 style="min-height: 500px"
                  id="{{column.id}}"
                  cdkDropList
                  [cdkDropListData]="column.cards"
@@ -85,7 +28,23 @@
             </div>
           </div>
         </div>
+
+
+        <div class="board-columns-add">
+          <div class="board-column" style="margin-left: 0px ">
+            <div class="column-title">
+              <form [formGroup]="columnForm" (ngSubmit)="addColumn()">
+                <input class="input" type="text" formControlName="title" placeholder="Nhập tiêu đề danh sách..." maxlength="512">
+                <div class="button-create-column">
+                  <button [disabled]="columnForm.invalid" class="button is-primary is-light" type="submit" value="Thêm danh sách">Thêm danh sách</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
+
