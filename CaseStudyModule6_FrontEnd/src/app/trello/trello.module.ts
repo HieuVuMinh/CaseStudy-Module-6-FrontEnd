@@ -15,7 +15,7 @@ import { TrelloAddComponent } from './trello-add/trello-add.component';
   declarations: [
     TrelloViewComponent,
     TrelloHomeComponent,
-    UserInformationComponent
+    UserInformationComponent,
     TrelloHomeComponent,
     TrelloAddComponent
   ],
