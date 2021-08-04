@@ -107,6 +107,21 @@ export class ModalComponent implements OnInit {
   private addNewMembers() {
     this.memberService.addNewMembers(this.membersDto).subscribe(() => {
       this.router.navigateByUrl(`/trello/boards/${this.board.id}`);
+      this.resetInputs();
     })
+  }
+
+  resetInputs() {
+    this.board = {
+      title: '',
+      owner: {
+        id: -1,
+      },
+      columns: [],
+    };
+    this.userSearch = ``;
+    this.userResult = [];
+    this.members = [];
+    this.membersDto = [];
   }
 }
