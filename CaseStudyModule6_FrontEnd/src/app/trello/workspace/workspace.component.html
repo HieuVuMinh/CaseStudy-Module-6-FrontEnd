@@ -21,24 +21,11 @@
   </aside>
 
   <div class="container column is-10">
-<!--    Board-->
-    <div class="title-board">
-      <h1> <i class="far fa-clipboard"></i>Your Boards</h1>
-    </div>
-    <div class="section-board">
-      <div class="card" *ngFor="let board of yourBoards" routerLink="/trello/boards/{{board.id}}">
-        <div class="card-header"><p class="card-header-title">{{board.title}}</p></div>
-        <div class="card-content"><div class="content">
-          id: {{board.id}}<br>
-          owner: {{board.owner}}
-        </div></div>
-      </div>
-    </div>
     <div class="title-board">
       <h1> <i class="far fa-clipboard"></i>Shared Boards</h1>
     </div>
     <div class="section-board">
-      <div class="card" *ngFor="let board of sharedBoards">
+      <div class="card" *ngFor="let board of workspace.boards">
         <div class="card-header"><p class="card-header-title">{{board.title}}</p></div>
         <div class="card-content"><div class="content">
           id: {{board.id}}<br>
@@ -47,17 +34,6 @@
       </div>
     </div>
 
-<!--    Work Space-->
-    <div class="title-board">
-      <h1><i class="fas fa-briefcase"></i>Your Workspace</h1>
-    </div>
-    <div class="section-board" >
-      <div class="card" *ngFor="let workspace of workspaces" routerLink="/workspaces/{{workspace.id}}">
-        <div class="card-header"><p class="card-header-title">{{workspace.title}}</p></div>
-        <div class="card-content"><div class="content">Content</div></div>
-      </div>
-
-    </div>
   </div>
 
 

@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Board} from "../../model/board";
 import {UserToken} from "../../model/user-token";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
 import {BoardService} from "../../service/board/board.service";
+import {Workspace} from "../../model/workspace";
+import {WorkspaceService} from "../../service/workspace.service";
 
 @Component({
   selector: 'app-trello-home',
@@ -13,15 +15,19 @@ export class TrelloHomeComponent implements OnInit {
   currentUser: UserToken = {};
   yourBoards: Board[] = [];
   sharedBoards: Board[] = [];
+  workspaces: Workspace[] = [];
 
   constructor(private authenticationService: AuthenticationService,
-              private boardService: BoardService) { }
+              private boardService: BoardService,
+              private workspaceService: WorkspaceService) {
+  }
 
   ngOnInit(): void {
     this.currentUser = this.authenticationService.getCurrentUserValue();
     console.log(this.currentUser.id)
     this.getYourBoards();
     this.getSharedBoards();
+    this.getAllWorkspace()
   }
 
 
@@ -34,5 +40,11 @@ export class TrelloHomeComponent implements OnInit {
       this.yourBoards = boards;
       console.log(this.yourBoards);
     });
+  }
+
+  private getAllWorkspace() {
+    this.workspaceService.findAllByOwnerId(<number>this.authenticationService.getCurrentUserValue().id).subscribe(workspaces => {
+        this.workspaces = workspaces;
+      })
   }
 }

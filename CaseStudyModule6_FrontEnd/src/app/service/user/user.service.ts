@@ -3,6 +3,7 @@ import {environment} from "../../../environments/environment";
 import {Observable} from "rxjs";
 import {User} from "../../model/user";
 import {HttpClient} from "@angular/common/http";
+import {A} from "@angular/cdk/keycodes";
 
 const API_URL = `${environment.api_url}`;
 
@@ -24,5 +25,13 @@ export class UserService {
 
   updateById(id: number, user: User): Observable<User> {
     return this.http.put<User>(`${API_URL}users/${id}`, user);
+  }
+
+  // Tìm user để thêm vào workspaces
+  findAllByUsername(username: string): Observable<User[]> {
+    return this.http.get<User[]>(`${API_URL}users/findAll/${username}`)
+  }
+  findByUsername(username: string): Observable<User> {
+    return this.http.get<User>(`${API_URL}users/find/${username}`)
   }
 }
