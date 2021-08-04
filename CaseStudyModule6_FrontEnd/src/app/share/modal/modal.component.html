@@ -11,7 +11,7 @@
         <div class="control">
           <input class="input" type="text" required [(ngModel)]="board.title" #boardTitle="ngModel">
         </div>
-        <div *ngIf="boardTitle.invalid && (boardTitle.dirty || boardTitle.touched)"
+        <div *ngIf="boardTitle.invalid"
              class="alert">
           <div *ngIf="boardTitle.errors?.required">
             Title is required.
@@ -55,7 +55,12 @@
       </div>
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-success">Save changes</button>
+      <div *ngIf="boardTitle.invalid" class="alert">
+        <button class="button is-dark" disabled>Save changes</button>
+      </div>
+      <div *ngIf="!boardTitle.invalid" class="alert">
+        <button class="button is-success" (click)="createNewBoard()">Save changes</button>
+      </div>
       <button class="button" (click)="modalService.close()">Cancel</button>
     </footer>
   </div>

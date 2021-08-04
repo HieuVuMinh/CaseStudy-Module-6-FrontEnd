@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {Board} from "../../model/board";
+import {DetailedMember} from "../../model/detailed-member";
+import {MemberService} from "../../service/member/member.service";
 
 @Component({
   selector: 'app-navbar-board-header',
@@ -6,10 +9,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./navbar-board-header.component.scss']
 })
 export class NavbarBoardHeaderComponent implements OnInit {
+  @Input() board: Board = {columns: [], owner: {}, title: ""}
+  @Input() members: DetailedMember[] = [];
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
+
 
 }

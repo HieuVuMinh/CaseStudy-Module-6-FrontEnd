@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TrelloAddComponent } from './trello-add.component';
+import { UserInformationComponent } from './user-information.component';
 
-describe('TrelloAddComponent', () => {
-  let component: TrelloAddComponent;
-  let fixture: ComponentFixture<TrelloAddComponent>;
+describe('UserInformationComponent', () => {
+  let component: UserInformationComponent;
+  let fixture: ComponentFixture<UserInformationComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TrelloAddComponent ]
+      declarations: [ UserInformationComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TrelloAddComponent);
+    fixture = TestBed.createComponent(UserInformationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
