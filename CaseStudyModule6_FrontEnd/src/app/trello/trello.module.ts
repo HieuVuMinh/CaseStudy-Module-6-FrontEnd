@@ -24,4 +24,6 @@ import { UserInformationComponent } from './user-information/user-information.co
         FormsModule,
     ]
 })
-export class TrelloModule { }
+export class TrelloModule {
+
+}
