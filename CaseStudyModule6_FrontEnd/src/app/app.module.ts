@@ -12,12 +12,15 @@ import {ErrorInterceptor} from "./helper/error-interceptor";
 import { SignUpComponent } from './sign-up/sign-up.component';
 import {ShareModule} from "./share/share.module";
 import { RecoverPasswordComponent } from './recoverPassword/recover-password.component';
+
+
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     SignUpComponent,
     RecoverPasswordComponent,
+
   ],
     imports: [
         BrowserModule,

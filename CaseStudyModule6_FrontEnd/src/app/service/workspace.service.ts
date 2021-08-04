@@ -19,7 +19,11 @@ export class WorkspaceService {
     return this.http.get<Workspace>(`${environment.api_url}workspaces/${id}`);
   }
 
-  update(id: any, workspaces: Workspace): Observable<Workspace>{
-    return this.http.put<Workspace>(`${environment.api_url}workspaces/${id}`, workspaces);
+  update(id: any, workspace: Workspace): Observable<Workspace>{
+    return this.http.put<Workspace>(`${environment.api_url}workspaces/${id}`, workspace);
+  }
+
+  create(workspace: Workspace):Observable<Workspace>{
+    return this.http.post<Workspace>(`${environment.api_url}workspaces`, workspace)
   }
 }

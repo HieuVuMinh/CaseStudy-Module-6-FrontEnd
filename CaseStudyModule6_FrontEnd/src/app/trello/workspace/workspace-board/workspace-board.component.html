@@ -1,0 +1,112 @@
+<section class="main-content columns is-fullheight">
+
+  <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile">
+    <ul class="menu-list">
+      <li>
+        <a href="#" class="is-active">
+          <span class="icon"><i class="fab fa-trello logo-icon"></i></span> Board
+        </a>
+      </li>
+      <li>
+        <a routerLink="/trello/workspaces/{{workspace.id}}/members" class="">
+          <span class="icon"><i class="fa fa-table"></i></span> Members
+        </a>
+      </li>
+      <li>
+        <a routerLink="/trello" class="">
+          <span class="icon"><i class="fas fa-briefcase"></i></span> Work Space
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <div class="container column is-10">
+    <div class="title-board">
+      <h1> <i class="far fa-clipboard"></i>Shared Boards</h1>
+    </div>
+    <div class="section-board">
+      <div class="card" (click)="showModal()">
+        <div class="img-circle-add-board">
+          <a><i class="fas fa-plus-circle"></i></a>
+        </div>
+      </div>
+      <div class="card" *ngFor="let board of workspace.boards" routerLink="/trello/boards/{{board.id}}">
+        <div class="card-header"><p class="card-header-title">{{board.title}}</p></div>
+        <div class="card-content"><div class="content">
+          id: {{board.id}}<br>
+          owner: {{board.owner.username}}
+        </div></div>
+      </div>
+    </div>
+
+
+  </div>
+</section>
+
+<div *ngIf="modalService.isActive" class="modal is-active">
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Creating new board</p>
+      <button class="delete" aria-label="close" (click)="modalService.close()"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="field">
+        <label class="label">Title</label>
+        <div class="control">
+          <input class="input" type="text" required [(ngModel)]="board.title" #boardTitle="ngModel">
+        </div>
+        <div *ngIf="boardTitle.invalid && (boardTitle.dirty || boardTitle.touched)"
+             class="alert">
+          <div *ngIf="boardTitle.errors?.required">
+            Title is required.
+          </div>
+        </div>
+      </div>
+      <div class="field columns">
+        <div class="column is-one-third">
+          <label class="label">Owner</label>
+          <div class="control">
+            <div class="button is-dark user-button">{{modalService.currentUser.username}}</div>
+          </div>
+        </div>
+        <div class="column">
+          <label class="label">Current members</label>
+          <p *ngIf="!members.length" class="help">No members yet!</p>
+          <div class="control">
+            <div class="button is-dark  user-button member-button"
+                 *ngFor="let member of members; index as i" (click)="removeMember(i)">
+              @{{member.username}} <span *ngIf="member.nickname">({{member.nickname}})</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Add member</label>
+        <div class="control">
+          <input class="input" type="text" (keyup)="searchUsers()" [(ngModel)]="userSearch">
+        </div>
+        <div>
+          <div *ngFor="let result of userResult"
+               class="button  user-button"
+               style="text-align: left"
+               (click)="addMember(result)">
+            <div>
+              <span>@{{result.username}}</span>
+              <span *ngIf="result.nickname">({{result.nickname}})</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success">Save changes</button>
+      <button class="button" (click)="modalService.close()">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+
+
+
+
+

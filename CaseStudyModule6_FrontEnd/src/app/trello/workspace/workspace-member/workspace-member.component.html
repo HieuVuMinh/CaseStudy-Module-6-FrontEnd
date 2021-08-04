@@ -1,0 +1,81 @@
+<div class="navbar-end">
+  <div class="navbar-item">
+    <div class="buttons">
+      <button class="button is-primary" (click)="showModal()">
+        <i class="fas fa-user-plus"></i>
+        Invite
+      </button>
+    </div>
+  </div>
+</div>
+<section class="main-content columns is-fullheight">
+
+  <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile">
+    <ul class="menu-list">
+      <li>
+        <a routerLink="/trello/workspaces/{{workspace.id}}" class="is-active">
+          <span class="icon"><i class="fab fa-trello logo-icon"></i></span> Board
+        </a>
+      </li>
+      <li>
+        <a routerLink="/trello/workspaces/{{workspace.id}}/members" class="">
+          <span class="icon"><i class="fa fa-table"></i></span> Members
+        </a>
+      </li>
+      <li>
+        <a routerLink="/trello" class="">
+          <span class="icon"><i class="fas fa-briefcase"></i></span> Work Space
+        </a>
+      </li>
+    </ul>
+  </aside>
+  <div class="container column is-10">
+    <div class="title-board">
+      <h1> <i class="far fa-clipboard"></i>Members</h1>
+    </div>
+    <div class="section-board">
+      <div class="card" *ngFor="let members of workspace.members">
+        <div class="card-header"><p class="card-header-title">{{members.username}}</p></div>
+        <div class="card-content"><div class="content">
+          Nickname: {{members.nickname}}<br>
+        </div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="modal" id="modal-add-member">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Modal title</p>
+      <button class="delete" aria-label="close" (click)="hideModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      <div>
+        <div style="padding: 16px 10px">
+          <span class="list-user-added"  *ngFor="let member of addUserList">@{{member.username}}</span>
+        </div>
+        <div class="control" style="display: flex">
+          <input #searchUser class="input is-focused" type="text" placeholder="Focused input" (keyup)="findAllUserByUsername(searchUser.value)">
+          <button class="button is-primary" (click)="updateWorkspace()">
+            <i class="fas fa-user-plus"></i>
+            Invite
+          </button>
+        </div>
+
+        <div>
+          <span class="list-user" (click)="selectUser(searchUser,user)" *ngFor="let user of users">{{user.username}}</span>
+        </div>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success" (click)="updateWorkspace()">Save changes</button>
+      <button class="button" (click)="hideModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+
+

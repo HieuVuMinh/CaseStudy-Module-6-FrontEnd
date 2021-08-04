@@ -26,14 +26,6 @@ export class UserService {
     return this.http.put<User>(`${API_URL}users/${id}`, user);
   }
 
-  // Tìm user để thêm vào workspaces
-  findAllByUsername(username: string): Observable<User[]> {
-    return this.http.get<User[]>(`${API_URL}users/findAll/${username}`)
-  }
-  findByUsername(username: string): Observable<User> {
-    return this.http.get<User>(`${API_URL}users/find/${username}`)
-  }
-
   findUsersByKeyword(keyword: string): Observable<User[]> {
     return this.http.get<User[]>(`${API_URL}users/search/${keyword}`);
   }

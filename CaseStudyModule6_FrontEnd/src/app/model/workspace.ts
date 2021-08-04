@@ -6,6 +6,8 @@ export interface Workspace {
 
   title: string;
 
+  type: string
+
   owner: any;
 
   members: User[];
