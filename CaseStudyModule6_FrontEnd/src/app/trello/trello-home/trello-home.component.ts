@@ -21,7 +21,6 @@ export class TrelloHomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authenticationService.getCurrentUserValue();
-    console.log(this.currentUser.id)
     this.getYourBoards();
     this.getSharedBoards();
   }
@@ -34,7 +33,6 @@ export class TrelloHomeComponent implements OnInit {
   private getYourBoards() {
     this.boardService.findAllOwnedBoardsByUserId(this.currentUser.id).subscribe(boards => {
       this.yourBoards = boards;
-      console.log(this.yourBoards);
     });
   }
 

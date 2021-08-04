@@ -33,4 +33,8 @@ export class BoardService {
   findAllSharedBoardsByUserId(id: any): Observable<Board[]> {
     return this.httpClient.get<Board[]>(`${API_URL}users/${id}/shared-boards`);
   }
+
+  addNewBoard(board: Board): Observable<Board> {
+    return  this.httpClient.post<Board>(`${API_URL}boards`, board);
+  }
 }
