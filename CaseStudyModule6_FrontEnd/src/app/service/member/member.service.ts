@@ -26,4 +26,8 @@ export class MemberService {
   addNewMembers(members: Member[]): Observable<Member[]> {
     return this.httpClient.post<Member[]>(`${API_URL}members/all`, members);
   }
+
+  deleteMember(id: any): Observable<Member> {
+    return this.httpClient.delete<Member>(`${API_URL}members/${id}`);
+  }
 }

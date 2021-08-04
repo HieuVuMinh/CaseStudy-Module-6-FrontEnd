@@ -18,6 +18,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
   searchBarIsShown: boolean = false;
   userSearch: string = ``;
   userResult: User[] = [];
+  selectedMember: DetailedMember = {boardId: -1, canEdit: false, id: -1, userId: -1, username: ""};
 
   constructor(public authenticationService: AuthenticationService,
               private userService: UserService,
@@ -51,7 +52,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
         toBeDeleted = true;
       } else {
         for (let member of this.members) {
-          if (result.id == member.id) {
+          if (result.id == member.userId) {
             toBeDeleted = true;
             break;
           }
@@ -70,8 +71,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
       canEdit: false,
       user: result
     }
-    this.memberService.addNewMember(member).subscribe(member => {
-      alert(member.user.username + ' added');
+    this.memberService.addNewMember(member).subscribe(() => {
       this.resetSearch();
       this.getMembers();
     });
@@ -85,5 +85,23 @@ export class NavbarBoardHeaderComponent implements OnInit {
 
   private getMembers() {
     this.memberService.getMembersByBoardId(this.board.id).subscribe(members => this.members = members);
+  }
+
+  showDetail(member: DetailedMember) {
+    this.selectedMember = member;
+    // @ts-ignore
+    document.getElementById('user-detail-modal').classList.add('is-active');
+  }
+
+  closeModal() {
+    // @ts-ignore
+    document.getElementById('user-detail-modal').classList.remove('is-active');
+  }
+
+  removeSelectedMember() {
+    this.memberService.deleteMember(this.selectedMember.id).subscribe(() => {
+      this.getMembers();
+      this.closeModal();
+    });
   }
 }

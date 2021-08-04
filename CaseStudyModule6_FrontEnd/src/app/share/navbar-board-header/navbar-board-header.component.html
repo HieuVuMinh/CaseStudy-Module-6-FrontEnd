@@ -27,8 +27,10 @@
         <div>
           Members:
           <span *ngFor="let member of members">
-            <img *ngIf="member.image" [src]="member.image" class="img-circle"/>
-            <img *ngIf="!member.image" src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+            <a (click)="showDetail(member)">
+              <img *ngIf="member.image" [src]="member.image" class="img-circle"/>
+              <img *ngIf="!member.image" src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+            </a>
             {{member.username}}
           </span>
         </div>
@@ -41,14 +43,18 @@
           <button class="button is-primary"><i class="fas fa-ellipsis-h"></i>
             Menu
           </button>
-          <button *ngIf="board.owner.id == authenticationService.getCurrentUserValue().id" class="button is-primary" (click)="toggleUserSearchBar()">
+          <button *ngIf="board.owner.id == authenticationService.getCurrentUserValue().id" class="button is-primary"
+                  (click)="toggleUserSearchBar()">
             <i class="fas fa-user-plus"></i>Invite
           </button>
           <div style="position: relative;">
             <div *ngIf="searchBarIsShown" style="position: absolute; top: 22px; left: -210px">
-              <input class="input" type="text" placeholder="Search member" [(ngModel)]="userSearch" (keyup)="searchUsers()">
+              <input class="input" type="text" placeholder="Search member" [(ngModel)]="userSearch"
+                     (keyup)="searchUsers()">
               <div *ngIf="userResult.length" class="dropdown-content">
                 <a *ngFor="let result of userResult" class="dropdown-item" (click)="addMember(result)">
+                  <img *ngIf="!result.image" src="assets/img/nicki-eliza.jpg" class="img-circle is-48x48">
+                  <img *ngIf="result.image" [src]="result.image" class="img-circle is-48x48">
                   @{{result.username}} <span *ngIf="result.nickname">({{result.nickname}})</span>
                 </a>
               </div>
@@ -59,3 +65,43 @@
     </div>
   </div>
 </nav>
+<!--User details modal-->
+<div class="modal" id="user-detail-modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Member Details</p>
+      <button class="delete" aria-label="close" (click)="closeModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="card">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-left">
+              <figure class="image is-48x48">
+                <img *ngIf="!selectedMember.image" src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+                <img *ngIf="selectedMember.image" [src]="selectedMember.image" alt="Placeholder image"
+                     class="is-rounded">
+              </figure>
+            </div>
+            <div class="media-content">
+              <p class="title is-4">{{selectedMember.nickname}}</p>
+              <p class="subtitle is-6">@{{selectedMember.username}}</p>
+            </div>
+          </div>
+          <div class="content">
+            <div *ngIf="selectedMember.canEdit" class="notification is-success is-light">This user has the right to edit this board</div>
+            <div *ngIf="!selectedMember.canEdit" class="notification is-info is-light">This user can not edit. Ask board owner for permission!</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-danger is-light"
+              *ngIf="this.board.owner.id == authenticationService.getCurrentUserValue().id" (click)="removeSelectedMember()">
+        Remove user from this board
+      </button>
+      <button class="button is-light" (click)="closeModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
