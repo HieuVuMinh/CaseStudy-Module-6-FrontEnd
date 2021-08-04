@@ -49,7 +49,12 @@ export class UserInformationComponent implements OnInit {
             this.imgSrc = url;
             console.log("This img after upload: " + this.imgSrc)
             this.user.image = url;
-            this.userService.updateById(this.id, this.user).subscribe();
+            this.userService.updateById(this.id, this.user).subscribe(() => {
+                alert("Success")
+              },
+              () => {
+                alert("Fail")
+              });
           });
         })).subscribe();
     }
