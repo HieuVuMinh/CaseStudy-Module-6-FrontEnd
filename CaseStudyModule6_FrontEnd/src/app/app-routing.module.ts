@@ -7,7 +7,7 @@ import {RecoverPasswordComponent} from "./recoverPassword/recover-password.compo
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'trello',
     canActivate: [AuthGuard],
     loadChildren: () => import('./trello/trello.module').then(module => module.TrelloModule)
   },

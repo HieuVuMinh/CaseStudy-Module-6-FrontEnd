@@ -4,6 +4,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { NavbarBoardHeaderComponent } from './navbar-board-header/navbar-board-header.component';
 import { ModalComponent } from './modal/modal.component';
 import {FormsModule} from "@angular/forms";
+import {RouterModule} from "@angular/router";
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {FormsModule} from "@angular/forms";
   ],
     imports: [
         CommonModule,
-        FormsModule
+        FormsModule,
+        RouterModule
     ]
 })
 export class ShareModule { }
