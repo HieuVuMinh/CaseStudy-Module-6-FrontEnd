@@ -1,40 +1,62 @@
-<section class="main-content columns is-fullheight">
+<!--<div class="navbar-end">-->
+<!--  <div class="navbar-item">-->
+<!--    <div class="buttons">-->
+<!--      <button class="button is-primary"><i class="fas fa-ellipsis-h"></i>-->
+<!--        Menu-->
+<!--      </button>-->
+<!--      <button class="button is-primary">-->
+<!--        <i class="fas fa-user-plus"></i>-->
+<!--        Invite-->
+<!--      </button>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+<!--<section class="main-content columns is-fullheight">-->
 
-  <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile">
-    <ul class="menu-list">
-      <li>
-        <a href="#" class="is-active">
-          <span class="icon"><i class="fab fa-trello logo-icon"></i></span> Board
-        </a>
-      </li>
-      <li>
-        <a href="#" class="">
-          <span class="icon"><i class="fa fa-table"></i></span> Template
-        </a>
-      </li>
-      <li>
-        <a href="#" class="">
-          <span class="icon"><i class="fas fa-briefcase"></i></span> Work Space
-        </a>
-      </li>
-    </ul>
-  </aside>
+<!--  <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile">-->
+<!--    <ul class="menu-list">-->
+<!--      <li>-->
+<!--        <a href="#" class="is-active">-->
+<!--          <span class="icon"><i class="fab fa-trello logo-icon"></i></span> Board-->
+<!--        </a>-->
+<!--      </li>-->
+<!--      <li>-->
+<!--        <a href="#" class="">-->
+<!--          <span class="icon"><i class="fa fa-table"></i></span> Template-->
+<!--        </a>-->
+<!--      </li>-->
+<!--      <li>-->
+<!--        <a href="#" class="">-->
+<!--          <span class="icon"><i class="fas fa-briefcase"></i></span> Work Space-->
+<!--        </a>-->
+<!--      </li>-->
+<!--    </ul>-->
+<!--  </aside>-->
 
-  <div class="container column is-10">
-    <div class="title-board">
-      <h1> <i class="far fa-clipboard"></i>Shared Boards</h1>
-    </div>
-    <div class="section-board">
-      <div class="card" *ngFor="let board of workspace.boards">
-        <div class="card-header"><p class="card-header-title">{{board.title}}</p></div>
-        <div class="card-content"><div class="content">
-          id: {{board.id}}<br>
-          owner: {{board.owner}}
-        </div></div>
-      </div>
-    </div>
+<!--  <div class="container column is-10">-->
+<!--    <div class="title-board">-->
+<!--      <h1> <i class="far fa-clipboard"></i>Shared Boards</h1>-->
+<!--    </div>-->
+<!--    <div class="section-board">-->
+<!--      <div class="card" *ngFor="let board of workspace.boards" routerLink="/trello/boards/{{board.id}}">-->
+<!--        <div class="card-header"><p class="card-header-title">{{board.title}}</p></div>-->
+<!--        <div class="card-content"><div class="content">-->
+<!--          id: {{board.id}}<br>-->
+<!--          owner: {{board.owner.username}}-->
+<!--        </div></div>-->
+<!--      </div>-->
+<!--    </div>-->
 
-  </div>
+<!--  </div>-->
+<!--</section>-->
 
-
-</section>
+<input #username type="text" (keyup)="findAllUserByUsername(username.value)">
+<div *ngFor="let userAdded of addUserList">
+  {{userAdded.username}}
+  <button (click)="removeUserAdded(addUserList.indexOf(userAdded))"><i class="fas fa-minus"></i></button>
+</div>
+<span *ngIf="!checkUser">Không có người dùng này</span>
+<div *ngFor="let user of users" id="user-list">
+  <input *ngIf="userList" type="text" value="{{user.username}}" (click)="selectUser(username, user)">
+</div>
+<button type="button" (click)="update()">Add user</button>

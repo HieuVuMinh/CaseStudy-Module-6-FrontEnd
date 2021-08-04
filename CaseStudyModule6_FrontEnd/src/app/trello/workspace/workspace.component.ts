@@ -17,6 +17,7 @@ export class WorkspaceComponent implements OnInit {
   checkUser = true;
   userList = true;
   users: User[] = [];
+  addUserList: User[] = [];
 
   constructor(private workspaceService: WorkspaceService,
               private userService: UserService,
@@ -62,10 +63,14 @@ export class WorkspaceComponent implements OnInit {
 
   }
 
-  public selectUser(element1: any, element2: any){
+  public selectUser(username: any, user: User){
     this.userList = false
-    element1.value = element2.value
-    this.user.username = element1.value
+    username.value = user.username
+    this.addUserList.push(user)
+  }
+
+  public removeUserAdded(i: number){
+    this.addUserList.splice(i, 1)
   }
 
 }
