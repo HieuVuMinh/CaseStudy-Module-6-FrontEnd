@@ -1,24 +1,35 @@
 <div class="navbar-end">
   <div class="navbar-item">
-    <div class="buttons">
-      <div class="dropdown is-active" style="top: -4px">
+    <div class="buttons" style="margin-right: 200px">
+      <div class="dropdown is-active" >
         <div class="dropdown-trigger">
           <input #searchUser class="input is-link" type="text" placeholder="Invite user" (keyup)="findAllUserByUsername(searchUser.value)">
         </div>
         <div class="dropdown-menu" id="dropdown-menu" role="menu" *ngIf="searchUser.value">
           <div class="dropdown-content">
-            <span *ngFor="let user of users" class="dropdown-item" (click)="selectUser(searchUser, user)">
-              {{user.username}}({{user.nickname}})
+            <div *ngFor="let user of users" class="dropdown-item" (click)="selectUser(searchUser, user)">
+              <span *ngIf="workspace.owner.id != user.id">
+              @{{user.username}}({{user.nickname}})
+            </span>
+            </div >
+
+          </div>
+        </div>
+      </div>
+      <button class="button is-primary" (click)="updateWorkspace()" style="width: 100px">
+        <i class="fas fa-user-plus"></i>
+        Invite
+      </button>
+      <div class="dropdown is-active" >
+        <div class="dropdown-menu" role="menu" *ngIf="addUserList.length !=0" style="top: -24px">
+          <div class="dropdown-content">
+            <span *ngFor="let user of addUserList" class="dropdown-item user-invite" (click)="removeUserAdded(addUserList.indexOf(user))">
+              @{{user.username}}({{user.nickname}})
             </span>
           </div>
         </div>
       </div>
 
-
-      <button class="button is-primary" (click)="showModal()">
-        <i class="fas fa-user-plus"></i>
-        Invite
-      </button>
     </div>
   </div>
 </div>
@@ -44,7 +55,23 @@
     </ul>
   </aside>
   <div class="container column is-10" >
-    <div class="user-container" *ngFor="let member of workspace.members">
+    <div class="user-container">
+      <div class="user-info">
+        <div>
+          <img class="user-img" src="{{workspace.owner.image}}">
+        </div>
+        <div class="user-name">
+          <h2 class="user-nickname">{{workspace.owner.nickname}}</h2>
+          <h6 class="user-username">@{{workspace.owner.username}}</h6>
+        </div>
+      </div>
+      <div>
+        <button class="button is-primary" >
+          Admin
+        </button>
+      </div>
+    </div>
+    <div class="user-container" *ngFor="let member of workspace.members; index as i">
       <div class="user-info">
         <div>
           <img class="user-img" src="{{member.image}}">
@@ -55,39 +82,20 @@
         </div>
       </div>
       <div>
-        <button class="button is-primary" (click)="showModal()">
-          <i class="fas fa-user-plus"></i>
-          Invite
+        <button class="button is-primary">
+          Member
+        </button>
+        <button class="button is-primary" style="width: 40px" (click)="removeMembers(i)" *ngIf="workspace.owner.id == currentUser.id">
+          <i class="fas fa-user-minus" style="color: red"></i>
+        </button>
+        <button class="button is-primary" style="width: 40px" (click)="removeMembers(i)" *ngIf="member.id == currentUser.id">
+          <i class="fas fa-user-minus" style="color: red"></i>
         </button>
       </div>
     </div>
-  </div>
+ </div>
 </section>
 
-<div class="modal" id="modal-add-member">
-  <div class="modal-background"></div>
-  <div class="modal-card">
-    <section class="modal-card-body" style="min-height: 200px">
-      <div>
-        <div style="padding: 16px 10px">
-          <span class="list-user-added"  *ngFor="let member of addUserList">@{{member.username}}</span>
-        </div>
-        <div class="control" style="display: flex">
-          <input #searchUser class="input is-focused" type="text" placeholder="Focused input" (keyup)="findAllUserByUsername(searchUser.value)">
-          <button class="button is-primary" (click)="updateWorkspace()">
-            <i class="fas fa-user-plus"></i>
-            Invite
-          </button>
-        </div>
-
-        <div>
-          <span  class="list-user" (click)="selectUser(searchUser,user)" *ngFor="let user of users">{{user.username}}</span>
-        </div>
-      </div>
-    </section>
-
-  </div>
-</div>
 
 
 

@@ -4,6 +4,7 @@ import {UserService} from "../../../service/user/user.service";
 import {ActivatedRoute} from "@angular/router";
 import {Workspace} from "../../../model/workspace";
 import {User} from "../../../model/user";
+import {UserToken} from "../../../model/user-token";
 import {AuthenticationService} from "../../../service/authentication/authentication.service";
 
 @Component({
@@ -17,9 +18,11 @@ export class WorkspaceMemberComponent implements OnInit {
   users: User[] = [];
   addUserList: User[] = [];
   user: User = {};
+  currentUser: UserToken = this.authenticationService.getCurrentUserValue();
   constructor(private workspaceService: WorkspaceService,
               private userService: UserService,
-              private activatedRoute: ActivatedRoute,) {}
+              private activatedRoute: ActivatedRoute,
+              private authenticationService: AuthenticationService) {}
 
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe(paramMap => {
@@ -40,9 +43,22 @@ export class WorkspaceMemberComponent implements OnInit {
     this.user.username = keyword;
     if (keyword != "") {
       this.userService.findUsersByKeyword(keyword).subscribe(users => {
+
         for (let member of this.workspace.members){
-          users.splice(users.indexOf(member))
+          for (let user of users){
+                if (member.id == user.id){
+                  users.splice(users.indexOf(user),1)
+                }
+          }
         }
+        for (let member of this.addUserList){
+          for (let user of users){
+            if (member.id == user.id){
+              users.splice(users.indexOf(user),1)
+            }
+          }
+        }
+
         this.users = users;
 
       })
@@ -52,10 +68,12 @@ export class WorkspaceMemberComponent implements OnInit {
   }
 
   public updateWorkspace() {
-    for (let user of this.addUserList) {
-      this.workspace.members.push(user)
+    if (this.addUserList.length > 0){
+      for (let user of this.addUserList) {
+        this.workspace.members.push(user)
+      }
     }
-    this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => console.log("ok"))
+    this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => this.addUserList = [])
 
   }
 
@@ -63,11 +81,14 @@ export class WorkspaceMemberComponent implements OnInit {
         username.value = ""
         this.userList = false
         this.addUserList.push(user)
-        this.users.splice(this.users.indexOf(user),1)
   }
 
   public removeUserAdded(i: number) {
     this.addUserList.splice(i, 1)
+  }
+  public removeMembers(i: number) {
+    this.workspace.members.splice(i,1)
+    this.updateWorkspace()
   }
   public showModal(){
     // @ts-ignore
