@@ -1,59 +1,98 @@
-<!--  Board-->
-<div class="board">
-  <div class="board-wrapper">
-    <div class="board-columns" cdkDropListGroup>
-      <!--column-->
-      <div class="board-column"
-           cdkDropList
-           #todoList="cdkDropList"
-           [cdkDropListData]="todo"
-           [cdkDropListConnectedTo]="[doneList]"
-           (cdkDropListDropped)="drop($event)">
-        <div class="column-title">To Do</div>
+<!--board-header-->
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
 
-        <div class="tasks-container">
-          <div class="task" cdkDrag>
-          </div>
-        </div>
-
-        <div class="tasks-container">
-          <div class="task" cdkDrag>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="board-column" cdkDropList
-           #doneList="cdkDropList"
-           [cdkDropListData]="done"
-           [cdkDropListConnectedTo]="[todoList]"
-           (cdkDropListDropped)="drop($event)">
-        <div class="column-title">Doing</div>
-        <div class="tasks-container">
-          <div class="task" cdkDrag>
-          </div>
-        </div>
-      </div>
-
-      <div class="board-column">
-        <div class="column-title">hello</div>
-        <div class="tasks-container">
-          <div class="task" cdkDrag>
-          </div>
-        </div>
-      </div>
-
-      <div class="board-column">
-        <div class="column-title">hello</div>
-        <div class="tasks-container">
-          <div class="task" cdkDrag>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
   </div>
 
-</div>
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-item">
+      <div class="buttons">
+        <button class="button is-primary">
+          Name Project
+        </button>
 
+        <button class="button is-primary">
+          Name WorkSpace
+        </button>
+
+        <button class="button is-primary">
+          <i class="far fa-star"></i>
+        </button>
+
+        <div>
+          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+        </div>
+        <div>
+          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+        </div>
+        <div>
+          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <button class="button is-primary"><i class="fas fa-ellipsis-h"></i>
+            Menu
+          </button>
+          <button class="button is-primary">
+            <i class="fas fa-user-plus"></i>
+            Invite
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<!--main content-->
+<div class="root">
+  <div class="board">
+    <div class="board-wrapper">
+      <div class="board-columns">
+
+        <div cdkDropList
+             cdkDropListGroup
+             cdkDropListOrientation="horizontal" class="board-columns"
+             (cdkDropListDropped)="dropColumn($event)">
+          <div
+            cdkDragLockAxis="x" class="board-column"
+            *ngFor="let column of board.columns" cdkDrag>
+            <div class="column-title" cdkDragHandle>
+              {{ column.title }} - {{column.position}}
+            </div>
+            <div class="tasks-container"
+                 style="min-height: 50px"
+                 id="{{column.id}}"
+                 cdkDropList
+                 [cdkDropListData]="column.cards"
+                 (cdkDropListDropped)="dropCard($event)">
+              <div class="task" *ngFor="let item of column.cards" cdkDrag>
+                {{ item.title }} - {{item.position}}<br>
+                {{item.content}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tasks-container">
+          <div class="task" cdkDrag>
+          </div>
+        </div>
+        <div class="tasks-container">
+          <div class="task" cdkDrag>
+          </div>
+        </div>
+        <div class="tasks-container">
+          <div class="task" cdkDrag>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

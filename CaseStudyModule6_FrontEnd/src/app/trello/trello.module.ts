@@ -8,6 +8,7 @@ import {ShareModule} from "../share/share.module";
 import { TrelloHomeComponent } from './trello-home/trello-home.component';
 import {FormsModule} from "@angular/forms";
 import { UserInformationComponent } from './user-information/user-information.component';
+import { TrelloAddComponent } from './trello-add/trello-add.component';
 
 
 @NgModule({
@@ -15,6 +16,8 @@ import { UserInformationComponent } from './user-information/user-information.co
     TrelloViewComponent,
     TrelloHomeComponent,
     UserInformationComponent
+    TrelloHomeComponent,
+    TrelloAddComponent
   ],
     imports: [
         CommonModule,
@@ -24,6 +27,4 @@ import { UserInformationComponent } from './user-information/user-information.co
         FormsModule,
     ]
 })
-export class TrelloModule {
-
-}
+export class TrelloModule { }

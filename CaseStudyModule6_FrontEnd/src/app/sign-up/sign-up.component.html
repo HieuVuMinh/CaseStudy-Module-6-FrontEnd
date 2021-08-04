@@ -9,13 +9,25 @@
         <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
       </div>
       <span>or use your email for registration</span>
+<!--      username-->
       <input type="text" formControlName="username" placeholder="User Name" />
       <div class="col alert alert-danger" role="alert"
-           *ngIf="username?.errors?.minlength">
+           *ngIf="username?.errors?.required && username?.touched">
         Name must be at least 6 characters long!
       </div>
+<!--      password-->
       <input type="password" formControlName="password" placeholder="Password" />
+      <div class="col alert alert-danger" role="alert"
+           *ngIf="password?.errors?.required && password?.touched"></div>
+      <div class="col alert alert-danger" role="alert"
+           *ngIf="password?.errors?.parent">
+        Minimum eight characters, at least one uppercase letter, one lowercase letter and one number!
+      </div>
       <input type="text" formControlName="nickname" placeholder="Nick Name" />
+      <div class="col alert alert-danger" role="alert"
+           *ngIf="nickname?.errors?.required && nickname?.touched">
+        Password must be entered!
+      </div>
       <button>Sign Up</button>
     </form>
   </div>

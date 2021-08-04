@@ -10,7 +10,7 @@ const routes: Routes = [
     component: TrelloHomeComponent
   },
   {
-    path: 'board',
+    path: 'boards/:id',
     component: TrelloViewComponent
   },
   {

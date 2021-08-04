@@ -25,4 +25,8 @@ export class UserService {
     updateById(id: number, user: User): Observable<any> {
     return this.http.put<any>(`${API_URL}users/${id}`, user);
   }
+
+  findUsersByKeyword(keyword: string): Observable<User[]> {
+    return this.http.get<User[]>(`${API_URL}users/search/${keyword}`);
+  }
 }
