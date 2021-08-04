@@ -4,21 +4,26 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { NavbarBoardHeaderComponent } from './navbar-board-header/navbar-board-header.component';
 import { ModalComponent } from './modal/modal.component';
 import {FormsModule} from "@angular/forms";
+import {RouterModule} from "@angular/router";
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
     NavbarComponent,
     NavbarBoardHeaderComponent,
-    ModalComponent
+    ModalComponent,
+    FooterComponent
   ],
   exports: [
     NavbarComponent,
     NavbarBoardHeaderComponent,
-    ModalComponent
+    ModalComponent,
+    FooterComponent
   ],
-    imports: [
-        CommonModule,
-        FormsModule
-    ]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule
+  ]
 })
 export class ShareModule { }
