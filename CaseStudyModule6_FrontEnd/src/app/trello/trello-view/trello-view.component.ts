@@ -140,6 +140,6 @@ export class TrelloViewComponent implements OnInit {
   }
 
   private updateBoard() {
-    this.boardService.updateBoard(this.boardId, this.board).subscribe(() => this.getBoard());
+    this.boardService.updateBoard(this.boardId, this.board).subscribe(() => this.getPage());
   }
 }
