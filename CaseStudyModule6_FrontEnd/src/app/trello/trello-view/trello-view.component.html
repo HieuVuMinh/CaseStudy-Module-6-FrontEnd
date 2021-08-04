@@ -1,4 +1,57 @@
-<app-navbar-board-header></app-navbar-board-header>
+<!--board-header-->
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-item">
+      <div class="buttons">
+        <button class="button is-primary">
+          Name Project
+        </button>
+
+        <button class="button is-primary">
+          Name WorkSpace
+        </button>
+
+        <button class="button is-primary">
+          <i class="far fa-star"></i>
+        </button>
+
+        <div>
+          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+        </div>
+        <div>
+          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+        </div>
+        <div>
+          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <button class="button is-primary"><i class="fas fa-ellipsis-h"></i>
+            Menu
+          </button>
+          <button class="button is-primary">
+            <i class="fas fa-user-plus"></i>
+            Invite
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<!--main content-->
 <div class="root">
   <div class="board">
     <div class="board-wrapper">
@@ -15,6 +68,7 @@
               {{ column.title }} - {{column.position}}
             </div>
             <div class="tasks-container"
+                 style="min-height: 50px"
                  id="{{column.id}}"
                  cdkDropList
                  [cdkDropListData]="column.cards"

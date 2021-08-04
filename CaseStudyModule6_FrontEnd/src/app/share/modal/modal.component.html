@@ -9,13 +9,31 @@
       <div class="field">
         <label class="label">Title</label>
         <div class="control">
-          <input class="input" type="text" required [(ngModel)]="board.title">
+          <input class="input" type="text" required [(ngModel)]="board.title" #boardTitle="ngModel">
+        </div>
+        <div *ngIf="boardTitle.invalid && (boardTitle.dirty || boardTitle.touched)"
+             class="alert">
+          <div *ngIf="boardTitle.errors?.required">
+            Title is required.
+          </div>
         </div>
       </div>
-      <div class="field">
-        <label class="label">Owner</label>
-        <div class="control">
-          <div class="button is-dark">{{modalService.currentUser.username}}</div>
+      <div class="field columns">
+        <div class="column is-one-third">
+          <label class="label">Owner</label>
+          <div class="control">
+            <div class="button is-dark user-button">{{modalService.currentUser.username}}</div>
+          </div>
+        </div>
+        <div class="column">
+          <label class="label">Current members</label>
+          <p *ngIf="!members.length" class="help">No members yet!</p>
+          <div class="control">
+            <div class="button is-dark  user-button member-button"
+                 *ngFor="let member of members; index as i" (click)="removeMember(i)">
+              @{{member.username}} <span *ngIf="member.nickname">({{member.nickname}})</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="field">
@@ -23,25 +41,15 @@
         <div class="control">
           <input class="input" type="text" (keyup)="searchUsers()" [(ngModel)]="userSearch">
         </div>
-        <div class="dropdown-content">
+        <div>
           <div *ngFor="let result of userResult"
-               class="button dropdown-item"
-               style="text-align: left" (click)="addMember(result)">
+               class="button  user-button"
+               style="text-align: left"
+               (click)="addMember(result)">
             <div>
               <span>@{{result.username}}</span>
               <span *ngIf="result.nickname">({{result.nickname}})</span>
             </div>
-          </div>
-        </div>
-        <p *ngIf="!members.length" class="help">No members yet!</p>
-      </div>
-      <div class="field">
-        <label *ngIf="members.length" class="label">Current members</label>
-        <div class="control">
-          <div class="button is-dark"
-               *ngFor="let member of members"
-               style="margin: 5px">
-            @{{member.username}} <span *ngIf="member.nickname">({{member.nickname}})</span>
           </div>
         </div>
       </div>

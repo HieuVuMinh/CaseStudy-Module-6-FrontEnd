@@ -66,4 +66,8 @@ export class ModalComponent implements OnInit {
       }
     }
   }
+
+  removeMember(memberIndex: number) {
+    this.members.splice(memberIndex, 1);
+  }
 }
