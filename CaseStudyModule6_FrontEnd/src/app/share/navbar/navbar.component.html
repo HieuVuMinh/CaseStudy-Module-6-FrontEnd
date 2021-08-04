@@ -37,13 +37,13 @@
     <div class="dropdown is-hoverable is-right">
       <div class="dropdown-trigger">
         <a href="#" class="icon-link" aria-haspopup="true" aria-controls="dropdown-menu4">
-          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/></a>
+          <img src="{{user.image}}" class="img-circle"/></a>
       </div>
       <div class="dropdown-menu" id="dropdown-menu4" role="menu">
         <div class="dropdown-content">
           <div href="#" class="dropdown-item">
             <div>
-              <img src="assets/img/nicki-eliza.jpg" class="user-img img-circle"/>
+              <img src="{{user.image}}" class="user-img img-circle"/>
             </div>
             <div class="user">
               <div class="username">
@@ -54,10 +54,10 @@
               </span>
             </div>
           </div>
-          <a href="#" class="dropdown-item">
+          <a routerLink="/trello/information" class="dropdown-item">
             Modifiers
           </a>
-          <a href="#" class="dropdown-item">
+          <a class="dropdown-item">
             Components
           </a>
           <a class="dropdown-item">
@@ -71,6 +71,5 @@
       </div>
     </div>
   </div>
-
 </div>
-<!--end-nav-->
+

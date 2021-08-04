@@ -3,9 +3,14 @@ import {Workspace} from "../../../model/workspace";
 import {User} from "../../../model/user";
 import {WorkspaceService} from "../../../service/workspace.service";
 import {UserService} from "../../../service/user/user.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Board} from "../../../model/board";
 import {ModalService} from "../../../service/modal/modal.service";
+import {BoardService} from "../../../service/board/board.service";
+import {Member} from "../../../model/member";
+import {MemberService} from "../../../service/member/member.service";
+import {UserToken} from "../../../model/user-token";
+import {AuthenticationService} from "../../../service/authentication/authentication.service";
 
 @Component({
   selector: 'app-workspace-board',
@@ -26,11 +31,17 @@ export class WorkspaceBoardComponent implements OnInit {
   userSearch: string = ``;
   userResult: User[] = [];
   members: User[] = [];
-
+  showModal = false;
+  currentUser: UserToken = this.authenticationService.getCurrentUserValue();
+  membersDto: Member[] = [];
   constructor(private workspaceService: WorkspaceService,
               private userService: UserService,
               private activatedRoute: ActivatedRoute,
-              public modalService: ModalService,) {
+              public modalService: ModalService,
+              private boardService: BoardService,
+              private router: Router,
+              private memberService: MemberService,
+              private authenticationService: AuthenticationService) {
 
   }
 
@@ -41,6 +52,7 @@ export class WorkspaceBoardComponent implements OnInit {
         this.findById(id)
       }
     });
+
 
   }
 
@@ -90,16 +102,65 @@ export class WorkspaceBoardComponent implements OnInit {
       }
     }
   }
+  addNewBoard() {
+    this.modalService.close();
+    //create new board
+    this.board.owner.id = this.currentUser.id;
+    this.boardService.addNewBoard(this.board).subscribe(board => {
+      this.updateWorkspace(board)
+        this.board = board;
+        this.loadDto();
+      }
+    )
+  }
 
   removeMember(memberIndex: number) {
     this.members.splice(memberIndex, 1);
   }
 
-  showModal() {
-    this.modalService.show();
+  private loadDto() {
+    for (let member of this.members) {
+      let memberDto: Member = {
+        board: this.board,
+        canEdit: false,
+        user: {
+          id: member.id
+        }
+      }
+      this.membersDto.push(memberDto)
+    }
+    this.addNewMembers();
   }
 
-  public updateWorkspace() {
+  private addNewMembers() {
+    this.memberService.addNewMembers(this.membersDto).subscribe(() => {
+      this.router.navigateByUrl(`/trello/boards/${this.board.id}`);
+      this.resetInputs();
+    })
+  }
+
+  resetInputs() {
+    this.board = {
+      title: '',
+      owner: {
+        id: -1,
+      },
+      columns: [],
+    };
+    this.userSearch = ``;
+    this.userResult = [];
+    this.members = [];
+    this.membersDto = [];
+  }
+
+  showAddBoardModal() {
+    this.showModal = true
+  }
+  hideAddBoardModal(){
+    this.showModal = false
+  }
+  public updateWorkspace(board: Board) {
+    this.workspace.boards.push(board)
     this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => console.log("ok"))
 
   }

@@ -4,6 +4,7 @@ import {UserService} from "../../../service/user/user.service";
 import {ActivatedRoute} from "@angular/router";
 import {Workspace} from "../../../model/workspace";
 import {User} from "../../../model/user";
+import {AuthenticationService} from "../../../service/authentication/authentication.service";
 
 @Component({
   selector: 'app-workspace-member',
@@ -12,16 +13,13 @@ import {User} from "../../../model/user";
 })
 export class WorkspaceMemberComponent implements OnInit {
   workspace: Workspace = {type: "", boards: [], id: 0, members: [], owner: undefined, title: ""};
-  checkMember = true;
   userList = true;
   users: User[] = [];
   addUserList: User[] = [];
   user: User = {};
   constructor(private workspaceService: WorkspaceService,
               private userService: UserService,
-              private activatedRoute: ActivatedRoute) {
-
-  }
+              private activatedRoute: ActivatedRoute,) {}
 
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe(paramMap => {
@@ -35,7 +33,6 @@ export class WorkspaceMemberComponent implements OnInit {
   public findById(id: any): void {
     this.workspaceService.findById(id).subscribe(workspaces => {
       this.workspace = workspaces
-      console.log(workspaces);
     })
   }
   public findAllUserByUsername(keyword: string): void {
@@ -43,7 +40,11 @@ export class WorkspaceMemberComponent implements OnInit {
     this.user.username = keyword;
     if (keyword != "") {
       this.userService.findUsersByKeyword(keyword).subscribe(users => {
+        for (let member of this.workspace.members){
+          users.splice(users.indexOf(member))
+        }
         this.users = users;
+
       })
     } else if (keyword == "") {
       this.users = []
@@ -59,27 +60,10 @@ export class WorkspaceMemberComponent implements OnInit {
   }
 
   public selectUser(username: any, user: User) {
-    if (this.addUserList.length == 0) {
-      username.value = ""
-      this.userList = false
-      this.addUserList.push(user)
-
-    } else {
-      this.checkMember = true
-      for (let member of this.addUserList) {
-        if (member.id == user.id) {
-          this.checkMember = false
-        }
-      }
-
-      if (this.checkMember){
         username.value = ""
         this.userList = false
         this.addUserList.push(user)
-
-      }
-
-    }
+        this.users.splice(this.users.indexOf(user),1)
   }
 
   public removeUserAdded(i: number) {
@@ -91,7 +75,6 @@ export class WorkspaceMemberComponent implements OnInit {
   }
   public hideModal(){
     // @ts-ignore
-
     document.getElementById("modal-add-member").classList.remove("is-active");
   }
 }

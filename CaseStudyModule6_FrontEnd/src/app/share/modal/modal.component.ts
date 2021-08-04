@@ -3,6 +3,10 @@ import {ModalService} from "../../service/modal/modal.service";
 import {Board} from "../../model/board";
 import {User} from "../../model/user";
 import {UserService} from "../../service/user/user.service";
+import {BoardService} from "../../service/board/board.service";
+import {MemberService} from "../../service/member/member.service";
+import {Member} from "../../model/member";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-modal',
@@ -20,9 +24,13 @@ export class ModalComponent implements OnInit {
   userSearch: string = ``;
   userResult: User[] = [];
   members: User[] = [];
+  membersDto: Member[] = [];
 
   constructor(public modalService: ModalService,
-              private userService: UserService) {
+              private userService: UserService,
+              private boardService: BoardService,
+              private memberService: MemberService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -69,5 +77,51 @@ export class ModalComponent implements OnInit {
 
   removeMember(memberIndex: number) {
     this.members.splice(memberIndex, 1);
+  }
+
+  createNewBoard() {
+    this.modalService.close();
+    //create new board
+    this.board.owner.id = this.modalService.currentUser.id;
+    this.boardService.addNewBoard(this.board).subscribe(board => {
+        this.board = board;
+        this.loadDto();
+      }
+    )
+  }
+
+  private loadDto() {
+    for (let member of this.members) {
+      let memberDto: Member = {
+        board: this.board,
+        canEdit: false,
+        user: {
+          id: member.id
+        }
+      }
+      this.membersDto.push(memberDto)
+    }
+    this.addNewMembers();
+  }
+
+  private addNewMembers() {
+    this.memberService.addNewMembers(this.membersDto).subscribe(() => {
+      this.router.navigateByUrl(`/trello/boards/${this.board.id}`);
+      this.resetInputs();
+    })
+  }
+
+  resetInputs() {
+    this.board = {
+      title: '',
+      owner: {
+        id: -1,
+      },
+      columns: [],
+    };
+    this.userSearch = ``;
+    this.userResult = [];
+    this.members = [];
+    this.membersDto = [];
   }
 }

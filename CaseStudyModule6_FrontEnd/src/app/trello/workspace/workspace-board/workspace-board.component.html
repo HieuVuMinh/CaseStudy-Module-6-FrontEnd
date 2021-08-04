@@ -25,7 +25,7 @@
       <h1> <i class="far fa-clipboard"></i>Shared Boards</h1>
     </div>
     <div class="section-board">
-      <div class="card" (click)="showModal()">
+      <div class="card" (click)="showAddBoardModal()">
         <div class="img-circle-add-board">
           <a><i class="fas fa-plus-circle"></i></a>
         </div>
@@ -43,11 +43,12 @@
   </div>
 </section>
 
-<div *ngIf="modalService.isActive" class="modal is-active">
+<div *ngIf="showModal" class="modal is-active">
+  <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title">Creating new board</p>
-      <button class="delete" aria-label="close" (click)="modalService.close()"></button>
+      <button class="delete" aria-label="close" (click)="hideAddBoardModal()"></button>
     </header>
     <section class="modal-card-body">
       <div class="field">
@@ -55,7 +56,7 @@
         <div class="control">
           <input class="input" type="text" required [(ngModel)]="board.title" #boardTitle="ngModel">
         </div>
-        <div *ngIf="boardTitle.invalid && (boardTitle.dirty || boardTitle.touched)"
+        <div *ngIf="boardTitle.invalid"
              class="alert">
           <div *ngIf="boardTitle.errors?.required">
             Title is required.
@@ -66,7 +67,7 @@
         <div class="column is-one-third">
           <label class="label">Owner</label>
           <div class="control">
-            <div class="button is-dark user-button">{{modalService.currentUser.username}}</div>
+            <div class="button is-dark user-button">{{currentUser.username}}</div>
           </div>
         </div>
         <div class="column">
@@ -99,11 +100,17 @@
       </div>
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-success">Save changes</button>
-      <button class="button" (click)="modalService.close()">Cancel</button>
+      <div *ngIf="boardTitle.invalid" class="alert">
+        <button class="button is-dark" disabled>Save changes</button>
+      </div>
+      <div *ngIf="!boardTitle.invalid" class="alert">
+        <button class="button" (click)="addNewBoard()">Save changes</button>
+      </div>
+      <button class="button" (click)="hideAddBoardModal()">Cancel</button>
     </footer>
   </div>
 </div>
+
 
 
 

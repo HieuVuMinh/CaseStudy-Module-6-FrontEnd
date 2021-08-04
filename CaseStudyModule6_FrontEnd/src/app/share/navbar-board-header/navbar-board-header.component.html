@@ -13,11 +13,11 @@
     <div class="navbar-item">
       <div class="buttons">
         <button class="button is-primary">
-          Name Project
+          Title: {{board.title}}
         </button>
 
         <button class="button is-primary">
-          Name WorkSpace
+          Owner: {{board.owner.username}}
         </button>
 
         <button class="button is-primary">
@@ -25,13 +25,12 @@
         </button>
 
         <div>
-          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
-        </div>
-        <div>
-          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
-        </div>
-        <div>
-          <img src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+          Members:
+          <span *ngFor="let member of members">
+            <img *ngIf="member.image" [src]="member.image" class="img-circle"/>
+            <img *ngIf="!member.image" src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+            {{member.username}}
+          </span>
         </div>
       </div>
     </div>

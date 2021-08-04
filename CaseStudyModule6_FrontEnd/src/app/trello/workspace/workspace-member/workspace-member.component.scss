@@ -230,6 +230,7 @@ h1.app-name {
   align-content: space-around;
   height: auto;
   margin: auto;
+  min-height: 100vh;
 }
 
 .card {
@@ -246,14 +247,17 @@ h1.app-name {
 .fa-briefcase, .fa-clipboard {
   margin-right: 5px;
 }
+
 .button.is-primary {
   background: rgba(255, 255, 255, 0.5);
   color: rgba(0, 0, 0, 0.65);
 }
+
 .list-user {
   padding: 10px;
   font-size: 16px;
 }
+
 .list-user:hover {
   background-color: red;
 }
@@ -263,3 +267,36 @@ h1.app-name {
   color: white;
   margin: 0 5px;
 }
+
+.user-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+}
+
+.user-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%
+}
+
+.user-name {
+  margin-left: 15px
+}
+.user-nickname {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.user-username {
+  font-size: 14px;
+  font-weight: lighter;
+}
+

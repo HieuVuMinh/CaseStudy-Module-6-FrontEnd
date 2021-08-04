@@ -6,12 +6,12 @@ import {TrelloViewComponent} from "./trello-view/trello-view.component";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {ShareModule} from "../share/share.module";
 import { TrelloHomeComponent } from './trello-home/trello-home.component';
-
-import { TrelloAddComponent } from './trello-add/trello-add.component';
+import {FormsModule} from "@angular/forms";
+import { UserInformationComponent } from './user-information/user-information.component';
 import {WorkspaceBoardComponent} from "./workspace/workspace-board/workspace-board.component";
 import {WorkspaceMemberComponent} from "./workspace/workspace-member/workspace-member.component";
-import { AddBoardComponent } from './workspace/add-board/add-board.component';
-import {FormsModule} from "@angular/forms";
+
+
 
 
 
@@ -19,10 +19,9 @@ import {FormsModule} from "@angular/forms";
   declarations: [
     TrelloViewComponent,
     TrelloHomeComponent,
-    TrelloAddComponent,
     WorkspaceBoardComponent,
     WorkspaceMemberComponent,
-    AddBoardComponent,
+    UserInformationComponent
   ],
     imports: [
         CommonModule,

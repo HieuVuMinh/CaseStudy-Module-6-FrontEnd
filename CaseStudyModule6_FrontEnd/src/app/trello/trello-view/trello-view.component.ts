@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
-import {UserToken} from "../../model/user-token";
-import {AuthenticationService} from "../../service/authentication/authentication.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Board} from "../../model/board";
 import {Column} from "../../model/column";
@@ -10,6 +8,8 @@ import {BoardService} from "../../service/board/board.service";
 import {ColumnService} from "../../service/column/column.service";
 import {CardService} from "../../service/card/card.service";
 import {map} from "rxjs/operators";
+import {DetailedMember} from "../../model/detailed-member";
+import {MemberService} from "../../service/member/member.service";
 
 @Component({
   selector: 'app-trello-view',
@@ -33,11 +33,13 @@ export class TrelloViewComponent implements OnInit {
   };
   cardsDto: Card[] = [];
   columnsDto: Column[] = [];
+  members: DetailedMember[] = [];
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
               private columnService: ColumnService,
-              private cardService: CardService) {
+              private cardService: CardService,
+              private memberService: MemberService) {
   }
 
   ngOnInit(): void {
@@ -47,15 +49,21 @@ export class TrelloViewComponent implements OnInit {
   getBoardIdByUrl() {
     this.activatedRoute.params.pipe(map(p => p.id)).subscribe(id => {
       this.boardId = id;
-      this.getBoard();
+      this.getPage();
     });
   }
 
+  getPage() {
+    this.getBoard();
+    this.getMembers();
+  }
+
+  private getMembers() {
+    this.memberService.getMembersByBoardId(this.boardId).subscribe(members => this.members = members)
+  }
+
   getBoard() {
-    this.boardService.getBoardById(this.boardId).subscribe(board => {
-      this.board = board;
-      console.log(this.board);
-    });
+    this.boardService.getBoardById(this.boardId).subscribe(board => this.board = board)
   }
 
   public dropColumn(event: CdkDragDrop<string[]>): void {
@@ -132,6 +140,6 @@ export class TrelloViewComponent implements OnInit {
   }
 
   private updateBoard() {
-    this.boardService.updateBoard(this.boardId, this.board).subscribe(() => this.getBoard());
+    this.boardService.updateBoard(this.boardId, this.board).subscribe(() => this.getPage());
   }
 }

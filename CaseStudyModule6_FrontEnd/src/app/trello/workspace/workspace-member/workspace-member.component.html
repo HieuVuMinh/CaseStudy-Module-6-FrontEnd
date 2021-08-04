@@ -1,6 +1,20 @@
 <div class="navbar-end">
   <div class="navbar-item">
     <div class="buttons">
+      <div class="dropdown is-active" style="top: -4px">
+        <div class="dropdown-trigger">
+          <input #searchUser class="input is-link" type="text" placeholder="Invite user" (keyup)="findAllUserByUsername(searchUser.value)">
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu" *ngIf="searchUser.value">
+          <div class="dropdown-content">
+            <span *ngFor="let user of users" class="dropdown-item" (click)="selectUser(searchUser, user)">
+              {{user.username}}({{user.nickname}})
+            </span>
+          </div>
+        </div>
+      </div>
+
+
       <button class="button is-primary" (click)="showModal()">
         <i class="fas fa-user-plus"></i>
         Invite
@@ -29,30 +43,31 @@
       </li>
     </ul>
   </aside>
-  <div class="container column is-10">
-    <div class="title-board">
-      <h1> <i class="far fa-clipboard"></i>Members</h1>
-    </div>
-    <div class="section-board">
-      <div class="card" *ngFor="let members of workspace.members">
-        <div class="card-header"><p class="card-header-title">{{members.username}}</p></div>
-        <div class="card-content"><div class="content">
-          Nickname: {{members.nickname}}<br>
-        </div></div>
+  <div class="container column is-10" >
+    <div class="user-container" *ngFor="let member of workspace.members">
+      <div class="user-info">
+        <div>
+          <img class="user-img" src="{{member.image}}">
+        </div>
+        <div class="user-name">
+          <h2 class="user-nickname">{{member.nickname}}</h2>
+          <h6 class="user-username">@{{member.username}}</h6>
+        </div>
+      </div>
+      <div>
+        <button class="button is-primary" (click)="showModal()">
+          <i class="fas fa-user-plus"></i>
+          Invite
+        </button>
       </div>
     </div>
-
   </div>
 </section>
 
 <div class="modal" id="modal-add-member">
   <div class="modal-background"></div>
   <div class="modal-card">
-    <header class="modal-card-head">
-      <p class="modal-card-title">Modal title</p>
-      <button class="delete" aria-label="close" (click)="hideModal()"></button>
-    </header>
-    <section class="modal-card-body">
+    <section class="modal-card-body" style="min-height: 200px">
       <div>
         <div style="padding: 16px 10px">
           <span class="list-user-added"  *ngFor="let member of addUserList">@{{member.username}}</span>
@@ -66,14 +81,11 @@
         </div>
 
         <div>
-          <span class="list-user" (click)="selectUser(searchUser,user)" *ngFor="let user of users">{{user.username}}</span>
+          <span  class="list-user" (click)="selectUser(searchUser,user)" *ngFor="let user of users">{{user.username}}</span>
         </div>
       </div>
     </section>
-    <footer class="modal-card-foot">
-      <button class="button is-success" (click)="updateWorkspace()">Save changes</button>
-      <button class="button" (click)="hideModal()">Cancel</button>
-    </footer>
+
   </div>
 </div>
 
