@@ -12,7 +12,7 @@ import {ActivatedRoute} from "@angular/router";
 })
 export class WorkspaceComponent implements OnInit {
 
-  workspace: Workspace = {boards: [], id: 0, owner: undefined, title: "", users: []};
+  workspace: Workspace = {boards: [], id: 0, members: [], owner: undefined, title: ""};
   user: User = {};
   checkUser = true;
   userList = true;
@@ -56,10 +56,10 @@ export class WorkspaceComponent implements OnInit {
   }
 
   public update() {
-    this.userService.findByUsername(<string>this.user.username).subscribe(user => {
-      this.workspace.users.push(user)
+      for (let user of this.addUserList){
+        this.workspace.members.push(user)
+      }
       this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => console.log("ok") , () => this.checkUser = false)
-    })
 
   }
 

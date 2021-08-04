@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {Board} from "../../model/board";
 import {UserToken} from "../../model/user-token";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
 import {BoardService} from "../../service/board/board.service";
 import {Workspace} from "../../model/workspace";
 import {WorkspaceService} from "../../service/workspace.service";
+import {ModalService} from "../../service/modal/modal.service";
 
 @Component({
   selector: 'app-trello-home',
@@ -19,6 +20,7 @@ export class TrelloHomeComponent implements OnInit {
 
   constructor(private authenticationService: AuthenticationService,
               private boardService: BoardService,
+              private modalService: ModalService,
               private workspaceService: WorkspaceService) {
   }
 
@@ -46,5 +48,9 @@ export class TrelloHomeComponent implements OnInit {
     this.workspaceService.findAllByOwnerId(<number>this.authenticationService.getCurrentUserValue().id).subscribe(workspaces => {
         this.workspaces = workspaces;
       })
+  }
+
+  showAddBoardModal() {
+    this.modalService.show();
   }
 }

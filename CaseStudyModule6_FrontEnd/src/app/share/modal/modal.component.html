@@ -1,0 +1,62 @@
+<div *ngIf="modalService.isActive" class="modal is-active">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Creating new board</p>
+      <button class="delete" aria-label="close" (click)="modalService.close()"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="field">
+        <label class="label">Title</label>
+        <div class="control">
+          <input class="input" type="text" required [(ngModel)]="board.title" #boardTitle="ngModel">
+        </div>
+        <div *ngIf="boardTitle.invalid && (boardTitle.dirty || boardTitle.touched)"
+             class="alert">
+          <div *ngIf="boardTitle.errors?.required">
+            Title is required.
+          </div>
+        </div>
+      </div>
+      <div class="field columns">
+        <div class="column is-one-third">
+          <label class="label">Owner</label>
+          <div class="control">
+            <div class="button is-dark user-button">{{modalService.currentUser.username}}</div>
+          </div>
+        </div>
+        <div class="column">
+          <label class="label">Current members</label>
+          <p *ngIf="!members.length" class="help">No members yet!</p>
+          <div class="control">
+            <div class="button is-dark  user-button member-button"
+                 *ngFor="let member of members; index as i" (click)="removeMember(i)">
+              @{{member.username}} <span *ngIf="member.nickname">({{member.nickname}})</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Add member</label>
+        <div class="control">
+          <input class="input" type="text" (keyup)="searchUsers()" [(ngModel)]="userSearch">
+        </div>
+        <div>
+          <div *ngFor="let result of userResult"
+               class="button  user-button"
+               style="text-align: left"
+               (click)="addMember(result)">
+            <div>
+              <span>@{{result.username}}</span>
+              <span *ngIf="result.nickname">({{result.nickname}})</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success">Save changes</button>
+      <button class="button" (click)="modalService.close()">Cancel</button>
+    </footer>
+  </div>
+</div>

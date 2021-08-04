@@ -8,7 +8,7 @@ export interface Workspace {
 
   owner: any;
 
-  users: User[];
+  members: User[];
 
   boards: Board[];
 }
