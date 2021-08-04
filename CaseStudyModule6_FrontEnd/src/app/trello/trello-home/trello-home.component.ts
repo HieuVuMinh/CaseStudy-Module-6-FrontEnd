@@ -3,6 +3,7 @@ import {Board} from "../../model/board";
 import {UserToken} from "../../model/user-token";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
 import {BoardService} from "../../service/board/board.service";
+import {ModalService} from "../../service/modal/modal.service";
 
 @Component({
   selector: 'app-trello-home',
@@ -15,7 +16,8 @@ export class TrelloHomeComponent implements OnInit {
   sharedBoards: Board[] = [];
 
   constructor(private authenticationService: AuthenticationService,
-              private boardService: BoardService) { }
+              private boardService: BoardService,
+              private modalService: ModalService) { }
 
   ngOnInit(): void {
     this.currentUser = this.authenticationService.getCurrentUserValue();
@@ -34,5 +36,9 @@ export class TrelloHomeComponent implements OnInit {
       this.yourBoards = boards;
       console.log(this.yourBoards);
     });
+  }
+
+  showAddBoardModal() {
+    this.modalService.show();
   }
 }
