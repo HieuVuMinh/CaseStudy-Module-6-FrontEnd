@@ -41,7 +41,7 @@
           <button class="button is-primary"><i class="fas fa-ellipsis-h"></i>
             Menu
           </button>
-          <button class="button is-primary">
+          <button *ngIf="board.owner.id == authenticationService.getCurrentUserValue().id" class="button is-primary">
             <i class="fas fa-user-plus"></i>
             Invite
           </button>

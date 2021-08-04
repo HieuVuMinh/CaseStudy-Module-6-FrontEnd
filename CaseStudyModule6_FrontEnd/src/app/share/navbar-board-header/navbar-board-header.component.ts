@@ -1,7 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Board} from "../../model/board";
 import {DetailedMember} from "../../model/detailed-member";
-import {MemberService} from "../../service/member/member.service";
+import {UserToken} from "../../model/user-token";
+import {AuthenticationService} from "../../service/authentication/authentication.service";
 
 @Component({
   selector: 'app-navbar-board-header',
@@ -12,7 +13,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
   @Input() board: Board = {columns: [], owner: {}, title: ""}
   @Input() members: DetailedMember[] = [];
 
-  constructor() {
+  constructor(public authenticationService: AuthenticationService) {
   }
 
   ngOnInit(): void {

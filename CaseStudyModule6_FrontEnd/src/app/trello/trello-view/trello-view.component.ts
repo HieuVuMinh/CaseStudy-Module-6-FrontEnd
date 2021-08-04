@@ -10,6 +10,9 @@ import {CardService} from "../../service/card/card.service";
 import {map} from "rxjs/operators";
 import {DetailedMember} from "../../model/detailed-member";
 import {MemberService} from "../../service/member/member.service";
+import {AuthenticationService} from "../../service/authentication/authentication.service";
+import {User} from "../../model/user";
+import {UserToken} from "../../model/user-token";
 
 @Component({
   selector: 'app-trello-view',
@@ -80,7 +83,6 @@ export class TrelloViewComponent implements OnInit {
         event.previousIndex,
         event.currentIndex);
     }
-    //assign value to previous column
     this.setPreviousColumn(event);
     this.saveChanges()
   }
