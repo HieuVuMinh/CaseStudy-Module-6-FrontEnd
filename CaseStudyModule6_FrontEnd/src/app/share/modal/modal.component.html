@@ -41,17 +41,6 @@
         <div class="control">
           <input class="input" type="text" (keyup)="searchUsers()" [(ngModel)]="userSearch">
         </div>
-        <div>
-          <div *ngFor="let result of userResult"
-               class="button  user-button"
-               style="text-align: left"
-               (click)="addMember(result)">
-            <div>
-              <span>@{{result.username}}</span>
-              <span *ngIf="result.nickname">({{result.nickname}})</span>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
     <footer class="modal-card-foot">
@@ -63,5 +52,14 @@
       </div>
       <button class="button" (click)="modalService.close()">Cancel</button>
     </footer>
+  </div>
+  <div style="position: relative;">
+    <div style="position: absolute; top: -100px; left: -300px">
+      <div *ngIf="userResult.length" class="dropdown-content">
+        <a *ngFor="let result of userResult" class="dropdown-item" (click)="addMember(result)">
+          @{{result.username}} <span *ngIf="result.nickname">({{result.nickname}})</span>
+        </a>
+      </div>
+    </div>
   </div>
 </div>
