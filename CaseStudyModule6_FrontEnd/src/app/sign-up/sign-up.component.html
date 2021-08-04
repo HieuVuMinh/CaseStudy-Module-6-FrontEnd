@@ -12,15 +12,13 @@
 <!--      username-->
       <input type="text" formControlName="username" placeholder="User Name" />
       <div class="col alert alert-danger" role="alert"
-           *ngIf="username?.errors?.minlength && username?.touched">
+           *ngIf="username?.errors?.required && username?.touched">
         Name must be at least 6 characters long!
       </div>
 <!--      password-->
       <input type="password" formControlName="password" placeholder="Password" />
       <div class="col alert alert-danger" role="alert"
-           *ngIf="password?.errors?.required && password?.touched">
-        Password must be entered!
-      </div>
+           *ngIf="password?.errors?.required && password?.touched"></div>
       <div class="col alert alert-danger" role="alert"
            *ngIf="password?.errors?.parent">
         Minimum eight characters, at least one uppercase letter, one lowercase letter and one number!

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Form, FormControl, FormGroup} from "@angular/forms";
+import {Form, FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserService} from "../service/user/user.service";
 import {User} from "../model/user";
 import {Router} from "@angular/router";
@@ -19,7 +19,9 @@ export class RecoverPasswordComponent implements OnInit {
     nickname: new FormControl()
   });
 
-  newConFirmForm: FormGroup = new FormGroup({});
+  newConFirmForm: FormGroup = new FormGroup({
+    password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$')])
+  });
 
 
   constructor(private userService: UserService,
@@ -38,8 +40,10 @@ export class RecoverPasswordComponent implements OnInit {
         this.newConFirmForm = new FormGroup({
           username: new FormControl(this.user.username),
           nickname: new FormControl(this.user.nickname),
-          password: new FormControl()
+          password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$')])
         });
+      }else {
+
       }
     })
   }
@@ -47,8 +51,11 @@ export class RecoverPasswordComponent implements OnInit {
   changeNewPassword(id: any) {
     console.log(this.newConFirmForm.value, id);
     this.userService.updateById(id, this.newConFirmForm.value).subscribe(()=> {
-      alert("Change Success!")
       this.router.navigateByUrl('/login')
     })
+  }
+
+  get password() {
+    return this.newConFirmForm.get('password');
   }
 }

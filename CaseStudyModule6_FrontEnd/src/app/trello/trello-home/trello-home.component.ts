@@ -13,4 +13,13 @@ export class TrelloHomeComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  openModal() {
+    let modalElement = (<HTMLElement>document.getElementById('modalElement'))
+    modalElement.className = "modal is-active";
+  }
+
+  closeModal() {
+    let modalElement = (<HTMLElement>document.getElementById('modalElement'))
+    modalElement.className = "modal";
+  }
 }
