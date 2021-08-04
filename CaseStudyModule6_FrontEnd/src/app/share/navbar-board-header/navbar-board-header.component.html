@@ -41,10 +41,19 @@
           <button class="button is-primary"><i class="fas fa-ellipsis-h"></i>
             Menu
           </button>
-          <button *ngIf="board.owner.id == authenticationService.getCurrentUserValue().id" class="button is-primary">
-            <i class="fas fa-user-plus"></i>
-            Invite
+          <button *ngIf="board.owner.id == authenticationService.getCurrentUserValue().id" class="button is-primary" (click)="toggleUserSearchBar()">
+            <i class="fas fa-user-plus"></i>Invite
           </button>
+          <div style="position: relative;">
+            <div *ngIf="searchBarIsShown" style="position: absolute; top: 22px; left: -210px">
+              <input class="input" type="text" placeholder="Search member" [(ngModel)]="userSearch" (keyup)="searchUsers()">
+              <div *ngIf="userResult.length" class="dropdown-content">
+                <a *ngFor="let result of userResult" class="dropdown-item" (click)="addMember(result)">
+                  @{{result.username}} <span *ngIf="result.nickname">({{result.nickname}})</span>
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

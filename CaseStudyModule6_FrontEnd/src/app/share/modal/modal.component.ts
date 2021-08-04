@@ -95,9 +95,7 @@ export class ModalComponent implements OnInit {
       let memberDto: Member = {
         board: this.board,
         canEdit: false,
-        user: {
-          id: member.id
-        }
+        user: member
       }
       this.membersDto.push(memberDto)
     }
