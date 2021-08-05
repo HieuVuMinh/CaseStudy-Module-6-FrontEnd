@@ -44,6 +44,7 @@ export class TrelloViewComponent implements OnInit {
   })
   currentUser: UserToken = {};
   canEdit: boolean = false;
+  isInWorkspace: boolean = false;
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
@@ -96,6 +97,11 @@ export class TrelloViewComponent implements OnInit {
     if (isOwner || isEditingMember) {
       this.canEdit = true;
     }
+    this.updateIsInWorkspace();
+  }
+
+  private updateIsInWorkspace() {
+    this.boardService.isBoardInWorkspace(this.boardId).subscribe(isInWorkspace => this.isInWorkspace = isInWorkspace);
   }
 
   public getPreviousColumn() {

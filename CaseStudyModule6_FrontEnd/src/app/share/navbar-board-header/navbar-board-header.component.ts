@@ -17,6 +17,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
   @Input() board: Board = {columns: [], owner: {}, title: ""}
   @Input() members: DetailedMember[] = [];
   @Input() canEdit: boolean = false;
+  @Input() isInWorkspace: boolean = false;
   searchBarIsShown: boolean = false;
   userSearch: string = ``;
   userResult: User[] = [];
@@ -135,6 +136,23 @@ export class NavbarBoardHeaderComponent implements OnInit {
   updateBoardTitle() {
     if (this.board.id != null) {
       this.boardService.updateBoard(this.board.id, this.board).subscribe(board => this.board = board);
+    }
+  }
+
+  showUserPreview(member: DetailedMember) {
+    let elementId = 'user-preview-text-' + member.userId;
+    let element = document.getElementById(elementId);
+    // @ts-ignore
+    element.innerHTML = '@' + member.username;
+    // @ts-ignore
+    element.classList.remove('is-hidden');
+  }
+
+  closeUserPreviews() {
+    let elements = document.getElementsByClassName('user-preview-text');
+    // @ts-ignore
+    for (let element of elements) {
+      element.classList.add('is-hidden');
     }
   }
 }

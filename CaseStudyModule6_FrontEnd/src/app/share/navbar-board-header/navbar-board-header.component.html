@@ -28,13 +28,18 @@
         </button>
 
         <div>
-          Members:
+          <!--          Members:-->
           <span *ngFor="let member of members">
-            <a (click)="showDetail(member)">
+            <a (click)="showDetail(member)" (mouseover)="showUserPreview(member)" (mouseout)="closeUserPreviews()"
+               class="user-preview" style="position: relative">
               <img *ngIf="member.image" [src]="member.image" class="img-circle"/>
               <img *ngIf="!member.image" src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+              <span id="user-preview-text-{{member.userId}}"
+                    class="user-preview-text is-hidden tag is-info is-light"
+                    style="position: absolute; top: 20px; left:5px; float: top">
+                User preview text
+              </span>
             </a>
-            {{member.username}}
           </span>
         </div>
       </div>
@@ -46,7 +51,7 @@
           <button class="button is-primary"><i class="fas fa-ellipsis-h"></i>
             Menu
           </button>
-          <button *ngIf="canEdit" class="button is-primary"
+          <button *ngIf="canEdit && !isInWorkspace" class="button is-primary"
                   (click)="toggleUserSearchBar()">
             <i class="fas fa-user-plus"></i>Invite
           </button>
