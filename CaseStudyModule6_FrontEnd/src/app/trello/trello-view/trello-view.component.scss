@@ -1,7 +1,12 @@
+::-webkit-scrollbar-corner {
+  display: none;
+}
+
 .root {
   display: flex;
   flex-direction: column;
   height: 100%;
+
 }
 
 .icon-item {
@@ -143,17 +148,16 @@ h1.app-name {
 
     .board-columns {
       display: flex;
-      flex-grow: 1;
 
       .board-column {
+        max-width: 314px;
         display: flex;
         flex-direction: column;
         flex-grow: 1;
         flex-basis: 0; // to force the columns to all be the same size, regardless of content
-
         min-width: 300px;
         margin: 50px;
-        padding: 25px;
+        padding: 15px;
 
         border-radius: 4px;
 
@@ -170,12 +174,12 @@ h1.app-name {
           font-family: 'Lato', sans-serif;
           text-transform: uppercase;
           margin-bottom: 20px;
+
         }
       }
     }
   }
 }
-
 
 //.tasks-container {
 //  flex-grow: 1;
@@ -226,3 +230,8 @@ h1.app-name {
 .button-create-column {
   margin-top: 10px;
 }
+
+//.title-column {
+//  width: 177px;
+//  margin-right: 6px;
+//}

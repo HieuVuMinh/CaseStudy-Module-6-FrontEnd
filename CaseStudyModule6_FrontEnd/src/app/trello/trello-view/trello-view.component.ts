@@ -39,9 +39,15 @@ export class TrelloViewComponent implements OnInit {
   columnsDto: Column[] = [];
   members: DetailedMember[] = [];
   columnBeforeAdd: Column[] = [];
+
   columnForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
   })
+  titleForm: FormGroup = new FormGroup({
+    title: new FormControl('', Validators.required),
+  })
+
+  titleColumn: Column = {cards: [], id: -1, position: -1, title: ""}
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
@@ -76,14 +82,6 @@ export class TrelloViewComponent implements OnInit {
     })
   }
 
-  public getPreviousColumn() {
-    let boardColumn = this.board.columns;
-    for (let i = 0; i < boardColumn.length; i++) {
-      if (i = boardColumn.length) {
-        this.previousColumn = boardColumn[i - 1];
-      }
-    }
-  }
 
   public dropColumn(event: CdkDragDrop<string[]>): void {
     moveItemInArray(this.board.columns, event.previousIndex, event.currentIndex);
@@ -146,7 +144,7 @@ export class TrelloViewComponent implements OnInit {
   }
 
   private updatePreviousColumn() {
-    if (this.previousColumn.id != 1) {
+    if (this.previousColumn.id != -1) {
       this.columnService.update(this.previousColumn.id, this.previousColumn).subscribe(() => this.updateColumns())
     } else {
       this.updateColumns()
@@ -162,31 +160,27 @@ export class TrelloViewComponent implements OnInit {
   }
 
   addColumn() {
-    this.getPreviousColumn();
     if (this.columnForm.valid) {
       // @ts-ignore
-      let column: Column = {cards: [], position: this.previousColumn.position + 1, title: this.columnForm.value.title};
+      let column: Column = {cards: [], position: this.board.columns.length, title: this.columnForm.value.title};
       this.columnForm = new FormGroup({
-        title: new FormControl('', Validators.required),
+        title: new FormControl('', Validators.required)
       });
-      this.columnsDto.push(column);
-      this.columnService.updateAll(this.columnsDto).subscribe(() => {
-        this.getAllColumn();
+      this.columnService.save(column).subscribe(column => {
+        this.previousColumn = column;
+        this.board.columns.push(this.previousColumn);
+        this.updateBoard()
       })
     }
   }
 
-  getAllColumn() {
-    this.columnService.getAllColumn().subscribe(columns => {
-      this.columnBeforeAdd = columns;
-      for (let i = 0; i < this.columnBeforeAdd.length; i++) {
-        if (i == this.columnBeforeAdd.length - 1) {
-          this.board.columns.push(this.columnBeforeAdd[i])
-          console.log(this.board)
-          this.updateBoard();
-        }
+  onKeydown($event: KeyboardEvent, column: Column) {
+    if ($event.key === "Enter") {
+      if (column.title != ''){
+        this.saveChanges();
+      } else {
+        this.getPage();
       }
-    })
+    }
   }
-
 }
