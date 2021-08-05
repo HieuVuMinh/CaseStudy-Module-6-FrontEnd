@@ -47,11 +47,6 @@
       <h1><i class="far fa-clipboard"></i>Shared with you</h1>
     </div>
     <div class="section-board">
-      <div class="card">
-        <div class="img-circle-add-board">
-          <a (click)="showAddBoardModal()"><i class="fas fa-plus-circle"></i></a>
-        </div>
-      </div>
       <div class="card" *ngFor="let board of sharedBoards" routerLink="/trello/boards/{{board.id}}">
         <div class="card-header"><p class="card-header-title">{{board.title}}</p></div>
         <div class="card-content">
