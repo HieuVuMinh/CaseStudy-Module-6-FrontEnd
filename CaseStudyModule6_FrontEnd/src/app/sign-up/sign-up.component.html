@@ -11,22 +11,29 @@
       <span>or use your email for registration</span>
 <!--      username-->
       <input type="text" formControlName="username" placeholder="User Name" />
-      <div class="col alert alert-danger" role="alert"
-           *ngIf="username?.errors?.required && username?.touched">
-        Name must be at least 6 characters long!
+      <div class="col alert alert-danger" role="alert" *ngIf="username?.invalid && (username?.dirty || username?.touched)">
+        <div *ngIf="username?.errors?.minlength" class="col alert alert-danger">
+          Name must be at least 6 characters long!
+        </div>
+        <div *ngIf="username?.errors?.required" class="col alert alert-danger">
+          Name must be required!
+        </div>
       </div>
 <!--      password-->
       <input type="password" formControlName="password" placeholder="Password" />
-      <div class="col alert alert-danger" role="alert"
-           *ngIf="password?.errors?.required && password?.touched"></div>
-      <div class="col alert alert-danger" role="alert"
-           *ngIf="password?.errors?.parent">
-        Minimum eight characters, at least one uppercase letter, one lowercase letter and one number!
+      <div class="col alert alert-danger" role="alert" *ngIf="password?.invalid && (password?.dirty || password?.touched)">
+        <div *ngIf="password?.errors?.required" class="col alert alert-danger">
+          Password must be required!
+        </div>
+        <div *ngIf="username?.errors?.pattern" class="col alert alert-danger">
+          Minimum eight characters, at least one uppercase letter, one lowercase letter and one number!
+        </div>
       </div>
+<!--      nickName-->
       <input type="text" formControlName="nickname" placeholder="Nick Name" />
       <div class="col alert alert-danger" role="alert"
            *ngIf="nickname?.errors?.required && nickname?.touched">
-        Password must be entered!
+        Nick name must be entered!
       </div>
       <button>Sign Up</button>
     </form>

@@ -230,11 +230,12 @@ h1.app-name {
   align-content: space-around;
   height: auto;
   margin: auto;
+  min-height: 100vh;
 }
 
 .card {
-  width: 255px;
-  margin: 20px;
+  width: 230px;
+  margin: 35px;
 }
 
 .title-board {
@@ -246,17 +247,15 @@ h1.app-name {
 .fa-briefcase, .fa-clipboard {
   margin-right: 5px;
 }
-
-.fa-plus-circle{
-  font-size: 50px;
-  margin-top: 30px;
+.button.is-primary {
+  background: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.65);
 }
-
 .img-circle-add-board{
   margin: inherit;
   text-align: center;
 }
-
-.modal{
-
+.fa-plus-circle{
+  font-size: 50px;
+  margin-top: 16px;
 }

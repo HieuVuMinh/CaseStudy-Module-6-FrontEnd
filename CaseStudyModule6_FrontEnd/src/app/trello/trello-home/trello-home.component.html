@@ -61,45 +61,19 @@
     <div class="title-board">
       <h1><i class="fas fa-briefcase"></i>Your Workspace</h1>
     </div>
-    <div class="section-board">
-
-      <div class="card is-hidden1">
+    <div class="section-board" >
+      <div class="card">
         <div class="img-circle-add-board">
           <a><i class="fas fa-plus-circle"></i></a>
         </div>
       </div>
-      <br/>
-
-      <div class="card">
-        <div class="card-header"><p class="card-header-title">Header</p></div>
-        <div class="card-content">
-          <div class="content">Content</div>
-        </div>
-      </div>
-      <br/>
-
-      <div class="card is-hidden1">
-        <div class="card-header"><p class="card-header-title">Header</p></div>
-        <div class="card-content">
-          <div class="content">Content</div>
-        </div>
-      </div>
-      <br/>
-
-      <div class="card is-hidden1">
-        <div class="card-header"><p class="card-header-title">Header</p></div>
-        <div class="card-content">
-          <div class="content">Content</div>
-        </div>
-      </div>
-      <br/>
-      <div class="card is-hidden1">
-        <div class="card-header"><p class="card-header-title">Header</p></div>
-        <div class="card-content">
-          <div class="content">Content</div>
-        </div>
+      <div class="card" *ngFor="let workspace of workspaces" routerLink="/trello/workspaces/{{workspace.id}}">
+        <div class="card-header"><p class="card-header-title">{{workspace.title}}</p></div>
+        <div class="card-content"><div class="content">Content</div></div>
       </div>
 
     </div>
   </div>
+
+
 </section>

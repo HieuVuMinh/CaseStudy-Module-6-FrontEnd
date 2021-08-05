@@ -4,6 +4,7 @@
   <div class="board">
     <div class="board-wrapper">
       <div class="board-columns">
+
         <div cdkDropList
              cdkDropListGroup
              cdkDropListOrientation="horizontal" class="board-columns"
@@ -12,7 +13,7 @@
             cdkDragLockAxis="x" class="board-column"
             *ngFor="let column of board.columns" cdkDrag>
             <div class="column-title" cdkDragHandle>
-              {{ column.title }} - {{column.position}}
+              {{ column.title }}
             </div>
             <div class="tasks-container"
                  style="min-height: 500px"
@@ -20,13 +21,28 @@
                  cdkDropList
                  [cdkDropListData]="column.cards"
                  (cdkDropListDropped)="dropCard($event)">
-              <div class="task" *ngFor="let item of column.cards" cdkDrag (click)="showUpdateModal(item)">
-                {{ item.title }} - {{item.position}}<br>
+              <div class="task" *ngFor="let item of column.cards" cdkDrag>
+                {{ item.title }}<br>
                 {{item.content}}
               </div>
             </div>
           </div>
         </div>
+
+
+        <div class="board-columns-add">
+          <div class="board-column" style="margin-left: 0px ">
+            <div class="column-title">
+              <form [formGroup]="columnForm" (ngSubmit)="addColumn()">
+                <input class="input" type="text" formControlName="title" placeholder="Enter title column..." maxlength="512">
+                <div class="button-create-column">
+                  <button [disabled]="columnForm.invalid" class="button is-primary is-light" type="submit">Add column</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

@@ -95,9 +95,7 @@ export class ModalComponent implements OnInit {
       let memberDto: Member = {
         board: this.board,
         canEdit: false,
-        user: {
-          id: member.id
-        }
+        user: member
       }
       this.membersDto.push(memberDto)
     }
@@ -107,6 +105,21 @@ export class ModalComponent implements OnInit {
   private addNewMembers() {
     this.memberService.addNewMembers(this.membersDto).subscribe(() => {
       this.router.navigateByUrl(`/trello/boards/${this.board.id}`);
+      this.resetInputs();
     })
+  }
+
+  resetInputs() {
+    this.board = {
+      title: '',
+      owner: {
+        id: -1,
+      },
+      columns: [],
+    };
+    this.userSearch = ``;
+    this.userResult = [];
+    this.members = [];
+    this.membersDto = [];
   }
 }

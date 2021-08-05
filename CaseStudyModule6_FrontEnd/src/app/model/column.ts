@@ -1,7 +1,7 @@
 import {Card} from "./card";
 
 export interface Column {
-  id: number;
+  id?: number;
   title: string;
   cards: Card[];
   position: number;
