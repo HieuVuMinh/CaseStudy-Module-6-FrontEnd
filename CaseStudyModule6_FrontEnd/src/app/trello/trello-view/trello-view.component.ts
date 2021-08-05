@@ -42,12 +42,15 @@ export class TrelloViewComponent implements OnInit {
   columnForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
   })
+  currentUser: UserToken = {};
+  canEdit: boolean = false;
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
               private columnService: ColumnService,
               private cardService: CardService,
-              private memberService: MemberService) {
+              private memberService: MemberService,
+              private authenticationService: AuthenticationService) {
   }
 
   ngOnInit(): void {
@@ -55,6 +58,7 @@ export class TrelloViewComponent implements OnInit {
   }
 
   getBoardIdByUrl() {
+    this.currentUser = this.authenticationService.getCurrentUserValue();
     this.activatedRoute.params.pipe(map(p => p.id)).subscribe(id => {
       this.boardId = id;
       this.getPage();
@@ -63,17 +67,35 @@ export class TrelloViewComponent implements OnInit {
 
   getPage() {
     this.getBoard();
-    this.getMembers();
-  }
-
-  private getMembers() {
-    this.memberService.getMembersByBoardId(this.boardId).subscribe(members => this.members = members)
   }
 
   getBoard() {
     this.boardService.getBoardById(this.boardId).subscribe(board => {
-      this.board = board
+      this.board = board;
+      this.getMembers();
     })
+  }
+
+  private getMembers() {
+    this.memberService.getMembersByBoardId(this.boardId).subscribe(members => {
+      this.members = members;
+      this.updateCanEdit();
+    })
+  }
+
+  private updateCanEdit() {
+    let currentUserId = this.currentUser.id;
+    let isOwner = currentUserId == this.board.owner.id;
+    let isEditingMember: boolean = false;
+    for (let member of this.members) {
+      if (currentUserId == member.userId && member.canEdit) {
+        isEditingMember = true;
+        break;
+      }
+    }
+    if (isOwner || isEditingMember) {
+      this.canEdit = true;
+    }
   }
 
   public getPreviousColumn() {
@@ -146,7 +168,7 @@ export class TrelloViewComponent implements OnInit {
   }
 
   private updatePreviousColumn() {
-    if (this.previousColumn.id != 1) {
+    if (this.previousColumn.id != -1) {
       this.columnService.update(this.previousColumn.id, this.previousColumn).subscribe(() => this.updateColumns())
     } else {
       this.updateColumns()
@@ -188,5 +210,4 @@ export class TrelloViewComponent implements OnInit {
       }
     })
   }
-
 }

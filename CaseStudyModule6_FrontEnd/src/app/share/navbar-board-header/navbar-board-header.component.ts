@@ -6,6 +6,7 @@ import {User} from "../../model/user";
 import {UserService} from "../../service/user/user.service";
 import {Member} from "../../model/member";
 import {MemberService} from "../../service/member/member.service";
+import {BoardService} from "../../service/board/board.service";
 
 @Component({
   selector: 'app-navbar-board-header',
@@ -15,6 +16,7 @@ import {MemberService} from "../../service/member/member.service";
 export class NavbarBoardHeaderComponent implements OnInit {
   @Input() board: Board = {columns: [], owner: {}, title: ""}
   @Input() members: DetailedMember[] = [];
+  @Input() canEdit: boolean = false;
   searchBarIsShown: boolean = false;
   userSearch: string = ``;
   userResult: User[] = [];
@@ -22,7 +24,8 @@ export class NavbarBoardHeaderComponent implements OnInit {
 
   constructor(public authenticationService: AuthenticationService,
               private userService: UserService,
-              private memberService: MemberService) {
+              private memberService: MemberService,
+              private boardService: BoardService) {
   }
 
   ngOnInit(): void {
@@ -127,5 +130,11 @@ export class NavbarBoardHeaderComponent implements OnInit {
     this.memberService.updateMember(this.selectedMember.id, member).subscribe(
       () => this.getMembers()
     );
+  }
+
+  updateBoardTitle() {
+    if (this.board.id != null) {
+      this.boardService.updateBoard(this.board.id, this.board).subscribe(board => this.board = board);
+    }
   }
 }

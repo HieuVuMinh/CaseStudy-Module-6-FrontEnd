@@ -12,8 +12,9 @@
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-item">
       <div class="buttons">
-        <button class="button is-primary">
-          Title: {{board.title}}
+        <input *ngIf="canEdit" [(ngModel)]="board.title" class="button is-primary" (change)="updateBoardTitle()">
+        <button *ngIf="!canEdit" class="button is-primary">
+          {{board.title}}
         </button>
 
         <button class="button is-primary">
@@ -43,7 +44,7 @@
           <button class="button is-primary"><i class="fas fa-ellipsis-h"></i>
             Menu
           </button>
-          <button *ngIf="board.owner.id == authenticationService.getCurrentUserValue().id" class="button is-primary"
+          <button *ngIf="canEdit" class="button is-primary"
                   (click)="toggleUserSearchBar()">
             <i class="fas fa-user-plus"></i>Invite
           </button>
@@ -85,7 +86,8 @@
               </figure>
             </div>
             <div class="media-content">
-              <p class="title is-4">{{selectedMember.nickname}}</p>
+              <p class="title is-4" *ngIf="selectedMember.nickname">{{selectedMember.nickname}}</p>
+              <p class="title is-4" *ngIf="!selectedMember.nickname">{{selectedMember.username}}</p>
               <p class="subtitle is-6">@{{selectedMember.username}}</p>
             </div>
           </div>
@@ -98,16 +100,16 @@
     </section>
     <footer class="modal-card-foot">
       <button class="button is-danger is-light"
-              *ngIf="this.board.owner.id == authenticationService.getCurrentUserValue().id" (click)="removeSelectedMember()">
+              *ngIf="canEdit" (click)="removeSelectedMember()">
         Remove member
       </button>
       <button class="button is-secondary is-light"
-              *ngIf="this.board.owner.id == authenticationService.getCurrentUserValue().id && selectedMember.canEdit"
+              *ngIf="canEdit && selectedMember.canEdit"
               (click)="makeSelectedMemberObserver()">
         Make observer
       </button>
       <button class="button is-success is-light"
-              *ngIf="this.board.owner.id == authenticationService.getCurrentUserValue().id && !selectedMember.canEdit"
+              *ngIf="canEdit && !selectedMember.canEdit"
               (click)="makeSelectedMemberEditor()">
         Make editor
       </button>

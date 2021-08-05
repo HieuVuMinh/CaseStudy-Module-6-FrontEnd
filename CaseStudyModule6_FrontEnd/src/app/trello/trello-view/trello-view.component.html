@@ -1,5 +1,6 @@
 <app-navbar-board-header [board]="board"
-                         [members]="members"></app-navbar-board-header>
+                         [members]="members"
+                         [canEdit]="canEdit"></app-navbar-board-header>
 <!--main content-->
 <div class="root">
   <div class="board">
@@ -31,11 +32,11 @@
         </div>
 
 
-        <div class="board-columns-add">
+        <div class="board-columns-add" *ngIf="canEdit">
           <div class="board-column" style="margin-left: 0px">
             <div class="column-title">
               <form [formGroup]="columnForm" (ngSubmit)="addColumn()">
-                <input class="input" type="text" formControlName="title" placeholder="Enter title column..." maxlength="512" style="z-index: -1;">
+                <input class="input" type="text" formControlName="title" placeholder="Enter title column..." maxlength="512">
                 <div class="button-create-column">
                   <button [disabled]="columnForm.invalid" class="button is-primary is-light" type="submit">Add column</button>
                 </div>
