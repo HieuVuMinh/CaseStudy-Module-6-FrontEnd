@@ -165,7 +165,10 @@ export class TrelloViewComponent implements OnInit {
     if (this.columnForm.valid) {
       // @ts-ignore
       let column: Column = {cards: [], position: this.previousColumn.position + 1, title: this.columnForm.value.title};
-      this.columnsDto.push(column)
+      this.columnForm = new FormGroup({
+        title: new FormControl('', Validators.required),
+      });
+      this.columnsDto.push(column);
       this.columnService.updateAll(this.columnsDto).subscribe(() => {
         this.getAllColumn();
       })
