@@ -28,10 +28,11 @@
         </button>
 
         <div>
-          <!--          Members:-->
-          <span *ngFor="let member of members">
-            <a (click)="showDetail(member)" (mouseover)="showUserPreview(member)" (mouseout)="closeUserPreviews()"
-               class="user-preview" style="position: relative">
+          <span *ngFor="let member of members; index as i">
+            <a (click)="showDetail(member)" (mouseover)="showUserPreview(member)"
+               (mouseout)="closeUserPreviews()"
+               class="user-preview" style="position: relative"
+               [ngClass]="{'is-hidden': i >= 5}">
               <img *ngIf="member.image" [src]="member.image" class="img-circle"/>
               <img *ngIf="!member.image" src="assets/img/nicki-eliza.jpg" class="img-circle"/>
               <span id="user-preview-text-{{member.userId}}"
@@ -41,7 +42,13 @@
               </span>
             </a>
           </span>
+          <span *ngIf="members.length > 5">
+            <a>
+              <img src="./assets/img/three-dots.png" (click)="showAllMembers()" class="img-circle"/>
+            </a>
+          </span>
         </div>
+
       </div>
     </div>
 
@@ -128,3 +135,4 @@
     </footer>
   </div>
 </div>
+<!--All user modal-->

@@ -155,4 +155,12 @@ export class NavbarBoardHeaderComponent implements OnInit {
       element.classList.add('is-hidden');
     }
   }
+
+  showAllMembers() {
+    let members = document.getElementsByClassName('user-preview');
+    // @ts-ignore
+    for (let member of members) {
+      member.classList.remove('is-hidden');
+    }
+  }
 }
