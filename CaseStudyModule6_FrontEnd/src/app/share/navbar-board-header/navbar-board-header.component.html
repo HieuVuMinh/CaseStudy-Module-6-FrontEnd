@@ -18,7 +18,9 @@
         </button>
 
         <button class="button is-primary">
-          Owner: {{board.owner.username}}
+          <img *ngIf="!board.owner.image" src="assets/img/nicki-eliza.jpg" class="img-circle is-48x48">
+          <img *ngIf="board.owner.image" [src]="board.owner.image" class="img-circle is-48x48">
+          {{board.owner.username}}
         </button>
 
         <button class="button is-primary">
@@ -92,8 +94,12 @@
             </div>
           </div>
           <div class="content">
-            <div *ngIf="selectedMember.canEdit" class="notification is-success is-light">This user has the right to edit this board</div>
-            <div *ngIf="!selectedMember.canEdit" class="notification is-info is-light">This user can not edit. Ask board owner for permission!</div>
+            <div *ngIf="selectedMember.canEdit" class="notification is-success is-light">This user has the right to edit
+              this board
+            </div>
+            <div *ngIf="!selectedMember.canEdit" class="notification is-info is-light">This user can not edit. Ask board
+              owner for permission!
+            </div>
           </div>
         </div>
       </div>
