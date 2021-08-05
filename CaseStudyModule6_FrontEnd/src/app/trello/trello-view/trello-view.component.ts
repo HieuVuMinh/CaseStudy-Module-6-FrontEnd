@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Board} from "../../model/board";
@@ -34,6 +34,7 @@ export class TrelloViewComponent implements OnInit {
   cardsDto: Card[] = [];
   columnsDto: Column[] = [];
   members: DetailedMember[] = [];
+  selectedCard: Card = {content: "", id: -1, position: -1, title: ""};
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
@@ -63,7 +64,10 @@ export class TrelloViewComponent implements OnInit {
   }
 
   getBoard() {
-    this.boardService.getBoardById(this.boardId).subscribe(board => this.board = board)
+    this.boardService.getBoardById(this.boardId).subscribe(board => {
+      this.board = board
+      console.log(this.board);
+    })
   }
 
   public dropColumn(event: CdkDragDrop<string[]>): void {
@@ -96,10 +100,11 @@ export class TrelloViewComponent implements OnInit {
     }
   }
 
-  private saveChanges() {
+  public saveChanges() {
     this.updatePositions();
     this.updateDto();
     this.updateCards();
+    this.closeUpdateModal();
   }
 
   private updatePositions() {
@@ -142,4 +147,21 @@ export class TrelloViewComponent implements OnInit {
   private updateBoard() {
     this.boardService.updateBoard(this.boardId, this.board).subscribe(() => this.getPage());
   }
+
+  showUpdateModal(item: Card) {
+    this.selectedCard = item;
+    // @ts-ignore
+    document.getElementById('modal-update-card').classList.add('is-active');
+  }
+
+  closeUpdateModal() {
+    // @ts-ignore
+    document.getElementById('modal-update-card').classList.remove('is-active');
+  }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+    this.closeUpdateModal()
+  }
+
+
 }

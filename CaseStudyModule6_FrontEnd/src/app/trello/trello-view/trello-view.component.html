@@ -4,7 +4,6 @@
   <div class="board">
     <div class="board-wrapper">
       <div class="board-columns">
-
         <div cdkDropList
              cdkDropListGroup
              cdkDropListOrientation="horizontal" class="board-columns"
@@ -16,12 +15,12 @@
               {{ column.title }} - {{column.position}}
             </div>
             <div class="tasks-container"
-                 style="min-height: 50px"
+                 style="min-height: 500px"
                  id="{{column.id}}"
                  cdkDropList
                  [cdkDropListData]="column.cards"
                  (cdkDropListDropped)="dropCard($event)">
-              <div class="task" *ngFor="let item of column.cards" cdkDrag>
+              <div class="task" *ngFor="let item of column.cards" cdkDrag (click)="showUpdateModal(item)">
                 {{ item.title }} - {{item.position}}<br>
                 {{item.content}}
               </div>
@@ -30,5 +29,21 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+<div id="modal-update-card" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <input class="modal-card-title" [(ngModel)]="selectedCard.title">
+      <button class="delete" (click)="closeUpdateModal()" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      Content : {{selectedCard.content}}
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success" (click)="saveChanges()">Save changes</button>
+      <button class="button" (click)="closeUpdateModal()">Cancel</button>
+    </footer>
   </div>
 </div>
