@@ -13,6 +13,9 @@
              (cdkDropListDropped)="dropColumn($event)">
           <div cdkDragLockAxis="x" class="board-column"
                *ngFor="let column of board.columns; index as i" cdkDrag>
+            <div class="window-close" (click)="closeColumn(column.id)">
+              <i class="far fa-window-close"  disabled></i>
+            </div>
             <div class="column-title" cdkDragHandle>
                 <input class="input title-column" type="text" style="border: none; position: revert"
                        (keydown)="onKeydown($event, column)"

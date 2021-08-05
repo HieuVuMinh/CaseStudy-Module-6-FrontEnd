@@ -231,7 +231,13 @@ h1.app-name {
   margin-top: 10px;
 }
 
-//.title-column {
-//  width: 177px;
-//  margin-right: 6px;
-//}
+.window-close {
+  display: none;
+  cursor: pointer;
+  position: absolute;
+  margin-left: 280px;
+}
+
+.board-column:hover .window-close {
+  display: inline-block;
+}

@@ -183,4 +183,15 @@ export class TrelloViewComponent implements OnInit {
       }
     }
   }
+
+  closeColumn(id: any) {
+    console.log(id);
+      for (let column of this.board.columns){
+        if (column.id == id){
+          let deleteId = this.board.columns.indexOf(column);
+          this.board.columns.splice(deleteId, 1);
+          this.saveChanges();
+        }
+      }
+  }
 }

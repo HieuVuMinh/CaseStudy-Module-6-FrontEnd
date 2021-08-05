@@ -1,36 +1,51 @@
 <div id="updateForm">
   <div class="login-card">
-    <div class="card-title">
-      <h1>Information</h1>
-    </div>
+
     <td class="update-image"><img [src]="imgSrc" (click)="preview.click()"></td>
     <div class="content">
+
       <form #updateForm="ngForm" (ngSubmit)="updateUserInfo()">
         <div class="update-info">
-          <div class="level options">
-            <div class="checkbox level-left">
-              <div class="update-info">
-                <tr>
-                  <span class="tag is-info">Image</span>
-                  <div class="file has-name">
-                    <div class="file">
-                      <label class="file-label">
-                        <input class="file-input" type="file" #preview (change)="showPreview($event)">
-                        <span class="file-cta">
-      <span class="file-icon">
-        <i class="fas fa-upload"></i>
-      </span>
-      <span class="file-label">
-        Choose a file…
-      </span>
-    </span>
-                      </label>
-                    </div>
-                  </div>
-              </div>
-            </div>
+
+<!--          <div class="level options">-->
+<!--            <div class="checkbox level-left">-->
+<!--              <div class="update-info">-->
+<!--                <tr>-->
+<!--                  <div class="file has-name">-->
+<!--                    <div class="file">-->
+<!--                      <label class="file-label">-->
+<!--                        <input class="file-input" type="file" #preview (change)="showPreview($event)">-->
+<!--                        <span class="file-cta">-->
+<!--                    <span class="file-icon">-->
+<!--                    <i class="fas fa-upload"></i>-->
+<!--                      </span>-->
+<!--                 <span class="file-label">-->
+<!--                       Choose a file…-->
+<!--                  </span>-->
+<!--                        </span>-->
+<!--                      </label>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+
+<!--upload file-->
+          <div class="file">
+            <label class="file-label">
+              <input class="file-input" type="file" #preview (change)="showPreview($event)">
+              <span class="file-cta">
+                  <span class="file-icon">
+                    <i class="fas fa-upload"></i>
+                  </span>
+                  <span class="file-label">
+                    Choose a file…
+                  </span>
+                </span>
+            </label>
           </div>
-          <span class="tag is-info">Nickname</span>
+<!--nick Name-->
+          <label class="label">Nick Name</label>
           <input type="text" class="input" name="nickname" #nickname="ngModel" minlength="4" required
                  [(ngModel)]="user.nickname" placeholder="Nick name">
           <td *ngIf="updateForm.invalid && updateForm.touched && isSubmitted">
@@ -38,17 +53,10 @@
             <p class="notification" *ngIf="nickname.errors?.minlength">At least 4 characters</p>
           </td>
         </div>
-        <div class="button-update">
-          <table>
-            <td>
-              <button routerLink="/trello" class="button is-danger">Cancel</button>
-            </td>
-            <td>
-              <button class="button is-primary">Update</button>
-            </td>
-          </table>
-        </div>
+        <button class="button is-primary is-light">Update</button>
+        <button routerLink="/trello" class="button is-danger is-light">Cancel</button>
       </form>
+
     </div>
   </div>
 </div>
