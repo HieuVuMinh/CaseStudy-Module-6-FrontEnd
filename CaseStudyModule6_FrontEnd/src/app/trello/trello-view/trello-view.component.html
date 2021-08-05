@@ -32,10 +32,10 @@
 
 
         <div class="board-columns-add">
-          <div class="board-column" style="margin-left: 0px ">
+          <div class="board-column" style="margin-left: 0px">
             <div class="column-title">
               <form [formGroup]="columnForm" (ngSubmit)="addColumn()">
-                <input class="input" type="text" formControlName="title" placeholder="Enter title column..." maxlength="512">
+                <input class="input" type="text" formControlName="title" placeholder="Enter title column..." maxlength="512" style="z-index: -1;">
                 <div class="button-create-column">
                   <button [disabled]="columnForm.invalid" class="button is-primary is-light" type="submit">Add column</button>
                 </div>

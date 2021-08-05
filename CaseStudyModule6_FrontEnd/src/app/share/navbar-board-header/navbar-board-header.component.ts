@@ -104,4 +104,28 @@ export class NavbarBoardHeaderComponent implements OnInit {
       this.closeModal();
     });
   }
+
+  makeSelectedMemberEditor() {
+    this.selectedMember.canEdit = true;
+    this.updateSelectedMember();
+  }
+
+  makeSelectedMemberObserver() {
+    this.selectedMember.canEdit = false;
+    this.updateSelectedMember();
+  }
+
+  updateSelectedMember() {
+    let member: Member = {
+      board: this.board,
+      canEdit: this.selectedMember.canEdit,
+      id: this.selectedMember.id,
+      user: {
+        id: this.selectedMember.userId
+      }
+    };
+    this.memberService.updateMember(this.selectedMember.id, member).subscribe(
+      () => this.getMembers()
+    );
+  }
 }

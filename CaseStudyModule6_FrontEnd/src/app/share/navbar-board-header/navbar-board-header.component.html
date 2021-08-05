@@ -99,7 +99,17 @@
     <footer class="modal-card-foot">
       <button class="button is-danger is-light"
               *ngIf="this.board.owner.id == authenticationService.getCurrentUserValue().id" (click)="removeSelectedMember()">
-        Remove user from this board
+        Remove member
+      </button>
+      <button class="button is-secondary is-light"
+              *ngIf="this.board.owner.id == authenticationService.getCurrentUserValue().id && selectedMember.canEdit"
+              (click)="makeSelectedMemberObserver()">
+        Make observer
+      </button>
+      <button class="button is-success is-light"
+              *ngIf="this.board.owner.id == authenticationService.getCurrentUserValue().id && !selectedMember.canEdit"
+              (click)="makeSelectedMemberEditor()">
+        Make editor
       </button>
       <button class="button is-light" (click)="closeModal()">Cancel</button>
     </footer>
