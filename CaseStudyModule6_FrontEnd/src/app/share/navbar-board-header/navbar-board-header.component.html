@@ -62,8 +62,8 @@
                   (click)="toggleUserSearchBar()">
             <i class="fas fa-user-plus"></i>Invite
           </button>
-          <div style="position: relative;">
-            <div *ngIf="searchBarIsShown" style="position: absolute; top: 22px; left: -210px">
+          <div class="search-bar">
+            <div *ngIf="searchBarIsShown" class="search-bar-input">
               <input class="input" type="text" placeholder="Search member" [(ngModel)]="userSearch"
                      (keyup)="searchUsers()">
               <div *ngIf="userResult.length" class="dropdown-content">

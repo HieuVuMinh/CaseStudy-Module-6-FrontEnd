@@ -12,14 +12,20 @@
              cdkDropListGroup
              cdkDropListOrientation="horizontal" class="board-columns"
              (cdkDropListDropped)="dropColumn($event)">
-          <div
-            cdkDragLockAxis="x" class="board-column"
-            *ngFor="let column of board.columns" cdkDrag>
-            <div class="column-title" cdkDragHandle>
-              {{ column.title }}
+          <div cdkDragLockAxis="x" class="board-column"
+               *ngFor="let column of board.columns; index as i" cdkDrag>
+            <div class="window-close" (click)="closeColumn(column.id)">
+              <i class="far fa-window-close"  disabled></i>
             </div>
+            <div class="column-title" cdkDragHandle>
+                <input class="input title-column" type="text" style="border: none; position: revert"
+                       (keydown)="onKeydown($event, column)"
+                       [(ngModel)]="this.board.columns[i].title"
+                       value="{{column.title}}">
+            </div>
+            <!--            content-->
             <div class="tasks-container"
-                 style="min-height: 500px"
+                 style="min-height: 410px"
                  id="{{column.id}}"
                  cdkDropList
                  [cdkDropListData]="column.cards"
@@ -55,16 +61,17 @@
           <div class="board-column" style="margin-left: 0px">
             <div class="column-title">
               <form [formGroup]="columnForm" (ngSubmit)="addColumn()">
-                <input class="input" type="text" formControlName="title" placeholder="Enter title column..."
-                       maxlength="512">
+                <input class="input add-column-input" type="text" formControlName="title" style="position: revert"
+                       placeholder="Enter title column..." maxlength="512">
                 <div class="button-create-column">
-                  <button [disabled]="columnForm.invalid" class="button is-primary is-light" type="submit">Add column
+                  <button style="position: revert" [disabled]="columnForm.invalid" class="button is-primary is-light" type="submit">Add column
                   </button>
                 </div>
               </form>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>

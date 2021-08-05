@@ -60,6 +60,11 @@ export class TrelloViewComponent implements OnInit {
   // selectedFile: any | undefined = null;
   // isSubmitted = false;
   // attachmentList: Attachment [] = [];
+  titleForm: FormGroup = new FormGroup({
+    title: new FormControl('', Validators.required),
+  })
+
+  titleColumn: Column = {cards: [], id: -1, position: -1, title: ""}
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
@@ -119,14 +124,6 @@ export class TrelloViewComponent implements OnInit {
     this.boardService.isBoardInWorkspace(this.boardId).subscribe(isInWorkspace => this.isInWorkspace = isInWorkspace);
   }
 
-  public getPreviousColumn() {
-    let boardColumn = this.board.columns;
-    for (let i = 0; i < boardColumn.length; i++) {
-      if (i == boardColumn.length) {
-        this.previousColumn = boardColumn[i - 1];
-      }
-    }
-  }
 
   public dropColumn(event: CdkDragDrop<string[]>): void {
     moveItemInArray(this.board.columns, event.previousIndex, event.currentIndex);
@@ -220,31 +217,28 @@ export class TrelloViewComponent implements OnInit {
   }
 
   addColumn() {
-    this.getPreviousColumn();
     if (this.columnForm.valid) {
       // @ts-ignore
-      let column: Column = {cards: [], position: this.previousColumn.position + 1, title: this.columnForm.value.title};
+      let column: Column = {cards: [], position: this.board.columns.length, title: this.columnForm.value.title};
       this.columnForm = new FormGroup({
-        title: new FormControl('', Validators.required),
+        title: new FormControl('', Validators.required)
       });
-      this.columnsDto.push(column);
-      this.columnService.updateAll(this.columnsDto).subscribe(() => {
-        this.getAllColumn();
+      this.columnService.save(column).subscribe(column => {
+        this.previousColumn = column;
+        this.board.columns.push(this.previousColumn);
+        this.updateBoard()
       })
     }
   }
 
-  getAllColumn() {
-    this.columnService.getAllColumn().subscribe(columns => {
-      this.columnBeforeAdd = columns;
-      for (let i = 0; i < this.columnBeforeAdd.length; i++) {
-        if (i == this.columnBeforeAdd.length - 1) {
-          this.board.columns.push(this.columnBeforeAdd[i])
-          console.log(this.board)
-          this.updateBoard();
-        }
+  onKeydown($event: KeyboardEvent, column: Column) {
+    if ($event.key === "Enter") {
+      if (column.title != ''){
+        this.saveChanges();
+      } else {
+        this.getPage();
       }
-    })
+    }
   }
 
   updateCurrentCard() {
@@ -314,5 +308,14 @@ export class TrelloViewComponent implements OnInit {
     // @ts-ignore
     document.getElementById(buttonShowFormCreateId).classList.remove('is-hidden');
   }
+  closeColumn(id: any) {
+    console.log(id);
+      for (let column of this.board.columns){
+        if (column.id == id){
+          let deleteId = this.board.columns.indexOf(column);
+          this.board.columns.splice(deleteId, 1);
+          this.saveChanges();
+        }
+      }
+  }
 }
-
