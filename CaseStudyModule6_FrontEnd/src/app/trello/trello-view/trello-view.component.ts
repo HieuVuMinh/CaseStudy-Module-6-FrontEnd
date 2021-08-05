@@ -1,6 +1,6 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 import {Board} from "../../model/board";
 import {Column} from "../../model/column";
 import {Card} from "../../model/card";
@@ -10,10 +10,7 @@ import {CardService} from "../../service/card/card.service";
 import {map} from "rxjs/operators";
 import {DetailedMember} from "../../model/detailed-member";
 import {MemberService} from "../../service/member/member.service";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {AuthenticationService} from "../../service/authentication/authentication.service";
-import {User} from "../../model/user";
-import {UserToken} from "../../model/user-token";
+import {FormControl, FormGroup, NgForm, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-trello-view',
@@ -43,6 +40,20 @@ export class TrelloViewComponent implements OnInit {
   columnForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
   })
+
+  newCard: Card = {
+    id: -1,
+    title: "",
+    content: "",
+    position: -1
+  }
+
+  isAdded = false;
+
+  // fileSrc: any | undefined = '';
+  // selectedFile: any | undefined = null;
+  // isSubmitted = false;
+  // attachmentList: Attachment [] = [];
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
@@ -80,11 +91,12 @@ export class TrelloViewComponent implements OnInit {
   public getPreviousColumn() {
     let boardColumn = this.board.columns;
     for (let i = 0; i < boardColumn.length; i++) {
-      if (i = boardColumn.length) {
+      if (i == boardColumn.length) {
         this.previousColumn = boardColumn[i - 1];
       }
     }
   }
+
 
   public dropColumn(event: CdkDragDrop<string[]>): void {
     moveItemInArray(this.board.columns, event.previousIndex, event.currentIndex);
@@ -120,7 +132,6 @@ export class TrelloViewComponent implements OnInit {
     this.updatePositions();
     this.updateDto();
     this.updateCards();
-    this.closeUpdateModal();
   }
 
   private updatePositions() {
@@ -149,7 +160,7 @@ export class TrelloViewComponent implements OnInit {
   }
 
   private updatePreviousColumn() {
-    if (this.previousColumn.id != 1) {
+    if (this.previousColumn.id != -1) {
       this.columnService.update(this.previousColumn.id, this.previousColumn).subscribe(() => this.updateColumns())
     } else {
       this.updateColumns()
@@ -179,8 +190,6 @@ export class TrelloViewComponent implements OnInit {
     this.closeUpdateModal()
   }
 
-
-
   addColumn() {
     this.getPreviousColumn();
     if (this.columnForm.valid) {
@@ -209,4 +218,72 @@ export class TrelloViewComponent implements OnInit {
     })
   }
 
+  updateCurrentCard() {
+    this.saveChanges();
+    this.closeUpdateModal();
+  }
+
+  // uploadFile() {
+  //   this.isSubmitted = true;
+  //   if (this.selectedFile != null) {
+  //     const filePath = `${this.selectedFile.name.split('.').slice(0, -1).join('.')}_${new Date().getTime()}`;
+  //     const fileRef = this.storage.ref(filePath);
+  //     this.storage.upload(filePath, this.selectedFile).snapshotChanges().pipe(
+  //       finalize(() => {
+  //         fileRef.getDownloadURL().subscribe(url => {
+  //           console.log("Url: " + url);
+  //           this.fileSrc = url;
+  //           console.log("This img after upload: " + this.fileSrc)
+  //           this.attachmentList.push(url);
+  //           this.userService.updateById(this.id, this.user).subscribe(() => {
+  //               alert("Success")
+  //             },
+  //             () => {
+  //               alert("Fail")
+  //             });
+  //         });
+  //       })).subscribe();
+  //   }
+  // }
+
+
+  addNewCard(id: any, length: any, addNewCardForm: NgForm) {
+    this.isAdded = true;
+    this.newCard.position = length;
+    this.cardService.saveCard(this.newCard).subscribe( card =>{
+      for (let column of this.board.columns) {
+        if(column.id == id && addNewCardForm.valid){
+          column.cards.push(card);
+          this.saveChanges();
+          this.newCard = {
+            id: -1,
+            title: "",
+            content: "",
+            position: -1
+          }
+          break;
+        }
+      }
+    })
+  }
+
+  showInputAddNewCard(id: any) {
+    let elementId = 'new-card-form-col-' + id;
+    // @ts-ignore
+    document.getElementById(elementId).classList.remove('is-hidden');
+    let buttonShowFormCreateId = 'show-form-create-new-card-'+id;
+    // @ts-ignore
+    document.getElementById(buttonShowFormCreateId).classList.add('is-hidden');
+
+  }
+
+  hiddenInputAddNewCard(id: any) {
+    let elementId = 'new-card-form-col-' + id;
+    // @ts-ignore
+    document.getElementById(elementId).classList.add('is-hidden');
+    let buttonShowFormCreateId = 'show-form-create-new-card-'+id;
+    // @ts-ignore
+    document.getElementById(buttonShowFormCreateId).classList.remove('is-hidden');
+  }
 }
+
