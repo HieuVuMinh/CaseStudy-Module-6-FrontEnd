@@ -5,6 +5,7 @@ import {AuthGuard} from "./helper/auth-guard";
 import {SignUpComponent} from "./sign-up/sign-up.component";
 import {RecoverPasswordComponent} from "./recoverPassword/recover-password.component";
 
+
 const routes: Routes = [
   {
     path: 'trello',
@@ -22,7 +23,7 @@ const routes: Routes = [
   {
     path: 'recoverpassword',
     component: RecoverPasswordComponent
-  }
+  },
 ];
 
 @NgModule({

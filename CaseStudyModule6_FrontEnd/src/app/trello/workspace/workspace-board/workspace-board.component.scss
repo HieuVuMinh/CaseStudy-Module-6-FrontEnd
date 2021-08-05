@@ -1,0 +1,261 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.icon-item {
+  list-style: none
+}
+
+.img-circle {
+  margin-top: 3px;
+  height: 33px;
+  width: 33px;
+  clip-path: circle(50%);
+}
+
+.icon-link {
+  display: inline-flex;
+  font-size: 25px;
+  text-decoration: none;
+  color: var(--color-icon);
+  width: 40px;
+  height: 40px;
+  transition: 0.5s linear;
+  position: relative;
+  z-index: 1;
+  margin: auto;
+}
+
+.icon-link:hover {
+  color: #fff;
+}
+
+.icon-link i {
+  margin: auto;
+}
+
+.fa-plus {
+  margin: 9px auto auto;
+}
+
+.fa-bell {
+  margin: 9px auto auto;
+}
+
+.fa-bars {
+  font-size: 22px;
+  margin: 12px auto auto;
+}
+
+.fa-home {
+  font-size: 22px;
+  margin: 12px auto auto;
+}
+
+.fa-board {
+  font-size: 20px;
+  margin: 11px 5px 5px;
+}
+
+.board-header {
+  display: flex;
+  margin: inherit;
+}
+
+.nav {
+  background: rgba(#ffffff, 0.07);
+  display: flex;
+  margin: inherit;
+}
+
+.nav-brand-start {
+  display: flex;
+  justify-content: flex-start;
+  height: 40px;
+  margin: auto auto auto;
+}
+
+.nav-brand-end {
+  margin-left: 1100px;
+  display: flex;
+  justify-content: flex-end;
+  height: 40px;
+  text-decoration: none;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+  color: #ffffff;
+  font-weight: bold;
+  line-height: 32px;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.nav-content {
+  display: inline-block;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.nav-item {
+  display: flex;
+  width: 32px;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  height: 40px;
+}
+
+h1.app-name {
+  padding: 4px;
+}
+
+.app-name {
+  font-size: 20px;
+  font-family: 'Lato', sans-serif;
+  font-weight: bold;
+}
+
+.has-gradient-text {
+  background: -webkit-linear-gradient(#ffffff, #efd0d0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+.board {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 210%;
+
+  // Override Automatic Minimum Size
+  // https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size
+  min-width: 0;
+  min-height: 0;
+
+  .board-wrapper {
+    display: flex;
+    flex-grow: 1;
+    overflow-x: auto;
+
+    .board-columns {
+      display: flex;
+      flex-grow: 1;
+
+      .board-column {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        flex-basis: 0; // to force the columns to all be the same size, regardless of content
+
+        min-width: 300px;
+        margin: 50px;
+        padding: 25px;
+
+        border-radius: 4px;
+
+        background: rgba(#ffffff, 0.5);
+
+        &:not(:first-child) {
+          margin-left: 0;
+        }
+
+        .column-title {
+          color: #523535;
+          font-size: 15px;
+          font-weight: 800;
+          font-family: 'Lato', sans-serif;
+          text-transform: uppercase;
+          margin-bottom: 20px;
+        }
+      }
+    }
+  }
+}
+
+
+//.tasks-container {
+//  flex-grow: 1;
+//  overflow-y: auto;
+//}
+
+.task {
+  display: flex;
+  padding: 18px 12px;
+  background: #ffffff;
+  border-bottom: solid 1px #ffffff;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.08),
+  0 3px 14px 2px rgba(0, 0, 0, 0.05);
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+  0 8px 10px 1px rgba(0, 0, 0, 0.14),
+  0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.tasks-container.cdk-drop-list-dragging .task:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.icon-board {
+  background-color: #4c94be;
+  border-radius: 0.3rem;
+  transition: background-color 150ms;
+}
+
+.section-board {
+  width: 80rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.main-content {
+  justify-content: space-between;
+  align-content: space-around;
+  height: auto;
+  margin: auto;
+  min-height: 100vh;
+}
+
+.card {
+  width: 230px;
+  margin: 35px;
+}
+
+.title-board {
+  margin-top: 30px;
+  margin-left: 35px;
+  font-size: 22px;
+}
+
+.fa-briefcase, .fa-clipboard {
+  margin-right: 5px;
+}
+.button.is-primary {
+  background: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.65);
+}
+.img-circle-add-board{
+  margin: inherit;
+  text-align: center;
+}
+.fa-plus-circle{
+  font-size: 50px;
+  margin-top: 16px;
+}
