@@ -14,7 +14,7 @@ export class ColumnService {
   constructor(private httpClient: HttpClient) {
   }
 
-  update(id: number, column: Column): Observable<Column> {
+  update(id: any, column: Column): Observable<Column> {
     return this.httpClient.put<Column>(`${API_URL}columns/${id}`, column);
   }
 
@@ -24,5 +24,13 @@ export class ColumnService {
 
   deleteAllById(ids: number[]): Observable<Column[]> {
     return this.httpClient.post<Column[]>(`${API_URL}columns/delete`, ids);
+  }
+
+  save(column: Column): Observable<Column> {
+    return this.httpClient.post<Column>(`${API_URL}columns`, column);
+  }
+
+  getAllColumn(): Observable<Column[]> {
+    return this.httpClient.get<Column[]>(`${API_URL}columns`);
   }
 }

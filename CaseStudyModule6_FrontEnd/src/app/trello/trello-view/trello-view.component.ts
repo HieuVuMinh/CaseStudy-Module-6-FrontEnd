@@ -10,6 +10,7 @@ import {CardService} from "../../service/card/card.service";
 import {map} from "rxjs/operators";
 import {DetailedMember} from "../../model/detailed-member";
 import {MemberService} from "../../service/member/member.service";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
 import {User} from "../../model/user";
 import {UserToken} from "../../model/user-token";
@@ -37,6 +38,10 @@ export class TrelloViewComponent implements OnInit {
   cardsDto: Card[] = [];
   columnsDto: Column[] = [];
   members: DetailedMember[] = [];
+  columnBeforeAdd: Column[] = [];
+  columnForm: FormGroup = new FormGroup({
+    title: new FormControl('', Validators.required),
+  })
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
@@ -66,7 +71,18 @@ export class TrelloViewComponent implements OnInit {
   }
 
   getBoard() {
-    this.boardService.getBoardById(this.boardId).subscribe(board => this.board = board)
+    this.boardService.getBoardById(this.boardId).subscribe(board => {
+      this.board = board
+    })
+  }
+
+  public getPreviousColumn() {
+    let boardColumn = this.board.columns;
+    for (let i = 0; i < boardColumn.length; i++) {
+      if (i = boardColumn.length) {
+        this.previousColumn = boardColumn[i - 1];
+      }
+    }
   }
 
   public dropColumn(event: CdkDragDrop<string[]>): void {
@@ -144,4 +160,33 @@ export class TrelloViewComponent implements OnInit {
   private updateBoard() {
     this.boardService.updateBoard(this.boardId, this.board).subscribe(() => this.getPage());
   }
+
+  addColumn() {
+    this.getPreviousColumn();
+    if (this.columnForm.valid) {
+      // @ts-ignore
+      let column: Column = {cards: [], position: this.previousColumn.position + 1, title: this.columnForm.value.title};
+      this.columnForm = new FormGroup({
+        title: new FormControl('', Validators.required),
+      });
+      this.columnsDto.push(column);
+      this.columnService.updateAll(this.columnsDto).subscribe(() => {
+        this.getAllColumn();
+      })
+    }
+  }
+
+  getAllColumn() {
+    this.columnService.getAllColumn().subscribe(columns => {
+      this.columnBeforeAdd = columns;
+      for (let i = 0; i < this.columnBeforeAdd.length; i++) {
+        if (i == this.columnBeforeAdd.length - 1) {
+          this.board.columns.push(this.columnBeforeAdd[i])
+          console.log(this.board)
+          this.updateBoard();
+        }
+      }
+    })
+  }
+
 }
