@@ -5,22 +5,25 @@ import { NavbarBoardHeaderComponent } from './navbar-board-header/navbar-board-h
 import { ModalComponent } from './modal/modal.component';
 import {FormsModule} from "@angular/forms";
 import {RouterModule} from "@angular/router";
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
     NavbarComponent,
     NavbarBoardHeaderComponent,
-    ModalComponent
+    ModalComponent,
+    FooterComponent
   ],
   exports: [
     NavbarComponent,
     NavbarBoardHeaderComponent,
-    ModalComponent
+    ModalComponent,
+    FooterComponent
   ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        RouterModule
-    ]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule
+  ]
 })
 export class ShareModule { }
