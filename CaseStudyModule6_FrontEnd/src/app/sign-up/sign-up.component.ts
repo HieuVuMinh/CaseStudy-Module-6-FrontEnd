@@ -46,7 +46,7 @@ export class SignUpComponent implements OnInit {
         });
       });
     } else {
-      alert("Fail!")
+      alert("Inform must be filed!")
     }
   }
 
