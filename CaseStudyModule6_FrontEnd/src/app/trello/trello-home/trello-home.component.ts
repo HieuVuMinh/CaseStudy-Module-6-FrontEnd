@@ -4,8 +4,10 @@ import {UserToken} from "../../model/user-token";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
 import {BoardService} from "../../service/board/board.service";
 import {Workspace} from "../../model/workspace";
-import {WorkspaceService} from "../../service/workspace.service";
+
 import {ModalService} from "../../service/modal/modal.service";
+import {WorkspaceService} from "../../service/workspace.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-trello-home',
@@ -17,11 +19,12 @@ export class TrelloHomeComponent implements OnInit {
   yourBoards: Board[] = [];
   sharedBoards: Board[] = [];
   workspaces: Workspace[] = [];
-
+  workspace: Workspace = {boards: [], id: 0, members: [], owner: undefined, title: "", type: ""};
   constructor(private authenticationService: AuthenticationService,
               private boardService: BoardService,
               private modalService: ModalService,
-              private workspaceService: WorkspaceService) {
+              private workspaceService: WorkspaceService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -50,5 +53,22 @@ export class TrelloHomeComponent implements OnInit {
 
   showAddBoardModal() {
     this.modalService.show();
+  }
+  showAddWorkspaceModal() {
+    // @ts-ignore
+    document.getElementById('create-workspace').classList.add('is-active');
+  }
+  hideAddWorkspaceModal() {
+    // @ts-ignore
+    document.getElementById('create-workspace').classList.remove('is-active');
+  }
+
+  createWorkspaces(){
+      this.workspace.owner = this.currentUser
+      this.hideAddWorkspaceModal()
+    this.workspaceService.create(this.workspace).subscribe((workspaces) => {
+        this.getAllWorkspace()
+        this.router.navigateByUrl(`/trello/workspaces/${workspaces.id}`)
+      })
   }
 }

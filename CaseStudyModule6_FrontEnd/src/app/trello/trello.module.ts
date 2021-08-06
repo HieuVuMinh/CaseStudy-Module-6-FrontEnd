@@ -17,7 +17,7 @@ import {WorkspaceMemberComponent} from "./workspace/workspace-member/workspace-m
     TrelloHomeComponent,
     WorkspaceBoardComponent,
     WorkspaceMemberComponent,
-    UserInformationComponent
+    UserInformationComponent,
   ],
   imports: [
     CommonModule,

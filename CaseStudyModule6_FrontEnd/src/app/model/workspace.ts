@@ -1,5 +1,6 @@
-import {User} from "./user";
+
 import {Board} from "./board";
+import {MemberWorkspace} from "./member-workspace";
 
 export interface Workspace {
   id: number;
@@ -10,7 +11,7 @@ export interface Workspace {
 
   owner: any;
 
-  members: User[];
+  members: MemberWorkspace[];
 
   boards: Board[];
 }

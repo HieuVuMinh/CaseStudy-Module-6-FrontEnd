@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Workspace} from "../../../model/workspace";
 import {User} from "../../../model/user";
 import {WorkspaceService} from "../../../service/workspace.service";
@@ -31,9 +31,12 @@ export class WorkspaceBoardComponent implements OnInit {
   userSearch: string = ``;
   userResult: User[] = [];
   members: User[] = [];
-  showModal = false;
+  modalBoard = false;
+  modalDelete =false;
   currentUser: UserToken = this.authenticationService.getCurrentUserValue();
   membersDto: Member[] = [];
+  roleUserInWorkspace: Boolean = false;
+
   constructor(private workspaceService: WorkspaceService,
               private userService: UserService,
               private activatedRoute: ActivatedRoute,
@@ -46,91 +49,47 @@ export class WorkspaceBoardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.activatedRoute.paramMap.subscribe(paramMap => {
       const id = paramMap.get('id')
       if (id != null) {
         this.findById(id)
       }
     });
-
-
+    window.scrollTo(0, 0)
   }
 
 
   public findById(id: any): void {
     this.workspaceService.findById(id).subscribe(workspaces => {
       this.workspace = workspaces
-      console.log(workspaces);
+      this.checkRole()
     })
   }
 
-  searchUsers() {
-    if (this.userSearch != '') {
-      this.userService.findUsersByKeyword(this.userSearch).subscribe(users => {
-        this.userResult = users;
-        this.cleanSearchResults();
-      });
-    } else {
-      this.userResult = [];
-    }
-  }
 
-  addMember(user: User) {
-    this.members.push(user);
-    this.userSearch = '';
-    this.userResult = [];
-  }
-
-  private cleanSearchResults() {
-    for (let i = 0; i < this.userResult.length; i++) {
-      let result = this.userResult[i];
-      let toBeDeleted = false;
-      if (result.id == this.modalService.currentUser.id) {
-        toBeDeleted = true;
-      } else {
-        for (let member of this.members) {
-          if (result.id == member.id) {
-            toBeDeleted = true;
-            break;
-          }
-        }
-      }
-
-      if (toBeDeleted) {
-        this.userResult.splice(i, 1);
-        i--;
-      }
-    }
-  }
   addNewBoard() {
     this.modalService.close();
-    //create new board
     this.board.owner.id = this.currentUser.id;
     this.boardService.addNewBoard(this.board).subscribe(board => {
-      this.updateWorkspace(board)
+        this.updateWorkspace(board)
         this.board = board;
-        this.loadDto();
+      for (let member of this.workspace.members) {
+        let memberDto: Member = {
+          board: this.board,
+          canEdit: false,
+          user: {
+            id: member.user?.id
+          }
+        }
+        this.membersDto.push(memberDto)
+      }
+      this.addNewMembers();
       }
     )
+    this.hideAddBoardModal()
   }
 
-  removeMember(memberIndex: number) {
-    this.members.splice(memberIndex, 1);
-  }
-
-  private loadDto() {
-    for (let member of this.members) {
-      let memberDto: Member = {
-        board: this.board,
-        canEdit: false,
-        user: {
-          id: member.id
-        }
-      }
-      this.membersDto.push(memberDto)
-    }
-    this.addNewMembers();
-  }
 
   private addNewMembers() {
     this.memberService.addNewMembers(this.membersDto).subscribe(() => {
@@ -154,15 +113,39 @@ export class WorkspaceBoardComponent implements OnInit {
   }
 
   showAddBoardModal() {
-    this.showModal = true
+    this.modalBoard = true
+
   }
-  hideAddBoardModal(){
-    this.showModal = false
+
+  hideAddBoardModal() {
+    this.modalBoard = false
   }
+  showModalDelete() {
+    this.modalDelete = true
+  }
+
+  hideModalDelete() {
+    this.modalDelete = false
+  }
+
   public updateWorkspace(board: Board) {
     this.workspace.boards.push(board)
     this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => console.log("ok"))
 
   }
 
+  checkRole() {
+    if (this.currentUser.id == this.workspace.owner?.id) {
+      this.roleUserInWorkspace = true
+    }
+    for (let member of this.workspace.members) {
+      if ((this.currentUser.id == member.user?.id && member.role == "Admin")) {
+        this.roleUserInWorkspace = true
+      }
+    }
+  }
+
+  deleteWorkspace(id: number) {
+    this.workspaceService.delete(id).subscribe(() => this.router.navigateByUrl(`/trello`))
+  }
 }
