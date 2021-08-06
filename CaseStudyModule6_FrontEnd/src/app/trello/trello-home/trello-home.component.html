@@ -42,7 +42,7 @@
       </div>
     </div>
 
-<!--    Shared with you-->
+    <!--    Shared with you-->
     <div class="title-board">
       <h1><i class="far fa-clipboard"></i>Shared with you</h1>
     </div>
@@ -67,19 +67,83 @@
     <div class="title-board">
       <h1><i class="fas fa-briefcase"></i>Your Workspace</h1>
     </div>
-    <div class="section-board" >
-      <div class="card">
+    <div class="section-board">
+      <div class="card" (click)="showAddWorkspaceModal()">
         <div class="img-circle-add-board">
           <a><i class="fas fa-plus-circle"></i></a>
         </div>
       </div>
-      <div class="card" *ngFor="let workspace of workspaces" routerLink="/trello/workspaces/{{workspace.id}}">
-        <div class="card-header"><p class="card-header-title">{{workspace.title}}</p></div>
-        <div class="card-content"><div class="content">Content</div></div>
+      <div *ngFor="let workspace of workspaces">
+        <div class="card" routerLink="/trello/workspaces/{{workspace.id}}" *ngIf="workspace.owner.id == currentUser.id">
+          <div class="card-header"><p class="card-header-title">{{workspace.title}}</p></div>
+          <div class="card-content">
+            <div class="content">Type: {{workspace.type}}</div>
+          </div>
+        </div>
       </div>
 
     </div>
+    <div class="title-board">
+      <h1><i class="fas fa-briefcase"></i>Workspace Shared With You</h1>
+    </div>
+    <div class="section-board">
+      <div *ngFor="let workspaceShare of workspaces">
+        <div class="card" routerLink="/trello/workspaces/{{workspaceShare.id}}"
+             *ngIf="workspaceShare.owner.id != currentUser.id">
+          <div class="card-header"><p class="card-header-title">{{workspaceShare.title}}</p></div>
+          <div class="card-content">
+            <div class="content">Type: {{workspace.type}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-
 </section>
+
+<div  class="modal" id="create-workspace">
+  <div class="modal-background" ></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Creating new board</p>
+      <button class="delete" aria-label="close" (click)="hideAddWorkspaceModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="field" style="position: relative">
+        <label class="label">Title</label>
+        <div class="control">
+          <input class="input" type="text" required [(ngModel)]="workspace.title" #workspaceTitle="ngModel">
+        </div>
+        <div *ngIf="workspaceTitle.invalid"
+             class="alert" style="position: absolute; top: 0px; left: 50px">
+          <div *ngIf="workspaceTitle.errors?.required" style="color: red">
+            Title is required.
+          </div>
+        </div>
+      </div>
+      <div class="field" style="position: relative">
+        <label class="label">Type</label>
+        <div class="control">
+          <input class="input" type="text" required [(ngModel)]="workspace.type" >
+        </div>
+      </div>
+      <div class="field columns">
+        <div class="column is-one-fifth">
+          <label class="label">Owner</label>
+          <div class="control">
+            <div class="button is-info user-button  is-light">{{currentUser.username}}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <div *ngIf="workspaceTitle.invalid" class="alert">
+        <button class="button is-dark is-light" disabled>Save changes</button>
+      </div>
+      <div *ngIf="!workspaceTitle.invalid" class="alert">
+        <button class="button is-success is-light" (click)="createWorkspaces()">Save changes</button>
+      </div>
+      <button class="button is-light" (click)="hideAddWorkspaceModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
+

@@ -11,17 +11,13 @@ import { UserInformationComponent } from './user-information/user-information.co
 import {WorkspaceBoardComponent} from "./workspace/workspace-board/workspace-board.component";
 import {WorkspaceMemberComponent} from "./workspace/workspace-member/workspace-member.component";
 
-
-
-
-
 @NgModule({
   declarations: [
     TrelloViewComponent,
     TrelloHomeComponent,
     WorkspaceBoardComponent,
     WorkspaceMemberComponent,
-    UserInformationComponent
+    UserInformationComponent,
   ],
   imports: [
     CommonModule,

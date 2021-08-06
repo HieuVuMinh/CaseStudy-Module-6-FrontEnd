@@ -26,4 +26,7 @@ export class WorkspaceService {
   create(workspace: Workspace):Observable<Workspace>{
     return this.http.post<Workspace>(`${environment.api_url}workspaces`, workspace)
   }
+  delete(id: any):Observable<Workspace>{
+    return this.http.delete<Workspace>(`${environment.api_url}workspaces/${id}`)
+  }
 }
