@@ -9,7 +9,12 @@
   width: 33px;
   clip-path: circle(50%);
 }
-
+.search-bar{
+  position: relative;
+}
+.search-bar-input{
+  position: absolute; top: 22px; left: -210px
+}
 .icon-link {
   display: inline-flex;
   font-size: 25px;

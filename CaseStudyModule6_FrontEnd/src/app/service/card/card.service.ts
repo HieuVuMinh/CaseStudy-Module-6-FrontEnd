@@ -20,4 +20,12 @@ export class CardService {
   updateAll(cards: Card[]): Observable<Card[]> {
     return this.httpClient.put<Card[]>(`${API_URL}cards`, cards);
   }
+
+  getAllCard(): Observable<Card[]> {
+    return this.httpClient.get<Card[]>(`${API_URL}cards`);
+  }
+
+  saveCard(card : Card): Observable<Card>{
+    return this.httpClient.post<Card>(`${API_URL}cards`, card);
+  }
 }

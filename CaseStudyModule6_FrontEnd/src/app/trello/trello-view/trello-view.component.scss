@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+
 }
 
 .icon-item {
@@ -143,17 +144,16 @@ h1.app-name {
 
     .board-columns {
       display: flex;
-      flex-grow: 1;
 
       .board-column {
+        max-width: 314px;
         display: flex;
         flex-direction: column;
         flex-grow: 1;
         flex-basis: 0; // to force the columns to all be the same size, regardless of content
-
         min-width: 300px;
         margin: 50px;
-        padding: 25px;
+        padding: 15px;
 
         border-radius: 4px;
 
@@ -170,12 +170,12 @@ h1.app-name {
           font-family: 'Lato', sans-serif;
           text-transform: uppercase;
           margin-bottom: 20px;
+
         }
       }
     }
   }
 }
-
 
 //.tasks-container {
 //  flex-grow: 1;
@@ -226,3 +226,52 @@ h1.app-name {
 .button-create-column {
   margin-top: 10px;
 }
+
+.window-close {
+  display: none;
+  cursor: pointer;
+  position: absolute;
+  margin-left: 280px;
+}
+
+.board-column:hover .window-close {
+  display: inline-block;
+}
+
+.model-card-body-content {
+  float: left;
+  width: 70%;
+  margin-right: 10px;
+}
+
+.model-card-body-upload-file {
+  float: left;
+  width: 25%;
+}
+
+.modal-card-title {
+  border: transparent;
+  outline: transparent;
+  background-color: whitesmoke;
+}
+
+.modal-card-content {
+  border: transparent;
+  outline: transparent;
+  background-color: white;
+}
+
+.form-create-new-card {
+  margin-top: 10px;
+}
+
+.button-option {
+  margin-top: 10px;
+}
+
+.add-new-card {
+  margin-right: 10px  ;
+}
+
+
+

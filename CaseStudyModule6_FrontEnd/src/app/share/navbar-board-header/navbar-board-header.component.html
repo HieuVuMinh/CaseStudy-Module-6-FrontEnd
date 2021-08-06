@@ -12,12 +12,15 @@
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-item">
       <div class="buttons">
-        <button class="button is-primary">
-          Title: {{board.title}}
+        <input *ngIf="canEdit" [(ngModel)]="board.title" class="button is-primary" (change)="updateBoardTitle()">
+        <button *ngIf="!canEdit" class="button is-primary">
+          {{board.title}}
         </button>
 
         <button class="button is-primary">
-          Owner: {{board.owner.username}}
+          <img *ngIf="!board.owner.image" src="assets/img/nicki-eliza.jpg" class="img-circle is-48x48">
+          <img *ngIf="board.owner.image" [src]="board.owner.image" class="img-circle is-48x48">
+          {{board.owner.username}}
         </button>
 
         <button class="button is-primary">
@@ -25,15 +28,27 @@
         </button>
 
         <div>
-          Members:
-          <span *ngFor="let member of members">
-            <a (click)="showDetail(member)">
+          <span *ngFor="let member of members; index as i">
+            <a (click)="showDetail(member)" (mouseover)="showUserPreview(member)"
+               (mouseout)="closeUserPreviews()"
+               class="user-preview" style="position: relative"
+               [ngClass]="{'is-hidden': i >= 5}">
               <img *ngIf="member.image" [src]="member.image" class="img-circle"/>
               <img *ngIf="!member.image" src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+              <span id="user-preview-text-{{member.userId}}"
+                    class="user-preview-text is-hidden tag is-info is-light"
+                    style="position: absolute; top: 20px; left:5px; float: top">
+                User preview text
+              </span>
             </a>
-            {{member.username}}
+          </span>
+          <span *ngIf="members.length > 5">
+            <a>
+              <img src="./assets/img/three-dots.png" (click)="showAllMembers()" class="img-circle"/>
+            </a>
           </span>
         </div>
+
       </div>
     </div>
 
@@ -43,12 +58,12 @@
           <button class="button is-primary"><i class="fas fa-ellipsis-h"></i>
             Menu
           </button>
-          <button *ngIf="board.owner.id == authenticationService.getCurrentUserValue().id" class="button is-primary"
+          <button *ngIf="canEdit && !isInWorkspace" class="button is-primary"
                   (click)="toggleUserSearchBar()">
             <i class="fas fa-user-plus"></i>Invite
           </button>
-          <div style="position: relative;">
-            <div *ngIf="searchBarIsShown" style="position: absolute; top: 22px; left: -210px">
+          <div class="search-bar">
+            <div *ngIf="searchBarIsShown" class="search-bar-input">
               <input class="input" type="text" placeholder="Search member" [(ngModel)]="userSearch"
                      (keyup)="searchUsers()">
               <div *ngIf="userResult.length" class="dropdown-content">
@@ -85,23 +100,39 @@
               </figure>
             </div>
             <div class="media-content">
-              <p class="title is-4">{{selectedMember.nickname}}</p>
+              <p class="title is-4" *ngIf="selectedMember.nickname">{{selectedMember.nickname}}</p>
+              <p class="title is-4" *ngIf="!selectedMember.nickname">{{selectedMember.username}}</p>
               <p class="subtitle is-6">@{{selectedMember.username}}</p>
             </div>
           </div>
           <div class="content">
-            <div *ngIf="selectedMember.canEdit" class="notification is-success is-light">This user has the right to edit this board</div>
-            <div *ngIf="!selectedMember.canEdit" class="notification is-info is-light">This user can not edit. Ask board owner for permission!</div>
+            <div *ngIf="selectedMember.canEdit" class="notification is-success is-light">This user has the right to edit
+              this board
+            </div>
+            <div *ngIf="!selectedMember.canEdit" class="notification is-info is-light">This user can not edit. Ask board
+              owner for permission!
+            </div>
           </div>
         </div>
       </div>
     </section>
     <footer class="modal-card-foot">
       <button class="button is-danger is-light"
-              *ngIf="this.board.owner.id == authenticationService.getCurrentUserValue().id" (click)="removeSelectedMember()">
-        Remove user from this board
+              *ngIf="canEdit" (click)="removeSelectedMember()">
+        Remove member
+      </button>
+      <button class="button is-secondary is-light"
+              *ngIf="canEdit && selectedMember.canEdit"
+              (click)="makeSelectedMemberObserver()">
+        Make observer
+      </button>
+      <button class="button is-success is-light"
+              *ngIf="canEdit && !selectedMember.canEdit"
+              (click)="makeSelectedMemberEditor()">
+        Make editor
       </button>
       <button class="button is-light" (click)="closeModal()">Cancel</button>
     </footer>
   </div>
 </div>
+<!--All user modal-->

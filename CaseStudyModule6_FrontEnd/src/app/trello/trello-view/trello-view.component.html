@@ -1,5 +1,7 @@
 <app-navbar-board-header [board]="board"
-                         [members]="members"></app-navbar-board-header>
+                         [members]="members"
+                         [canEdit]="canEdit"
+                         [isInWorkspace]="isInWorkspace"></app-navbar-board-header>
 <!--main content-->
 <div class="root">
   <div class="board">
@@ -10,34 +12,60 @@
              cdkDropListGroup
              cdkDropListOrientation="horizontal" class="board-columns"
              (cdkDropListDropped)="dropColumn($event)">
-          <div
-            cdkDragLockAxis="x" class="board-column"
-            *ngFor="let column of board.columns" cdkDrag>
-            <div class="column-title" cdkDragHandle>
-              {{ column.title }}
+          <div cdkDragLockAxis="x" class="board-column"
+               *ngFor="let column of board.columns; index as i" cdkDrag>
+            <div class="window-close" (click)="closeColumn(column.id)">
+              <i class="far fa-window-close"  disabled></i>
             </div>
+            <div class="column-title" cdkDragHandle>
+                <input class="input title-column" type="text" style="border: none; position: revert"
+                       (keydown)="onKeydown($event, column)"
+                       [(ngModel)]="this.board.columns[i].title"
+                       value="{{column.title}}">
+            </div>
+            <!--            content-->
             <div class="tasks-container"
-                 style="min-height: 500px"
+                 style="min-height: 410px"
                  id="{{column.id}}"
                  cdkDropList
                  [cdkDropListData]="column.cards"
                  (cdkDropListDropped)="dropCard($event)">
-              <div class="task" *ngFor="let item of column.cards" cdkDrag>
-                {{ item.title }}<br>
-                {{item.content}}
+              <div class="task" *ngFor="let item of column.cards" cdkDrag (click)="showUpdateModal(item)">
+                {{item.title}}
+              </div>
+              <div class="form-create-new-card is-hidden" id="new-card-form-col-{{column.id}}">
+                <form #showAddNewCardForm="ngForm" (ngSubmit)="addNewCard(column.id,column.cards?.length,showAddNewCardForm)">
+                  <input type="text" name="title" #addCard="ngModel" class="input" [(ngModel)]="newCard.title"
+                         placeholder="Title..." minlength="4" required>
+                  <td *ngIf="showAddNewCardForm.invalid && addCard.touched && isAdded">
+                    <p class="notification is-danger is-light" *ngIf="addCard.errors?.required">Can not blank</p>
+                    <p class="notification is-danger is-light" *ngIf="addCard.errors?.minlength">At least 4 characters</p>
+                  </td>
+                  <div class="button-option">
+                    <button class="button add-new-card is-primary is-light" type="submit">
+                      Add card
+                    </button>
+                    <button class="button is-danger is-light " (click)="hiddenInputAddNewCard(column.id)" type="button">
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <div id="show-form-create-new-card-{{column.id}}" class="show-form-create-new-card">
+                <button class="button is-light" (click)="showInputAddNewCard(column.id)"> + Add new card</button>
               </div>
             </div>
           </div>
         </div>
-
-
-        <div class="board-columns-add">
-          <div class="board-column" style="margin-left: 0px ">
+        <div class="board-columns-add" *ngIf="canEdit">
+          <div class="board-column" style="margin-left: 0px">
             <div class="column-title">
               <form [formGroup]="columnForm" (ngSubmit)="addColumn()">
-                <input class="input" type="text" formControlName="title" placeholder="Enter title column..." maxlength="512">
+                <input class="input add-column-input" type="text" formControlName="title" style="position: revert"
+                       placeholder="Enter title column..." maxlength="512">
                 <div class="button-create-column">
-                  <button [disabled]="columnForm.invalid" class="button is-primary is-light" type="submit">Add column</button>
+                  <button style="position: revert" [disabled]="columnForm.invalid" class="button is-primary is-light" type="submit">Add column
+                  </button>
                 </div>
               </form>
             </div>
@@ -49,3 +77,36 @@
   </div>
 </div>
 
+<!--Modal update card-->
+<div id="modal-update-card" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <input class="input modal-card-title" type="text" placeholder="Title" [(ngModel)]="selectedCard.title">
+    </header>
+    <section class="modal-card-body">
+      <div class="model-card-body-content">
+        <input class="input modal-card-content" type="text" placeholder="Content..." [(ngModel)]="selectedCard.content">
+      </div>
+      <div class="model-card-body-upload-file">
+        <div class="file">
+          <label class="file-label">
+            <input class="file-input" type="file" name="resume">
+            <span class="file-cta">
+      <span class="file-icon">
+        <i class="fas fa-upload"></i>
+      </span>
+      <span class="file-label">
+        Attachment
+      </span>
+    </span>
+          </label>
+        </div>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success" (click)="updateCurrentCard()">Save changes</button>
+      <button class="button" (click)="closeUpdateModal()">Cancel</button>
+    </footer>
+  </div>
+</div>

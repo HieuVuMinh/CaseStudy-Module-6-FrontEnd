@@ -37,4 +37,8 @@ export class BoardService {
   addNewBoard(board: Board): Observable<Board> {
     return  this.httpClient.post<Board>(`${API_URL}boards`, board);
   }
+
+  isBoardInWorkspace(id: number): Observable<boolean> {
+    return this.httpClient.get<boolean>(`${API_URL}boards/${id}/is-in-workspace`);
+  }
 }

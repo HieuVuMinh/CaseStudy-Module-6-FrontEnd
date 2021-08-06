@@ -23,6 +23,10 @@ export class MemberService {
     return this.httpClient.post<Member>(`${API_URL}members`, member);
   }
 
+  updateMember(id: number, member: Member): Observable<Member> {
+    return this.httpClient.put<Member>(`${API_URL}members/${id}`, member);
+  }
+
   addNewMembers(members: Member[]): Observable<Member[]> {
     return this.httpClient.post<Member[]>(`${API_URL}members/all`, members);
   }

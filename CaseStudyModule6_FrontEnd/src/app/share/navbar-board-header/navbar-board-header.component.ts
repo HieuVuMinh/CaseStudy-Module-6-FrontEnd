@@ -6,6 +6,7 @@ import {User} from "../../model/user";
 import {UserService} from "../../service/user/user.service";
 import {Member} from "../../model/member";
 import {MemberService} from "../../service/member/member.service";
+import {BoardService} from "../../service/board/board.service";
 
 @Component({
   selector: 'app-navbar-board-header',
@@ -15,6 +16,8 @@ import {MemberService} from "../../service/member/member.service";
 export class NavbarBoardHeaderComponent implements OnInit {
   @Input() board: Board = {columns: [], owner: {}, title: ""}
   @Input() members: DetailedMember[] = [];
+  @Input() canEdit: boolean = false;
+  @Input() isInWorkspace: boolean = false;
   searchBarIsShown: boolean = false;
   userSearch: string = ``;
   userResult: User[] = [];
@@ -22,7 +25,8 @@ export class NavbarBoardHeaderComponent implements OnInit {
 
   constructor(public authenticationService: AuthenticationService,
               private userService: UserService,
-              private memberService: MemberService) {
+              private memberService: MemberService,
+              private boardService: BoardService) {
   }
 
   ngOnInit(): void {
@@ -103,5 +107,60 @@ export class NavbarBoardHeaderComponent implements OnInit {
       this.getMembers();
       this.closeModal();
     });
+  }
+
+  makeSelectedMemberEditor() {
+    this.selectedMember.canEdit = true;
+    this.updateSelectedMember();
+  }
+
+  makeSelectedMemberObserver() {
+    this.selectedMember.canEdit = false;
+    this.updateSelectedMember();
+  }
+
+  updateSelectedMember() {
+    let member: Member = {
+      board: this.board,
+      canEdit: this.selectedMember.canEdit,
+      id: this.selectedMember.id,
+      user: {
+        id: this.selectedMember.userId
+      }
+    };
+    this.memberService.updateMember(this.selectedMember.id, member).subscribe(
+      () => this.getMembers()
+    );
+  }
+
+  updateBoardTitle() {
+    if (this.board.id != null) {
+      this.boardService.updateBoard(this.board.id, this.board).subscribe(board => this.board = board);
+    }
+  }
+
+  showUserPreview(member: DetailedMember) {
+    let elementId = 'user-preview-text-' + member.userId;
+    let element = document.getElementById(elementId);
+    // @ts-ignore
+    element.innerHTML = '@' + member.username;
+    // @ts-ignore
+    element.classList.remove('is-hidden');
+  }
+
+  closeUserPreviews() {
+    let elements = document.getElementsByClassName('user-preview-text');
+    // @ts-ignore
+    for (let element of elements) {
+      element.classList.add('is-hidden');
+    }
+  }
+
+  showAllMembers() {
+    let members = document.getElementsByClassName('user-preview');
+    // @ts-ignore
+    for (let member of members) {
+      member.classList.remove('is-hidden');
+    }
   }
 }
