@@ -126,14 +126,13 @@ h1.app-name {
 }
 
 
+
 .board {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  height: 675px;
+  height: 615px;
 
-  // Override Automatic Minimum Size
-  // https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size
   min-width: 0;
   min-height: 0;
 
@@ -141,6 +140,8 @@ h1.app-name {
     display: flex;
     flex-grow: 1;
     overflow-x: auto;
+    margin-left: 13px;
+
 
     .board-columns {
       display: flex;
@@ -152,7 +153,7 @@ h1.app-name {
         flex-grow: 1;
         flex-basis: 0; // to force the columns to all be the same size, regardless of content
         min-width: 300px;
-        margin: 50px;
+        margin: 50px 50px 50px 0px;
         padding: 15px;
 
         border-radius: 4px;
@@ -226,11 +227,17 @@ h1.app-name {
   display: none;
   cursor: pointer;
   position: absolute;
-  margin-left: 280px;
+  margin-left: 275px;
+  top: 135px;
 }
 
 .board-column:hover .window-close {
   display: inline-block;
+}
+
+.fa-trash-alt {
+  height: 17.5px;
+  width: 20px;
 }
 
 .model-card-body-content {

@@ -10,7 +10,10 @@
       </div>
       <span>or use your email for registration</span>
 <!--      username-->
-      <input type="text" formControlName="username" placeholder="User Name" />
+      <input type="text" formControlName="username" placeholder="User Name" (click)="existence()"/>
+      <div *ngIf="this.userExistence" class="col alert alert-danger">
+        User name was already exist!
+      </div>
       <div class="col alert alert-danger" role="alert" *ngIf="username?.invalid && (username?.dirty || username?.touched)">
         <div *ngIf="username?.errors?.minlength" class="col alert alert-danger">
           Name must be at least 6 characters long!
@@ -25,11 +28,27 @@
         <div *ngIf="password?.errors?.required" class="col alert alert-danger">
           Password must be required!
         </div>
-        <div *ngIf="username?.errors?.pattern" class="col alert alert-danger">
-          Minimum eight characters, at least one uppercase letter, one lowercase letter and one number!
+        <div *ngIf="password?.errors?.minlength" class="col alert alert-danger">
+          Password must be at least 5 characters long!
+        </div>
+        <div *ngIf="password?.errors?.pattern" class="col alert alert-danger">
+          Minimum four characters, at least one uppercase letter, one lowercase letter and one number!
         </div>
       </div>
-<!--      nickName-->
+<!--      email-->
+      <input type="text" formControlName="email" placeholder="Email" (click)="existence()" />
+      <div *ngIf="this.emailExistence" class="col alert alert-danger">
+        Email was already exist!
+      </div>
+      <div class="col alert alert-danger" role="alert" *ngIf="email?.invalid && (email?.dirty || email?.touched)">
+        <div *ngIf="email?.errors?.required" class="col alert alert-danger">
+          Email must be required!
+        </div>
+        <div *ngIf="email?.errors?.pattern" class="col alert alert-danger">
+          Email is invalid. Must have type: "abc@gmail.com"
+        </div>
+      </div>
+      <!--      nickName-->
       <input type="text" formControlName="nickname" placeholder="Nick Name" />
       <div class="col alert alert-danger" role="alert"
            *ngIf="nickname?.errors?.required && nickname?.touched">

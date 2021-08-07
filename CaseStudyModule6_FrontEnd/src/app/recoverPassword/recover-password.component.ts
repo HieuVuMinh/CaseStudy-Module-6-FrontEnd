@@ -16,12 +16,10 @@ export class RecoverPasswordComponent implements OnInit {
 
   conFirmForm: FormGroup = new FormGroup({
     username: new FormControl(),
-    nickname: new FormControl()
+    email: new FormControl(),
   });
 
-  newConFirmForm: FormGroup = new FormGroup({
-    password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$')])
-  });
+  newConFirmForm: FormGroup = new FormGroup({});
 
 
   constructor(private userService: UserService,
@@ -33,14 +31,15 @@ export class RecoverPasswordComponent implements OnInit {
   }
 
   confirm() {
-    this.userService.getUserByUserNameAndNickName(this.conFirmForm.get('username')?.value, this.conFirmForm.get('nickname')?.value).subscribe(user => {
+    this.userService.getUserByUserNameAndEmail(this.conFirmForm.get('username')?.value, this.conFirmForm.get('email')?.value).subscribe(user => {
       this.user = user;
       if (this.user != null){
         this.divNewPassword = true;
         this.newConFirmForm = new FormGroup({
           username: new FormControl(this.user.username),
-          nickname: new FormControl(this.user.nickname),
-          password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$')])
+          email: new FormControl(this.user.email),
+          password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$')]),
+          nickname: new FormControl(this.user.nickname)
         });
       }else {
 
