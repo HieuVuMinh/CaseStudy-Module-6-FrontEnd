@@ -1,4 +1,4 @@
-<div class="navbar-end" *ngIf="roleUserInWorkspace">
+<div class="navbar-end" *ngIf="roleUserInWorkspace || currentUser.id == workspace.owner?.id">
   <div class="navbar-item">
     <div class="buttons" style="margin-right: 200px">
       <div class="dropdown is-active">
@@ -35,7 +35,7 @@
     </div>
   </div>
 </div>
-<section class="main-content columns is-fullheight">
+<section class="main-content columns is-fullheight" >
 
   <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile">
     <ul class="menu-list">
@@ -86,12 +86,12 @@
       </div>
       <div>
         <button class="button is-primary">
-          Admin
+          Owner
         </button>
       </div>
     </div>
-    <div class="user-container" *ngFor="let member of workspace.members; index as i">
-      <div class="user-info">
+    <div class="user-container" *ngFor="let member of workspace.members; index as i" [class.background-current-user]="currentUser.id == member.user?.id">
+      <div class="user-info"  >
         <div>
           <img class="user-img" src="{{member.user?.image}}">
         </div>
@@ -109,14 +109,25 @@
           <i class="fas fa-user-minus" style="color: red"></i>
         </button>
         <button class="button is-primary" style="width: 40px" (click)="removeMembers(i)"
-                *ngIf="member.user?.id == currentUser.id || (member.role =='Member')">
+                *ngIf="member.user?.id == currentUser.id && member.role != 'Admin'" >
           <i class="fas fa-user-minus" style="color: red"></i>
         </button>
+        <button class="button is-primary" style="width: 40px" (click)="removeMembers(i)"
+                *ngIf="roleUserInWorkspace" >
+          <i class="fas fa-user-minus" style="color: red"></i>
+        </button>
+
         <button class="button is-success" style="top: 10px" (click)="updateMember(member,'Admin')"
                 *ngIf="roleUserInWorkspace && member.role !== 'Admin'">Set Admin
         </button>
         <button class="button is-success" style="top: 10px" (click)="updateMember(member,'Member')"
                 *ngIf="roleUserInWorkspace && member.role == 'Admin' && currentUser.id != member.user?.id">Set Member
+        </button>
+        <button class="button is-success" style="top: 10px" (click)="updateMember(member,'Admin')"
+                *ngIf="workspace.owner.id == currentUser.id && member.role !== 'Admin'">Set Admin
+        </button>
+        <button class="button is-success" style="top: 10px" (click)="updateMember(member,'Member')"
+                *ngIf="workspace.owner.id == currentUser.id && member.role == 'Admin'">Set Member
         </button>
       </div>
     </div>
