@@ -15,13 +15,13 @@
           <div cdkDragLockAxis="x" class="board-column"
                *ngFor="let column of board.columns; index as i" cdkDrag>
             <div class="window-close" (click)="closeColumn(column.id)">
-              <i class="far fa-window-close"  disabled></i>
+              <i class="far fa-window-close" disabled></i>
             </div>
             <div class="column-title" cdkDragHandle>
-                <input class="input title-column" type="text" style="border: none; position: revert"
-                       (keydown)="onKeydown($event, column)"
-                       [(ngModel)]="this.board.columns[i].title"
-                       value="{{column.title}}">
+              <input class="input title-column" type="text" style="border: none; position: revert"
+                     (keydown)="onKeydown($event, column)"
+                     [(ngModel)]="this.board.columns[i].title"
+                     value="{{column.title}}">
             </div>
             <!--            content-->
             <div class="tasks-container"
@@ -31,15 +31,20 @@
                  [cdkDropListData]="column.cards"
                  (cdkDropListDropped)="dropCard($event)">
               <div class="task" *ngFor="let item of column.cards" cdkDrag (click)="showUpdateModal(item)">
+                <span>
+                  <span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
+                </span>
                 {{item.title}}
               </div>
               <div class="form-create-new-card is-hidden" id="new-card-form-col-{{column.id}}">
-                <form #showAddNewCardForm="ngForm" (ngSubmit)="addNewCard(column.id,column.cards?.length,showAddNewCardForm)">
+                <form #showAddNewCardForm="ngForm"
+                      (ngSubmit)="addNewCard(column.id,column.cards?.length,showAddNewCardForm)">
                   <input type="text" name="title" #addCard="ngModel" class="input" [(ngModel)]="newCard.title"
                          placeholder="Title..." minlength="4" required>
                   <td *ngIf="showAddNewCardForm.invalid && addCard.touched && isAdded">
                     <p class="notification is-danger is-light" *ngIf="addCard.errors?.required">Can not blank</p>
-                    <p class="notification is-danger is-light" *ngIf="addCard.errors?.minlength">At least 4 characters</p>
+                    <p class="notification is-danger is-light" *ngIf="addCard.errors?.minlength">At least 4
+                      characters</p>
                   </td>
                   <div class="button-option">
                     <button class="button add-new-card is-primary is-light" type="submit">
@@ -64,7 +69,8 @@
                 <input class="input add-column-input" type="text" formControlName="title" style="position: revert"
                        placeholder="Enter title column..." maxlength="512">
                 <div class="button-create-column">
-                  <button style="position: revert" [disabled]="columnForm.invalid" class="button is-primary is-light" type="submit">Add column
+                  <button style="position: revert" [disabled]="columnForm.invalid" class="button is-primary is-light"
+                          type="submit">Add column
                   </button>
                 </div>
               </form>
@@ -79,12 +85,16 @@
 
 <!--Modal update card-->
 <div id="modal-update-card" class="modal">
-  <div class="modal-background"></div>
+  <div class="modal-background" (click)="closeUpdateModal()"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <input class="input modal-card-title" type="text" placeholder="Title" [(ngModel)]="selectedCard.title">
     </header>
     <section class="modal-card-body">
+      <div>
+        <span *ngFor="let tag of selectedCard.tags" class="tag is-light" [ngClass]="tag.color"
+              (click)="removeTagFromCard(tag)">{{tag.name}}</span>
+      </div>
       <div class="model-card-body-content">
         <input class="input modal-card-content" type="text" placeholder="Content..." [(ngModel)]="selectedCard.content">
       </div>
@@ -93,15 +103,40 @@
           <label class="file-label">
             <input class="file-input" type="file" name="resume">
             <span class="file-cta">
-      <span class="file-icon">
-        <i class="fas fa-upload"></i>
-      </span>
-      <span class="file-label">
-        Attachment
-      </span>
-    </span>
+              <span class="file-icon">
+                <i class="fas fa-upload"></i>
+              </span>
+              <span class="file-label">
+                Attachment
+              </span>
+            </span>
           </label>
         </div>
+      </div>
+      <div id="tag-section" class="">
+        <div>available tags:
+          <span *ngFor="let tag of this.board.tags" class="tag is-light" [ngClass]="tag.color"
+                (click)="addTagToCard(tag)">{{tag.name}}</span>
+        </div>
+        <input class="input is-info" [(ngModel)]="newTag.name" #newTagName="ngModel" required type="text"
+               placeholder="Tag name">
+        <div *ngIf="newTagName.invalid" class="alert">
+          <div *ngIf="newTagName.errors?.required">
+            Tag name is required.
+          </div>
+        </div>
+        <div class="select">
+          <select [(ngModel)]="newTag.color">
+            <option value="is-primary"><span class="tag is-primary is-light">Primary</span></option>
+            <option value="is-link"><span class="tag is-link is-light">Link</span></option>
+            <option value="is-info"><span class="tag is-info is-light">Info</span></option>
+            <option value="is-success"><span class="tag is-success is-light">Success</span></option>
+            <option value="is-warning"><span class="tag is-warning is-light">Warning</span></option>
+            <option value="is-danger"><span class="tag is-danger is-light">Danger</span></option>
+          </select>
+        </div>
+        <button *ngIf="newTagName.valid" class="button is-info is-light" (click)="addNewTag()">Add tag</button>
+        <button *ngIf="newTagName.invalid" class="button is-info is-light" disabled>Add tag</button>
       </div>
     </section>
     <footer class="modal-card-foot">
