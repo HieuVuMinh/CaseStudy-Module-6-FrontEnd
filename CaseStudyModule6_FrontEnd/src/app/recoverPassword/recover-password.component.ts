@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Form, FormControl, FormGroup, Validators} from "@angular/forms";
+import {Form, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserService} from "../service/user/user.service";
 import {User} from "../model/user";
 import {Router} from "@angular/router";
@@ -21,10 +21,12 @@ export class RecoverPasswordComponent implements OnInit {
     email: new FormControl(),
   });
 
-  newConFirmForm: FormGroup = new FormGroup({});
+  newConFirmForm: FormGroup = this.formBuilder.group({});
 
+  finalConfirmForm: FormGroup = new FormGroup({});
 
   constructor(private userService: UserService,
+              private formBuilder: FormBuilder,
               private router: Router) {
 
   }
@@ -33,33 +35,45 @@ export class RecoverPasswordComponent implements OnInit {
   }
 
   confirm() {
-    if (this.confirmPassword != this.conFirmForm.value.password){
-      this.isConfirmPassword = true;
-    }
     this.userService.getUserByUserNameAndEmail(this.conFirmForm.get('username')?.value, this.conFirmForm.get('email')?.value).subscribe(user => {
       this.user = user;
-      if (this.user != null){
+      if (this.user != null) {
         this.divNewPassword = true;
-        this.newConFirmForm = new FormGroup({
+        this.newConFirmForm = this.formBuilder.group({
           username: new FormControl(this.user.username),
           email: new FormControl(this.user.email),
-          password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$')]),
+          newPassword: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,10}$')]),
+          confirmPassword: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,10}$')]),
           nickname: new FormControl(this.user.nickname)
         });
-      }else {
-
+      } else {
+        alert("Incorrect!")
       }
     })
   }
 
   changeNewPassword(id: any) {
-    console.log(this.newConFirmForm.value, id);
-    this.userService.updateById(id, this.newConFirmForm.value).subscribe(()=> {
-      this.router.navigateByUrl('/login')
-    })
+    if (this.newConFirmForm.value.newPassword != this.newConFirmForm.value.confirmPassword) {
+      this.isConfirmPassword = true;
+    } else {
+      this.finalConfirmForm = new FormGroup({
+        id: new FormControl(this.user.id),
+        username: new FormControl(this.user.username),
+        email: new FormControl(this.user.email),
+        password: new FormControl(this.newConFirmForm.value.newPassword),
+        nickname: new FormControl(this.user.nickname)
+      })
+      this.userService.updateById(id, this.finalConfirmForm.value).subscribe(()=> {
+        alert("Change success!")
+        this.router.navigateByUrl('/login')
+      })
+    }
   }
 
-  get password() {
-    return this.newConFirmForm.get('password');
+  get newPassword() {
+    return this.newConFirmForm.get('newPassword');
+  }
+  get newConfirmPassword() {
+    return this.newConFirmForm.get('confirmPassword');
   }
 }
