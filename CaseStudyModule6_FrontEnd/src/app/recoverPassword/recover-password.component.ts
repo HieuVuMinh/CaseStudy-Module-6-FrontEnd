@@ -13,6 +13,8 @@ export class RecoverPasswordComponent implements OnInit {
 
   user: User = {};
   divNewPassword = false;
+  isConfirmPassword = false;
+  confirmPassword = '';
 
   conFirmForm: FormGroup = new FormGroup({
     username: new FormControl(),
@@ -31,6 +33,9 @@ export class RecoverPasswordComponent implements OnInit {
   }
 
   confirm() {
+    if (this.confirmPassword != this.conFirmForm.value.password){
+      this.isConfirmPassword = true;
+    }
     this.userService.getUserByUserNameAndEmail(this.conFirmForm.get('username')?.value, this.conFirmForm.get('email')?.value).subscribe(user => {
       this.user = user;
       if (this.user != null){
