@@ -46,6 +46,7 @@ export class TrelloViewComponent implements OnInit {
   cardsDto: Card[] = [];
   columnsDto: Column[] = [];
   members: DetailedMember[] = [];
+  commentId = -1;
   selectedCard: Card = {content: "", id: -1, position: -1, title: ""};
   columnBeforeAdd: Column[] = [];
   columnForm: FormGroup = new FormGroup({
@@ -253,7 +254,7 @@ export class TrelloViewComponent implements OnInit {
       cardId: new FormControl()
     });
     this.commentCardService.save(commentCard).subscribe(() => {
-
+      this.getAllCommentByCardId();
     })
   }
 
@@ -261,9 +262,39 @@ export class TrelloViewComponent implements OnInit {
     this.commentCardService.findAllByCardId(this.selectedCard.id).subscribe(comments => {
       // @ts-ignore
       this.commentDto = comments;
-      console.log(this.commentDto);
     })
   }
+
+  showDeleteCommentModal(id: any) {
+    // @ts-ignore
+    document.getElementById("deleteModal").classList.add("is-active")
+    this.commentId = id;
+  }
+
+  deleteComment() {
+    this.commentCardService.deleteComment(this.commentId).subscribe(() => {
+        alert("Success!")
+        this.getAllCommentByCardId();
+        this.closeDeleteCommentModal()
+      }
+    )
+  }
+
+  closeDeleteCommentModal() {
+    // @ts-ignore
+    document.getElementById("deleteModal").classList.remove("is-active")
+  }
+
+  // closeColumn(id: any) {
+  //   console.log(id);
+  //   for (let column of this.board.columns) {
+  //     if (column.id == id) {
+  //       let deleteId = this.board.columns.indexOf(column);
+  //       this.board.columns.splice(deleteId, 1);
+  //       this.saveChanges();
+  //     }
+  //   }
+  // }
 
   addColumn() {
     if (this.columnForm.valid) {
@@ -377,4 +408,5 @@ export class TrelloViewComponent implements OnInit {
     // @ts-ignore
     document.getElementById("submitComment-" + this.selectedCard.id).classList.add('is-hidden')
   }
+
 }

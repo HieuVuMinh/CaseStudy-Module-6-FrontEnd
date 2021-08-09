@@ -130,13 +130,13 @@
           <div class="media-content">
             <div class="content">
               <p>
-                <strong>{{user.username}}</strong> <small>@{{user.nickname}}</small>
+                <strong>{{user.username}}</strong> <small>@{{user.nickname}}</small> <br/>
                 {{comment.content}}
               </p>
             </div>
           </div>
-          <div class="media-right">
-            <button class="delete"></button>
+          <div class="media-right button-delete" *ngIf="canEdit">
+            <button class="delete" (click)="showDeleteCommentModal(comment.id)"></button>
           </div>
         </article>
       </div>
@@ -165,6 +165,24 @@
     <footer class="modal-card-foot">
       <button class="button is-primary is-light" (click)="updateCurrentCard()">Save changes</button>
       <button class="button is-danger is-light" (click)="closeUpdateModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+<!--delete Comment modal-->
+<div class="modal" id="deleteModal">
+  <div class="modal-background"></div>
+  <div class="modal-card" style="width: 500px; height: 215px;">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Delete</p>
+      <button class="delete" aria-label="close"  (click)="closeDeleteCommentModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      Do you want to delete your comment?
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-danger is-light" (click)="deleteComment()" >Delete</button>
+      <button class="button is-light" (click)="closeDeleteCommentModal()">Cancel</button>
     </footer>
   </div>
 </div>

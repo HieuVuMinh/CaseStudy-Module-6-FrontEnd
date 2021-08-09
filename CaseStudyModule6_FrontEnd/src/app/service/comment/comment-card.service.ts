@@ -20,4 +20,8 @@ export class CommentCardService {
   findAllByCardId(cardId: any): Observable<CommentCard> {
     return this.httpClient.get<CommentCard>(`${API_URL}comments/${cardId}/comment-card`);
   }
+
+  deleteComment(id: any): Observable<CommentCard> {
+    return this.httpClient.delete(`${API_URL}comments/${id}`)
+  }
 }

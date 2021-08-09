@@ -238,6 +238,14 @@ h1.app-name {
   display: inline-block;
 }
 
+.button-delete {
+  display: none;
+}
+
+.media-comment-body:hover .button-delete {
+  display: inline-block;
+}
+
 .fa-trash-alt {
   height: 17.5px;
   width: 20px;
