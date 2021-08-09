@@ -15,13 +15,13 @@
           <div cdkDragLockAxis="x" class="board-column"
                *ngFor="let column of board.columns; index as i" cdkDrag>
             <div class="window-close" (click)="closeColumn(column.id)">
-              <i class="far fa-window-close"  disabled></i>
+              <i class="far fa-window-close" disabled></i>
             </div>
             <div class="column-title" cdkDragHandle>
-                <input class="input title-column" type="text" style="border: none; position: revert"
-                       (keydown)="onKeydown($event, column)"
-                       [(ngModel)]="this.board.columns[i].title"
-                       value="{{column.title}}">
+              <input class="input title-column" type="text" style="border: none; position: revert"
+                     (keydown)="onKeydown($event, column)"
+                     [(ngModel)]="this.board.columns[i].title"
+                     value="{{column.title}}">
             </div>
             <!--            content-->
             <div class="tasks-container"
@@ -30,16 +30,16 @@
                  cdkDropList
                  [cdkDropListData]="column.cards"
                  (cdkDropListDropped)="dropCard($event)">
-              <div class="task" *ngFor="let item of column.cards" cdkDrag (click)="showUpdateModal(item)">
-                {{item.title}}
+              <div class="task" *ngFor="let card of column.cards" cdkDrag (click)="showUpdateCardModal(card)">
+                {{card.title}}
               </div>
               <div class="form-create-new-card is-hidden" id="new-card-form-col-{{column.id}}">
-                <form #showAddNewCardForm="ngForm" (ngSubmit)="addNewCard(column.id,column.cards?.length,showAddNewCardForm)">
+                <form #showAddNewCardForm="ngForm"
+                      (ngSubmit)="addNewCard(column.id,column.cards?.length,showAddNewCardForm)">
                   <input type="text" name="title" #addCard="ngModel" class="input" [(ngModel)]="newCard.title"
-                         placeholder="Title..." minlength="4" required>
+                         placeholder="Title..." required>
                   <td *ngIf="showAddNewCardForm.invalid && addCard.touched && isAdded">
                     <p class="notification is-danger is-light" *ngIf="addCard.errors?.required">Can not blank</p>
-                    <p class="notification is-danger is-light" *ngIf="addCard.errors?.minlength">At least 4 characters</p>
                   </td>
                   <div class="button-option">
                     <button class="button add-new-card is-primary is-light" type="submit">
@@ -55,6 +55,73 @@
                 <button class="button is-light" (click)="showInputAddNewCard(column.id)"> + Add new card</button>
               </div>
             </div>
+            <!--Modal update card-->
+            <div id="modal-update-card" class="modal" *ngFor="let card of column.cards">
+              <div class="modal-background" id="modal-background" (click)="closeUpdateCardModal()"></div>
+              <div class="modal-card">
+                <div class="modal-card-update" id="modal-card-update">
+                  <header class="modal-card-head">
+                    <input class="input modal-card-title" type="text" placeholder="Title"
+                           [(ngModel)]="selectedCard.title">
+                  </header>
+                  <section class="modal-card-body">
+                    <div class="model-card-body-content">
+                      <input class="input modal-card-content" type="text" placeholder="Content..."
+                             [(ngModel)]="selectedCard.content">
+                    </div>
+                    <button class="button" (click)="showFormUploadFile()">Upload file</button>
+                    <!--                    Form upload file-->
+                    <div class="content">
+                      <form #uploadFileCard="ngForm" (ngSubmit)="uploadFile()">
+                        <div class="update-info">
+                          <div class="level options">
+                            <div class="checkbox level-left">
+                              <div class="update-info">
+                                <tr>
+                                  <span class="tag is-info">Image</span>
+                                  <div class="file has-name">
+                                    <div class="file">
+                                      <label class="file-label">
+                                        <input class="file-input" type="file" #preview (change)="showPreview($event)">
+                                        <span class="file-cta">
+      <span class="file-icon">
+        <i class="fas fa-upload"></i>
+      </span>
+      <span class="file-label" (change)="showPreview($event)">
+        Choose a file…
+      </span>
+    </span>
+                                      </label>
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!--                          <span class="tag is-info">Nickname</span>-->
+                          <!--                          <input type="text" class="input" name="nickname" #nickname="ngModel" required-->
+                          <!--                                 [(ngModel)]="user.nickname" placeholder="Nick name">-->
+                          <!--                          <td *ngIf="uploadFileCard.invalid && uploadFileCard.touched && isSubmitted">-->
+                          <!--                            <p class="notification" *ngIf="nickname.errors?.required">Can not blank</p>-->
+                          <!--                          </td>-->
+                        </div>
+                        <button class="button is-success is-light">Update</button>
+                      </form>
+                    </div>
+                  </section>
+                  <footer class="modal-card-foot">
+                    <button class="button is-success" (click)="updateCurrentCard()">Save changes</button>
+                    <button class="button" (click)="closeUpdateCardModal()">Cancel</button>
+                    <button class="button is-danger" (click)="confirmDelete()">Delete</button>
+                    <!--            Confirm-->
+                    <div class="modal-confirm-delete" id="modal-confirm-delete">
+                      Are you sure ?
+                      <button class="button is-danger" (click)="deleteCard()">Delete</button>
+                      <button class="button" (click)="showUpdateCardModal(card)">Cancel</button>
+                    </div>
+                  </footer>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="board-columns-add" *ngIf="canEdit">
@@ -64,49 +131,19 @@
                 <input class="input add-column-input" type="text" formControlName="title" style="position: revert"
                        placeholder="Enter title column..." maxlength="512">
                 <div class="button-create-column">
-                  <button style="position: revert" [disabled]="columnForm.invalid" class="button is-primary is-light" type="submit">Add column
+                  <button style="position: revert" [disabled]="columnForm.invalid" class="button is-primary is-light"
+                          type="submit">Add column
                   </button>
                 </div>
               </form>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 </div>
 
-<!--Modal update card-->
-<div id="modal-update-card" class="modal">
-  <div class="modal-background"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
-      <input class="input modal-card-title" type="text" placeholder="Title" [(ngModel)]="selectedCard.title">
-    </header>
-    <section class="modal-card-body">
-      <div class="model-card-body-content">
-        <input class="input modal-card-content" type="text" placeholder="Content..." [(ngModel)]="selectedCard.content">
-      </div>
-      <div class="model-card-body-upload-file">
-        <div class="file">
-          <label class="file-label">
-            <input class="file-input" type="file" name="resume">
-            <span class="file-cta">
-      <span class="file-icon">
-        <i class="fas fa-upload"></i>
-      </span>
-      <span class="file-label">
-        Attachment
-      </span>
-    </span>
-          </label>
-        </div>
-      </div>
-    </section>
-    <footer class="modal-card-foot">
-      <button class="button is-success" (click)="updateCurrentCard()">Save changes</button>
-      <button class="button" (click)="closeUpdateModal()">Cancel</button>
-    </footer>
-  </div>
-</div>
+
+
+

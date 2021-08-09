@@ -1,6 +1,9 @@
+import {Member} from "./member";
+import {Card} from "./card";
+
 export interface Attachment {
   id?: number;
-  member?: any;
+  member?: Member;
   source?: string;
-  card?: any;
+  card?: Card;
 }

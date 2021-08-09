@@ -5,8 +5,6 @@ import {TrelloHomeComponent} from "./trello-home/trello-home.component";
 import {WorkspaceBoardComponent} from "./workspace/workspace-board/workspace-board.component";
 import {WorkspaceMemberComponent} from "./workspace/workspace-member/workspace-member.component";
 
-import {UserInformationComponent} from "./user-information/user-information.component";
-
 const routes: Routes = [
   {
     path: '',
@@ -23,10 +21,6 @@ const routes: Routes = [
   {
     path: 'workspaces/:id/members',
     component: WorkspaceMemberComponent
-  },
-  {
-    path: 'information',
-    component: UserInformationComponent
   }
 ];
 

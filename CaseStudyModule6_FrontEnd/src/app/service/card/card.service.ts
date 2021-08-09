@@ -28,4 +28,8 @@ export class CardService {
   saveCard(card : Card): Observable<Card>{
     return this.httpClient.post<Card>(`${API_URL}cards`, card);
   }
+
+  deleteById(id: any): Observable<Card>{
+    return this.httpClient.delete<Card>(`${API_URL}cards/${id}`);
+  }
 }

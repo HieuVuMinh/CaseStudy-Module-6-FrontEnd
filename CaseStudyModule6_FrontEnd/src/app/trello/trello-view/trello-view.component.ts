@@ -1,19 +1,21 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Board} from "../../model/board";
 import {Column} from "../../model/column";
 import {Card} from "../../model/card";
 import {BoardService} from "../../service/board/board.service";
 import {ColumnService} from "../../service/column/column.service";
 import {CardService} from "../../service/card/card.service";
-import {map} from "rxjs/operators";
+import {finalize, map} from "rxjs/operators";
 import {DetailedMember} from "../../model/detailed-member";
 import {MemberService} from "../../service/member/member.service";
 import {FormControl, FormGroup, NgForm, Validators} from "@angular/forms";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
-import {User} from "../../model/user";
 import {UserToken} from "../../model/user-token";
+import {Attachment} from "../../model/attachment";
+import {AttachmentService} from "../../service/attachment/attachment.service";
+import {AngularFireStorage} from "@angular/fire/storage";
 
 @Component({
   selector: 'app-trello-view',
@@ -54,24 +56,32 @@ export class TrelloViewComponent implements OnInit {
     position: -1
   }
 
+  newAttachment: Attachment = {
+    id: -1,
+    source: ""
+  }
+
   isAdded = false;
 
-  // fileSrc: any | undefined = '';
-  // selectedFile: any | undefined = null;
-  // isSubmitted = false;
-  // attachmentList: Attachment [] = [];
+  selectedFile: any | undefined = null;
+  isSubmitted = false;
+
   titleForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
   })
 
   titleColumn: Column = {cards: [], id: -1, position: -1, title: ""}
+  fileSrc: any | undefined = null;
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
               private columnService: ColumnService,
               private cardService: CardService,
               private memberService: MemberService,
-              private authenticationService: AuthenticationService) {
+              private authenticationService: AuthenticationService,
+              private router: Router,
+              private attachmentService: AttachmentService,
+              private storage: AngularFireStorage) {
   }
 
   ngOnInit(): void {
@@ -201,19 +211,23 @@ export class TrelloViewComponent implements OnInit {
     this.boardService.updateBoard(this.boardId, this.board).subscribe(() => this.getPage());
   }
 
-  showUpdateModal(item: Card) {
-    this.selectedCard = item;
+  showUpdateCardModal(card: Card) {
+    // @ts-ignore
+    document.getElementById('modal-card-update').classList.remove('is-hidden');
+    // @ts-ignore
+    document.getElementById('modal-confirm-delete').classList.add('is-hidden');
+    this.selectedCard = card;
     // @ts-ignore
     document.getElementById('modal-update-card').classList.add('is-active');
   }
 
-  closeUpdateModal() {
+  closeUpdateCardModal() {
     // @ts-ignore
     document.getElementById('modal-update-card').classList.remove('is-active');
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
-    this.closeUpdateModal()
+    this.closeUpdateCardModal()
   }
 
   addColumn() {
@@ -233,7 +247,7 @@ export class TrelloViewComponent implements OnInit {
 
   onKeydown($event: KeyboardEvent, column: Column) {
     if ($event.key === "Enter") {
-      if (column.title != ''){
+      if (column.title != '') {
         this.saveChanges();
       } else {
         this.getPage();
@@ -243,39 +257,15 @@ export class TrelloViewComponent implements OnInit {
 
   updateCurrentCard() {
     this.saveChanges();
-    this.closeUpdateModal();
+    this.closeUpdateCardModal();
   }
-
-  // uploadFile() {
-  //   this.isSubmitted = true;
-  //   if (this.selectedFile != null) {
-  //     const filePath = `${this.selectedFile.name.split('.').slice(0, -1).join('.')}_${new Date().getTime()}`;
-  //     const fileRef = this.storage.ref(filePath);
-  //     this.storage.upload(filePath, this.selectedFile).snapshotChanges().pipe(
-  //       finalize(() => {
-  //         fileRef.getDownloadURL().subscribe(url => {
-  //           console.log("Url: " + url);
-  //           this.fileSrc = url;
-  //           console.log("This img after upload: " + this.fileSrc)
-  //           this.attachmentList.push(url);
-  //           this.userService.updateById(this.id, this.user).subscribe(() => {
-  //               alert("Success")
-  //             },
-  //             () => {
-  //               alert("Fail")
-  //             });
-  //         });
-  //       })).subscribe();
-  //   }
-  // }
-
 
   addNewCard(id: any, length: any, addNewCardForm: NgForm) {
     this.isAdded = true;
     this.newCard.position = length;
-    this.cardService.saveCard(this.newCard).subscribe( card =>{
+    this.cardService.saveCard(this.newCard).subscribe(card => {
       for (let column of this.board.columns) {
-        if(column.id == id && addNewCardForm.valid){
+        if (column.id == id && addNewCardForm.valid) {
           column.cards.push(card);
           this.saveChanges();
           this.newCard = {
@@ -294,7 +284,7 @@ export class TrelloViewComponent implements OnInit {
     let elementId = 'new-card-form-col-' + id;
     // @ts-ignore
     document.getElementById(elementId).classList.remove('is-hidden');
-    let buttonShowFormCreateId = 'show-form-create-new-card-'+id;
+    let buttonShowFormCreateId = 'show-form-create-new-card-' + id;
     // @ts-ignore
     document.getElementById(buttonShowFormCreateId).classList.add('is-hidden');
 
@@ -304,18 +294,90 @@ export class TrelloViewComponent implements OnInit {
     let elementId = 'new-card-form-col-' + id;
     // @ts-ignore
     document.getElementById(elementId).classList.add('is-hidden');
-    let buttonShowFormCreateId = 'show-form-create-new-card-'+id;
+    let buttonShowFormCreateId = 'show-form-create-new-card-' + id;
     // @ts-ignore
     document.getElementById(buttonShowFormCreateId).classList.remove('is-hidden');
   }
+
   closeColumn(id: any) {
     console.log(id);
-      for (let column of this.board.columns){
-        if (column.id == id){
-          let deleteId = this.board.columns.indexOf(column);
-          this.board.columns.splice(deleteId, 1);
-          this.saveChanges();
-        }
+    for (let column of this.board.columns) {
+      if (column.id == id) {
+        let deleteId = this.board.columns.indexOf(column);
+        this.board.columns.splice(deleteId, 1);
+        this.saveChanges();
       }
+    }
+  }
+
+
+  confirmDelete() {
+    console.log(this.selectedCard.id);
+    // @ts-ignore
+    document.getElementById('modal-confirm-delete').classList.remove('is-hidden');
+  }
+
+  deleteCard() {
+    this.cardService.deleteById(this.selectedCard.id).subscribe(() => {
+      this.closeUpdateCardModal();
+      this.getPage();
+    });
+  }
+
+  uploadFile() {
+    this.isSubmitted = true;
+    let isMember = false;
+    for (let member of this.members) {
+      if (member.userId == this.currentUser.id) {
+        // @ts-ignore
+        this.newAttachment.member = member;
+        isMember = true;
+        this.newAttachment.card = this.selectedCard;
+        break;
+      }
+    }
+    if (isMember && this.selectedFile != null) {
+      const filePath = `${this.selectedFile.name.split('.').slice(0, -1).join('.')}_${new Date().getTime()}`;
+      const fileRef = this.storage.ref(filePath);
+      this.storage.upload(filePath, this.selectedFile).snapshotChanges().pipe(
+        finalize(() => {
+          fileRef.getDownloadURL().subscribe(url => {
+            this.fileSrc = url;
+            this.newAttachment.source = url;
+            this.attachmentService.addNewFile(this.newAttachment).subscribe(() => {
+                alert("Success");
+              },
+              () => {
+                alert("Fail")
+              });
+          });
+        })).subscribe();
+    }
+  }
+
+  showPreview(event: any) {
+    if (event.target.files && event.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => this.fileSrc = event.target.result;
+      reader.readAsDataURL(event.target.files[0]);
+      this.selectedFile = event.target.files[0];
+      if (this.selectedFile != null) {
+        const filePath = `${this.selectedFile.name.split('.').splice(0, -1).join('.')}_${new Date().getTime()}`;
+        const fileRef = this.storage.ref(filePath);
+        this.storage.upload(filePath, this.selectedFile).snapshotChanges().pipe(
+          finalize(() => {
+            fileRef.getDownloadURL().subscribe(url => {
+              this.fileSrc = url;
+            });
+          })).subscribe();
+      }
+    } else {
+      this.selectedFile = null;
+    }
+  }
+
+  showFormUploadFile() {
+    // @ts-ignore
+    document.getElementById('form-upload-file').classList.remove('is-hidden');
   }
 }
