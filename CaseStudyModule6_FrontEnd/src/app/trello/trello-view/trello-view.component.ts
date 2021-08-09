@@ -14,6 +14,9 @@ import {FormControl, FormGroup, NgForm, Validators} from "@angular/forms";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
 import {User} from "../../model/user";
 import {UserToken} from "../../model/user-token";
+import {UserService} from "../../service/user/user.service";
+import {CommentCard} from "../../model/commentCard";
+import {CommentCardService} from "../../service/comment/comment-card.service";
 
 @Component({
   selector: 'app-trello-view',
@@ -21,6 +24,7 @@ import {UserToken} from "../../model/user-token";
   styleUrls: ['./trello-view.component.scss']
 })
 export class TrelloViewComponent implements OnInit {
+  user: User = {};
 
   boardId = -1;
   board: Board = {
@@ -29,12 +33,16 @@ export class TrelloViewComponent implements OnInit {
     title: '',
     columns: []
   };
+
+  commentCard: CommentCard = {}
+
   previousColumn: Column = {
     cards: [],
     id: -1,
     position: -1,
     title: ""
   };
+  commentDto: CommentCard[] = [];
   cardsDto: Card[] = [];
   columnsDto: Column[] = [];
   members: DetailedMember[] = [];
@@ -42,6 +50,10 @@ export class TrelloViewComponent implements OnInit {
   columnBeforeAdd: Column[] = [];
   columnForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
+  })
+  commentForm: FormGroup = new FormGroup({
+    content: new FormControl(''),
+    cardId: new FormControl()
   })
   currentUser: UserToken = {};
   canEdit: boolean = false;
@@ -71,11 +83,26 @@ export class TrelloViewComponent implements OnInit {
               private columnService: ColumnService,
               private cardService: CardService,
               private memberService: MemberService,
+              private userService: UserService,
+              private commentCardService: CommentCardService,
               private authenticationService: AuthenticationService) {
+    this.authenticationService.currentUserSubject.subscribe(user => {
+      this.currentUser = user
+    });
   }
 
   ngOnInit(): void {
     this.getBoardIdByUrl();
+    if (this.currentUser) {
+      // @ts-ignore
+      this.getUserById(this.currentUser.id)
+    }
+  }
+
+  getUserById(id: number) {
+    this.userService.getUserById(id).subscribe(user => {
+      this.user = user;
+    })
   }
 
   getBoardIdByUrl() {
@@ -205,6 +232,7 @@ export class TrelloViewComponent implements OnInit {
     this.selectedCard = item;
     // @ts-ignore
     document.getElementById('modal-update-card').classList.add('is-active');
+    this.getAllCommentByCardId()
   }
 
   closeUpdateModal() {
@@ -214,6 +242,27 @@ export class TrelloViewComponent implements OnInit {
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     this.closeUpdateModal()
+  }
+
+  addComment() {
+    console.log(this.selectedCard)
+    let commentCard: CommentCard = {content: this.commentForm.value.content, card: this.selectedCard};
+    console.log(commentCard)
+    this.commentForm = new FormGroup({
+      content: new FormControl(''),
+      cardId: new FormControl()
+    });
+    this.commentCardService.save(commentCard).subscribe(() => {
+
+    })
+  }
+
+  getAllCommentByCardId() {
+    this.commentCardService.findAllByCardId(this.selectedCard.id).subscribe(comments => {
+      // @ts-ignore
+      this.commentDto = comments;
+      console.log(this.commentDto);
+    })
   }
 
   addColumn() {
@@ -233,7 +282,7 @@ export class TrelloViewComponent implements OnInit {
 
   onKeydown($event: KeyboardEvent, column: Column) {
     if ($event.key === "Enter") {
-      if (column.title != ''){
+      if (column.title != '') {
         this.saveChanges();
       } else {
         this.getPage();
@@ -273,9 +322,9 @@ export class TrelloViewComponent implements OnInit {
   addNewCard(id: any, length: any, addNewCardForm: NgForm) {
     this.isAdded = true;
     this.newCard.position = length;
-    this.cardService.saveCard(this.newCard).subscribe( card =>{
+    this.cardService.saveCard(this.newCard).subscribe(card => {
       for (let column of this.board.columns) {
-        if(column.id == id && addNewCardForm.valid){
+        if (column.id == id && addNewCardForm.valid) {
           column.cards.push(card);
           this.saveChanges();
           this.newCard = {
@@ -294,28 +343,38 @@ export class TrelloViewComponent implements OnInit {
     let elementId = 'new-card-form-col-' + id;
     // @ts-ignore
     document.getElementById(elementId).classList.remove('is-hidden');
-    let buttonShowFormCreateId = 'show-form-create-new-card-'+id;
+    let buttonShowFormCreateId = 'show-form-create-new-card-' + id;
     // @ts-ignore
     document.getElementById(buttonShowFormCreateId).classList.add('is-hidden');
-
   }
 
   hiddenInputAddNewCard(id: any) {
     let elementId = 'new-card-form-col-' + id;
     // @ts-ignore
     document.getElementById(elementId).classList.add('is-hidden');
-    let buttonShowFormCreateId = 'show-form-create-new-card-'+id;
+    let buttonShowFormCreateId = 'show-form-create-new-card-' + id;
     // @ts-ignore
     document.getElementById(buttonShowFormCreateId).classList.remove('is-hidden');
   }
+
   closeColumn(id: any) {
     console.log(id);
-      for (let column of this.board.columns){
-        if (column.id == id){
-          let deleteId = this.board.columns.indexOf(column);
-          this.board.columns.splice(deleteId, 1);
-          this.saveChanges();
-        }
+    for (let column of this.board.columns) {
+      if (column.id == id) {
+        let deleteId = this.board.columns.indexOf(column);
+        this.board.columns.splice(deleteId, 1);
+        this.saveChanges();
       }
+    }
+  }
+
+  displaySubmitCommentButton() {
+    // @ts-ignore
+    document.getElementById("submitComment-" + this.selectedCard.id).classList.remove('is-hidden')
+  }
+
+  showSubmitCommentButton() {
+    // @ts-ignore
+    document.getElementById("submitComment-" + this.selectedCard.id).classList.add('is-hidden')
   }
 }

@@ -18,10 +18,10 @@
               <i class="far fa-trash-alt"></i>
             </div>
             <div class="column-title" cdkDragHandle>
-                <input class="input title-column" type="text" style="border: none; position: revert"
-                       (keydown)="onKeydown($event, column)"
-                       [(ngModel)]="this.board.columns[i].title"
-                       value="{{column.title}}">
+              <input class="input title-column" type="text" style="border: none; position: revert"
+                     (keydown)="onKeydown($event, column)"
+                     [(ngModel)]="this.board.columns[i].title"
+                     value="{{column.title}}">
             </div>
             <!--            content-->
             <div class="tasks-container"
@@ -34,12 +34,14 @@
                 {{item.title}}
               </div>
               <div class="form-create-new-card is-hidden" id="new-card-form-col-{{column.id}}">
-                <form #showAddNewCardForm="ngForm" (ngSubmit)="addNewCard(column.id,column.cards?.length,showAddNewCardForm)">
+                <form #showAddNewCardForm="ngForm"
+                      (ngSubmit)="addNewCard(column.id,column.cards?.length,showAddNewCardForm)">
                   <input type="text" name="title" #addCard="ngModel" class="input" [(ngModel)]="newCard.title"
                          placeholder="Title..." minlength="4" required>
                   <td *ngIf="showAddNewCardForm.invalid && addCard.touched && isAdded">
                     <p class="notification is-danger is-light" *ngIf="addCard.errors?.required">Can not blank</p>
-                    <p class="notification is-danger is-light" *ngIf="addCard.errors?.minlength">At least 4 characters</p>
+                    <p class="notification is-danger is-light" *ngIf="addCard.errors?.minlength">At least 4
+                      characters</p>
                   </td>
                   <div class="button-option">
                     <button class="button add-new-card is-primary is-light" type="submit">
@@ -64,7 +66,8 @@
                 <input class="input add-column-input" type="text" formControlName="title" style="position: revert"
                        placeholder="Enter title column..." maxlength="512">
                 <div class="button-create-column">
-                  <button style="position: revert" [disabled]="columnForm.invalid" class="button is-primary is-light" type="submit">Add column
+                  <button style="position: revert" [disabled]="columnForm.invalid" class="button is-primary is-light"
+                          type="submit">Add column
                   </button>
                 </div>
               </form>
@@ -79,34 +82,89 @@
 
 <!--Modal update card-->
 <div id="modal-update-card" class="modal">
-  <div class="modal-background"></div>
+  <div class="modal-background" (click)="showSubmitCommentButton()"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <input class="input modal-card-title" type="text" placeholder="Title" [(ngModel)]="selectedCard.title">
     </header>
     <section class="modal-card-body">
+      <!--        content-->
       <div class="model-card-body-content">
         <input class="input modal-card-content" type="text" placeholder="Content..." [(ngModel)]="selectedCard.content">
       </div>
-      <div class="model-card-body-upload-file">
-        <div class="file">
-          <label class="file-label">
-            <input class="file-input" type="file" name="resume">
-            <span class="file-cta">
-      <span class="file-icon">
-        <i class="fas fa-upload"></i>
-      </span>
-      <span class="file-label">
-        Attachment
-      </span>
-    </span>
-          </label>
-        </div>
+      <!--        Comment-->
+      <div class="model-card-body-content">
+        <article class="media">
+          <figure class="media-left">
+            <img src="{{user.image}}" class="user-img img-circle"/>
+          </figure>
+
+          <form [formGroup]="commentForm" (ngSubmit)="addComment()">
+            <div class="media-content">
+              <div class="field">
+                <p class="control">
+                  <textarea (click)="displaySubmitCommentButton()" class="textarea" formControlName="content"
+                            placeholder="Add a comment..."></textarea>
+                </p>
+              </div>
+              <nav class="level">
+                <div class="level-left">
+                  <div class="level-item">
+                    <button class="button is-primary is-light submitComment is-hidden"
+                            id="submitComment-{{this.selectedCard.id}}" type="submit">Submit
+                    </button>
+                  </div>
+                </div>
+              </nav>
+            </div>
+          </form>
+        </article>
       </div>
+      <!--      comment body-->
+      <span *ngFor="let comment of commentDto">
+        <div class="model-card-body-content comment-body">
+        <article class="media media-comment-body">
+          <figure class="media-left">
+            <img src="{{user.image}}" class="user-img img-circle"/>
+          </figure>
+          <div class="media-content">
+            <div class="content">
+              <p>
+                <strong>{{user.username}}</strong> <small>@{{user.nickname}}</small>
+                {{comment.content}}
+              </p>
+            </div>
+          </div>
+          <div class="media-right">
+            <button class="delete"></button>
+          </div>
+        </article>
+      </div>
+      </span>
+
+
+      <!--upload file-->
+<!--      <div class="model-card-body-upload-file">-->
+<!--        <div class="file">-->
+<!--          <label class="file-label">-->
+<!--            <input class="file-input" type="file" name="resume">-->
+<!--            <span class="file-cta">-->
+<!--            <span class="file-icon">-->
+<!--              <i class="fas fa-upload"></i>-->
+<!--            </span>-->
+<!--            <span class="file-label">-->
+<!--              Attachment-->
+<!--            </span>-->
+<!--            </span>-->
+<!--          </label>-->
+<!--        </div>-->
+
+<!--      </div>-->
+<!--      end upload file-->
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-success" (click)="updateCurrentCard()">Save changes</button>
-      <button class="button" (click)="closeUpdateModal()">Cancel</button>
+      <button class="button is-primary is-light" (click)="updateCurrentCard()">Save changes</button>
+      <button class="button is-danger is-light" (click)="closeUpdateModal()">Cancel</button>
     </footer>
   </div>
 </div>

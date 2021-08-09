@@ -1,6 +1,7 @@
-body{
+body {
   overflow-y: auto;
 }
+
 .root {
   display: flex;
   flex-direction: column;
@@ -129,7 +130,6 @@ h1.app-name {
 }
 
 
-
 .board {
   display: flex;
   flex-direction: column;
@@ -244,14 +244,21 @@ h1.app-name {
 }
 
 .model-card-body-content {
+  display: flex;
   float: left;
-  width: 70%;
+  width: 79%;
   margin-right: 10px;
+  margin-bottom: 20px;
 }
 
 .model-card-body-upload-file {
-  float: left;
-  width: 25%;
+  float: right;
+  width: 19%;
+}
+
+.modal-card {
+  width: 800px;
+  height: 600px;
 }
 
 .modal-card-title {
@@ -275,7 +282,21 @@ h1.app-name {
 }
 
 .add-new-card {
-  margin-right: 10px  ;
+  margin-right: 10px;
+}
+
+.textarea {
+  max-height: 40em;
+  min-height: 4em;
+  width: 552px;
+}
+
+.comment-body {
+  margin-left: 50px;
+
+  .media-comment-body {
+    width: 550px;
+  }
 }
 
 
