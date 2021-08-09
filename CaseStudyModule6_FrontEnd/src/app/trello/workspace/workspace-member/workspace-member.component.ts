@@ -11,6 +11,8 @@ import {MemberWorkspaceService} from "../../../service/memberworkspace/member-wo
 import {MemberService} from "../../../service/member/member.service";
 import {Member} from "../../../model/member";
 
+declare var $: any;
+declare var Swal: any;
 @Component({
   selector: 'app-workspace-member',
   templateUrl: './workspace-member.component.html',
@@ -28,6 +30,7 @@ export class WorkspaceMemberComponent implements OnInit {
   roleUserInWorkspace: boolean = false;
   modalDelete = false;
   membersDto: Member[] = [];
+  listMemberWorkspace: MemberWorkspace[] = [];
   constructor(private workspaceService: WorkspaceService,
               private userService: UserService,
               private activatedRoute: ActivatedRoute,
@@ -52,6 +55,7 @@ export class WorkspaceMemberComponent implements OnInit {
     this.workspaceService.findById(id).subscribe(workspaces => {
       this.workspace = workspaces
       this.owner = workspaces.owner
+      this.listMemberWorkspace = this.workspace.members;
       this.checkRole()
     })
   }
@@ -85,7 +89,7 @@ export class WorkspaceMemberComponent implements OnInit {
     }
   }
 
-  public updateWorkspace() {
+  public addMemberWorkspace() {
     if (this.addUserList.length > 0) {
       for (let user of this.addUserList) {
         this.memberWorkspace = {
@@ -94,7 +98,13 @@ export class WorkspaceMemberComponent implements OnInit {
         }
         this.memberWorkspaceService.create(this.memberWorkspace).subscribe((memberWorkspace) => {
           this.workspace.members.push(memberWorkspace);
-          this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => this.addUserList = [])
+          this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Success',
+            showConfirmButton: false,
+            timer: 1000
+          }))
         })
       }
       for (let board of this.workspace.boards) {
@@ -172,5 +182,15 @@ export class WorkspaceMemberComponent implements OnInit {
   updateMember(member: MemberWorkspace, role: string){
     member.role = role;
     this.memberWorkspaceService.update(member.id, member).subscribe()
+  }
+
+  findMemberWorkspaceByKeyword(keyword: String){
+      if (keyword !=""){
+        this.memberWorkspaceService.findByKeyword(keyword, this.workspace.id).subscribe(memberWorkspace => {
+          this.listMemberWorkspace = memberWorkspace;
+        })
+      } else {
+        this.listMemberWorkspace = this.workspace.members;
+      }
   }
 }

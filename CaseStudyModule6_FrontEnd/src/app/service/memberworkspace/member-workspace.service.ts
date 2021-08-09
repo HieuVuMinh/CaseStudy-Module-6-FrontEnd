@@ -25,4 +25,7 @@ export class MemberWorkspaceService {
   delete(memberWorkspaces: MemberWorkspace[]):Observable<MemberWorkspace>{
     return this.http.post<MemberWorkspace>(`${environment.api_url}member-workspace/delete`,memberWorkspaces)
   }
+  findByKeyword(keyword: String, workspaceId: number): Observable<MemberWorkspace[]>{
+    return this.http.get<MemberWorkspace[]>(`${environment.api_url}member-workspace/search/${keyword}/${workspaceId}`);
+  }
 }
