@@ -125,8 +125,14 @@ export class WorkspaceMemberComponent implements OnInit {
   }
 
   public removeMembers(i: number) {
-    this.workspace.members.splice(i, 1)
+    let removeMemberBoard: MemberWorkspace[] = this.workspace.members.splice(i, 1)
     this.workspaceService.update(this.workspace.id,this.workspace).subscribe()
+    for (let board of this.workspace.boards) {
+      for (let member of removeMemberBoard) {
+          this.memberService.deleteMemberBoardWorkspace(board.id, member.user?.id).subscribe()
+      }
+    }
+    this.memberWorkspaceService.delete(removeMemberBoard).subscribe()
   }
 
   public showModal() {
@@ -140,9 +146,6 @@ export class WorkspaceMemberComponent implements OnInit {
   }
 
   checkRole() {
-    if (this.currentUser.id == this.workspace.owner?.id) {
-      this.roleUserInWorkspace = true
-    }
     for (let member of this.workspace.members) {
       if ((this.currentUser.id == member.user?.id && member.role == "Admin")) {
         this.roleUserInWorkspace = true
@@ -160,7 +163,7 @@ export class WorkspaceMemberComponent implements OnInit {
 
   deleteWorkspace(id: number) {
     this.workspaceService.delete(id).subscribe(() => {
-      this.router.navigateByUrl(`/trello/workspaces`)
+      this.router.navigateByUrl(`/trello`)
     })
   }
 

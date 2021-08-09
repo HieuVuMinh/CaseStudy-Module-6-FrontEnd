@@ -22,4 +22,7 @@ export class MemberWorkspaceService {
   create(memberWorkspace: MemberWorkspace):Observable<MemberWorkspace>{
     return this.http.post<MemberWorkspace>(`${environment.api_url}member-workspace`, memberWorkspace)
   }
+  delete(memberWorkspaces: MemberWorkspace[]):Observable<MemberWorkspace>{
+    return this.http.post<MemberWorkspace>(`${environment.api_url}member-workspace/delete`,memberWorkspaces)
+  }
 }
