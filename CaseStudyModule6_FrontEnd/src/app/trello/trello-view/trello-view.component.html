@@ -263,21 +263,6 @@
     </footer>
   </div>
 </div>
-<div class="board-columns-add" *ngIf="canEdit">
-  <div class="board-column" style="margin-left: 0px">
-    <div class="column-title">
-      <form [formGroup]="columnForm" (ngSubmit)="addColumn()">
-        <input class="input add-column-input" type="text" formControlName="title" style="position: revert"
-               placeholder="Enter title column..." maxlength="512">
-        <div class="button-create-column">
-          <button style="position: revert" [disabled]="columnForm.invalid" class="button is-primary is-light"
-                  type="submit">Add column
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 <!--delete Comment modal-->
 <div class="modal" id="deleteModal">
   <div class="modal-background"></div>
