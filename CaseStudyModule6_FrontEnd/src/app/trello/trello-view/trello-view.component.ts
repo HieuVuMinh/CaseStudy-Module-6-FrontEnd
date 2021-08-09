@@ -14,14 +14,14 @@ import {FormControl, FormGroup, NgForm, Validators} from "@angular/forms";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
 import {UserToken} from "../../model/user-token";
 import {Attachment} from "../../model/attachment";
-import {AttachmentService} from "../../service/attachment/attachment.service";
 import {AngularFireStorage} from "@angular/fire/storage";
-import {Tag} from "../../model/tag";
-import {TagService} from "../../service/tag/tag.service";
 import {UserService} from "../../service/user/user.service";
-import {CommentCard} from "../../model/commentCard";
-import {CommentCardService} from "../../service/comment/comment-card.service";
 import {Member} from "../../model/member";
+import {CommentCard} from "../../model/commentCard";
+import {AttachmentService} from "../../service/attachment/attachment.service";
+import {TagService} from "../../service/tag/tag.service";
+import {CommentCardService} from "../../service/comment/comment-card.service";
+import {Tag} from "../../model/tag";
 
 @Component({
   selector: 'app-trello-view',
@@ -296,17 +296,6 @@ export class TrelloViewComponent implements OnInit {
     document.getElementById("deleteModal").classList.remove("is-active")
   }
 
-  // closeColumn(id: any) {
-  //   console.log(id);
-  //   for (let column of this.board.columns) {
-  //     if (column.id == id) {
-  //       let deleteId = this.board.columns.indexOf(column);
-  //       this.board.columns.splice(deleteId, 1);
-  //       this.saveChanges();
-  //     }
-  //   }
-  // }
-
   addColumn() {
     if (this.columnForm.valid) {
       // @ts-ignore
@@ -533,31 +522,12 @@ export class TrelloViewComponent implements OnInit {
         break;
       }
     }
-    // if (isValid) {
-    //   let memberDto: Member = {
-    //     // @ts-ignore
-    //     board: {id: member.boardId},
-    //     canEdit: member.canEdit,
-    //     id: member.id,
-    //     user: {id: member.userId, username: member.username}
-    //   };
-    //   // @ts-ignore
-    //   this.selectedCard.members.push(memberDto);
-    //   console.log(this.board);
-    //   console.log(member);
-    //   this.saveChanges();
-    // }
   }
 
-
-  confirmDelete() {
-    console.log(this.selectedCard.id);
-    // @ts-ignore
-    document.getElementById('modal-confirm-delete').classList.remove('is-hidden');
-  }
 
   deleteCard() {
     this.cardService.deleteById(this.selectedCard.id).subscribe(() => {
+      this.hiddenDeleteConfirm();
       this.closeModalUpdateCard();
       this.getPage();
     });
@@ -618,5 +588,16 @@ export class TrelloViewComponent implements OnInit {
   showFormUploadFile() {
     // @ts-ignore
     document.getElementById('form-upload-file').classList.remove('is-hidden');
+  }
+
+  hiddenDeleteConfirm() {
+    // @ts-ignore
+    document.getElementById('delete-card-modal').classList.remove('is-active');
+  }
+
+  showDeleteCardModal() {
+    // @ts-ignore
+    document.getElementById('delete-card-modal').classList.add('is-active');
+    // this.closeModalUpdateCard();
   }
 }

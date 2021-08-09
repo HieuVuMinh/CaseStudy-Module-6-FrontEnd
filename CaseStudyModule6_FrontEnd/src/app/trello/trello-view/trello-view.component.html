@@ -163,33 +163,6 @@
               </article>
             </div>
           </span>
-          <!--          Upload file-->
-          <div class="content">
-            <form #uploadFileCard="ngForm" (ngSubmit)="uploadFile()">
-              <div class="update-info">
-                <div class="level options">
-                  <div class="checkbox level-left">
-                    <tr>
-                      <span class="tag is-info">Image</span>
-                      <div class="file has-name">
-                        <label class="file-label">
-                          <input class="file-input" type="file" (change)="showPreview($event)">
-                          <span class="file-cta">
-                                        <span class="file-icon">
-                                          <i class="fas fa-upload"></i>
-                                        </span>
-                                        <span class="file-label" (change)="showPreview($event)">
-                                          Choose a file…
-                                        </span>
-                                      </span>
-                        </label>
-                      </div>
-                  </div>
-                </div>
-              </div>
-              <button class="button is-success is-light">Update</button>
-            </form>
-          </div>
         </div>
         <div class="column is-one-quarter">
           <div class="member-section">
@@ -254,12 +227,35 @@
               <button *ngIf="newTagName.invalid" class="button is-info is-light is-small" disabled>Add tag</button>
             </div>
           </div>
+          <!--          Upload file-->
+          <div class="content">
+            <form #uploadFileCard="ngForm" (ngSubmit)="uploadFile()">
+              <div class="update-info">
+                <div class="level options">
+                  <div class="checkbox level-left">
+                    <div class="file has-name">
+                      <label class="file-label">
+                        <input class="file-input" type="file" (change)="showPreview($event)">
+                        <span class="file-cta">
+                                        <span class="file-label" (change)="showPreview($event)">
+                                          Upload file
+                                        </span>
+                                      </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="button is-success is-light">Update</button>
+            </form>
+          </div>
         </div>
       </div>
     </section>
     <footer class="modal-card-foot">
       <button class="button is-success" (click)="updateCurrentCard()">Save changes</button>
       <button class="button" (click)="closeModalUpdateCard()">Cancel</button>
+      <button class="button is-danger" (click)="showDeleteCardModal()">Delete</button>
     </footer>
   </div>
 </div>
@@ -290,8 +286,26 @@
       Do you want to delete your comment?
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-danger is-light" (click)="deleteComment()">Delete</button>
+      <button class="button is-danger is-light" (click)="showDeleteCommentModal(commentId)">Delete</button>
       <button class="button is-light" (click)="closeDeleteCommentModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+<!--  Modal delete card-->
+<div class="modal" id="delete-card-modal">
+  <div class="modal-background"></div>
+  <div class="modal-card" style="width: 500px; height: 215px;">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Delete</p>
+      <button class="delete" aria-label="close" (click)="hiddenDeleteConfirm()"></button>
+    </header>
+    <section class="modal-card-body">
+      Are you sure ???
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-danger is-light" (click)="deleteCard()">Delete</button>
+      <button class="button is-light" (click)="hiddenDeleteConfirm()">Cancel</button>
     </footer>
   </div>
 </div>

@@ -31,18 +31,6 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  // ngOnInit(): void {
-  //   if (this.currentUser) {
-  //     // @ts-ignore
-  //     this.getUserById(this.currentUser.id)
-  //   }
-  // }
-  //
-  // getUserById(id: number) {
-  //   this.userService.getUserById(id).subscribe(user => {
-  //     this.user = user;
-  //   })
-  // }
 
   ngOnInit(): void {
     this.id = this.authenticationService.getCurrentUserValue().id;
@@ -54,7 +42,6 @@ export class NavbarComponent implements OnInit {
     this.userService.getUserById(this.id).subscribe(user => {
       this.user = user;
       this.imgSrc = this.user.image;
-      console.log("This imgSrc onInit: " + this.imgSrc)
     })
   }
 
@@ -68,7 +55,10 @@ export class NavbarComponent implements OnInit {
           fileRef.getDownloadURL().subscribe(url => {
             this.imgSrc = url;
             this.user.image = url;
+            console.log("This.user.image: "+this.user.image);
             this.userService.updateById(this.id, this.user).subscribe(() => {
+                console.log("This.id : "+this.id);
+                console.log("This.user: "+this.user);
                 alert("Success");
                 this.closeModalUpdate();
               },
@@ -93,6 +83,7 @@ export class NavbarComponent implements OnInit {
           finalize(() => {
             fileRef.getDownloadURL().subscribe(url => {
               this.imgSrc = url;
+              console.log("ImgSrc : "+this.imgSrc);
             });
           })).subscribe();
       }
@@ -100,6 +91,7 @@ export class NavbarComponent implements OnInit {
       this.selectedImage = null;
     }
   }
+
 
   logout() {
     this.authenticationService.logout();
