@@ -12,7 +12,6 @@ import {DetailedMember} from "../../model/detailed-member";
 import {MemberService} from "../../service/member/member.service";
 import {FormControl, FormGroup, NgForm, Validators} from "@angular/forms";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
-import {User} from "../../model/user";
 import {UserToken} from "../../model/user-token";
 import {Tag} from "../../model/tag";
 import {TagService} from "../../service/tag/tag.service";
@@ -41,7 +40,6 @@ export class TrelloViewComponent implements OnInit {
   columnsDto: Column[] = [];
   members: DetailedMember[] = [];
   selectedCard: Card = {content: "", id: -1, position: -1, title: ""};
-  columnBeforeAdd: Column[] = [];
   columnForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
   })
@@ -432,5 +430,29 @@ export class TrelloViewComponent implements OnInit {
       }
     }
     this.saveChanges();
+  }
+
+  toggleTagForm() {
+    let tagFormEle = document.getElementById('tag-form');
+    // @ts-ignore
+    if (tagFormEle.classList.contains('is-hidden')) {
+      // @ts-ignore
+      tagFormEle.classList.remove('is-hidden');
+    } else {
+      // @ts-ignore
+      tagFormEle.classList.add('is-hidden');
+    }
+  }
+
+  toggleMemberForm() {
+    let memberFormEle = document.getElementById('member-form');
+    // @ts-ignore
+    if (memberFormEle.classList.contains('is-hidden')) {
+      // @ts-ignore
+      memberFormEle.classList.remove('is-hidden');
+    } else {
+      // @ts-ignore
+      memberFormEle.classList.add('is-hidden');
+    }
   }
 }
