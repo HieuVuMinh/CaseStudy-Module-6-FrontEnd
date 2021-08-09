@@ -17,6 +17,7 @@ import {UserToken} from "../../model/user-token";
 import {UserService} from "../../service/user/user.service";
 import {CommentCard} from "../../model/commentCard";
 import {CommentCardService} from "../../service/comment/comment-card.service";
+import {Member} from "../../model/member";
 
 @Component({
   selector: 'app-trello-view',
@@ -246,12 +247,18 @@ export class TrelloViewComponent implements OnInit {
   }
 
   addComment() {
-    console.log(this.selectedCard)
-    let commentCard: CommentCard = {content: this.commentForm.value.content, card: this.selectedCard};
+    let member: DetailedMember = {boardId: 0, canEdit: false, id: 0, userId: 0, username: ""}
+    for (let m of this.members) {
+      if (m.userId == this.currentUser.id){
+        member = m;
+      }
+    }
+    // @ts-ignore
+    let memberDto: Member = {board: {id: member.id}, canEdit: member.canEdit, id: member.id, user: {id: member.userId}}
+    let commentCard: CommentCard = {content: this.commentForm.value.content, card: this.selectedCard, member: memberDto};
     console.log(commentCard)
     this.commentForm = new FormGroup({
-      content: new FormControl(''),
-      cardId: new FormControl()
+      content: new FormControl('')
     });
     this.commentCardService.save(commentCard).subscribe(() => {
       this.getAllCommentByCardId();
@@ -262,6 +269,8 @@ export class TrelloViewComponent implements OnInit {
     this.commentCardService.findAllByCardId(this.selectedCard.id).subscribe(comments => {
       // @ts-ignore
       this.commentDto = comments;
+      console.log(this.commentDto)
+      console.log(this.members)
     })
   }
 

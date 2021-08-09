@@ -104,7 +104,8 @@
               <div class="field">
                 <p class="control">
                   <textarea (click)="displaySubmitCommentButton()" class="textarea" formControlName="content"
-                            placeholder="Add a comment..."></textarea>
+                            placeholder="Add a comment...">
+                  </textarea>
                 </p>
               </div>
               <nav class="level">
@@ -125,12 +126,12 @@
         <div class="model-card-body-content comment-body">
         <article class="media media-comment-body">
           <figure class="media-left">
-            <img src="{{user.image}}" class="user-img img-circle"/>
+            <img src="{{comment.member?.user?.image}}" class="user-img img-circle"/>
           </figure>
           <div class="media-content">
             <div class="content">
               <p>
-                <strong>{{user.username}}</strong> <small>@{{user.nickname}}</small> <br/>
+                <strong>{{comment.member?.user?.username}}</strong> <small>@{{comment.member?.user?.nickname}}</small> <br/>
                 {{comment.content}}
               </p>
             </div>
