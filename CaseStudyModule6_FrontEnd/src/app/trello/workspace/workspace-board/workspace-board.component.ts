@@ -148,6 +148,8 @@ export class WorkspaceBoardComponent implements OnInit {
   }
 
   deleteWorkspace(id: number) {
+    let board: Board[] = this.workspace.boards;
+    this.boardService.deleteAllByWorkspace(board).subscribe()
     this.workspaceService.delete(id).subscribe(() => this.router.navigateByUrl(`/trello`))
   }
 }
