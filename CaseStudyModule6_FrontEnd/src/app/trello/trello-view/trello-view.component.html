@@ -31,10 +31,11 @@
                  [cdkDropListData]="column.cards"
                  (cdkDropListDropped)="dropCard($event)">
               <div class="task" *ngFor="let item of column.cards" cdkDrag (click)="showUpdateModal(item)">
-                <span>
-                  <span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
-                </span>
-                {{item.title}}
+                <ul>
+                  <li><span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
+                  </li>
+                  <li><span style="padding-left: 5px">{{item.title}}</span></li>
+                </ul>
               </div>
               <div class="form-create-new-card is-hidden" id="new-card-form-col-{{column.id}}">
                 <form #showAddNewCardForm="ngForm"
@@ -91,18 +92,21 @@
       <input class="input modal-card-title" type="text" placeholder="Title" [(ngModel)]="selectedCard.title">
     </header>
     <section class="modal-card-body">
-      <div>
+      <div class="columns">
+        <div class="column">
+          <div>
         <span *ngFor="let tag of selectedCard.tags" class="tag is-light" [ngClass]="tag.color"
               (click)="removeTagFromCard(tag)">{{tag.name}}</span>
-      </div>
-      <div class="model-card-body-content">
-        <input class="input modal-card-content" type="text" placeholder="Content..." [(ngModel)]="selectedCard.content">
-      </div>
-      <div class="model-card-body-upload-file">
-        <div class="file">
-          <label class="file-label">
-            <input class="file-input" type="file" name="resume">
-            <span class="file-cta">
+          </div>
+          <div class="model-card-body-content">
+            <input class="input modal-card-content" type="text" placeholder="Content..."
+                   [(ngModel)]="selectedCard.content">
+          </div>
+          <div class="model-card-body-upload-file">
+            <div class="file">
+              <label class="file-label">
+                <input class="file-input" type="file" name="resume">
+                <span class="file-cta">
               <span class="file-icon">
                 <i class="fas fa-upload"></i>
               </span>
@@ -110,33 +114,46 @@
                 Attachment
               </span>
             </span>
-          </label>
-        </div>
-      </div>
-      <div id="tag-section" class="">
-        <div>available tags:
-          <span *ngFor="let tag of this.board.tags" class="tag is-light" [ngClass]="tag.color"
-                (click)="addTagToCard(tag)">{{tag.name}}</span>
-        </div>
-        <input class="input is-info" [(ngModel)]="newTag.name" #newTagName="ngModel" required type="text"
-               placeholder="Tag name">
-        <div *ngIf="newTagName.invalid" class="alert">
-          <div *ngIf="newTagName.errors?.required">
-            Tag name is required.
+              </label>
+            </div>
           </div>
         </div>
-        <div class="select">
-          <select [(ngModel)]="newTag.color">
-            <option value="is-primary"><span class="tag is-primary is-light">Primary</span></option>
-            <option value="is-link"><span class="tag is-link is-light">Link</span></option>
-            <option value="is-info"><span class="tag is-info is-light">Info</span></option>
-            <option value="is-success"><span class="tag is-success is-light">Success</span></option>
-            <option value="is-warning"><span class="tag is-warning is-light">Warning</span></option>
-            <option value="is-danger"><span class="tag is-danger is-light">Danger</span></option>
-          </select>
+        <div class="column is-one-quarter">
+          <div id="tag-section" class="">
+            <span>Tags</span>
+            <ul>
+              <li *ngFor="let tag of this.board.tags"
+                  (mouseover)="showDeleteTagButton(tag.id)"
+                  (mouseout)="hideDeleteTagButton(tag.id)">
+                <span class="tag is-light" [ngClass]="tag.color"
+                      (click)="addTagToCard(tag)">{{tag.name}}
+                </span>
+                <a (click)="deleteTag(tag.id)"><span class="tag is-danger is-hidden" id="delete-btn-tag-{{tag.id}}"><i class="far fa-trash-alt"></i></span></a>
+              </li>
+            </ul>
+            <span style="font-size: small">Add new tag:</span>
+            <input class="input is-info is-small" [(ngModel)]="newTag.name" #newTagName="ngModel" required type="text"
+                   placeholder="Tag name">
+            <div *ngIf="newTagName.invalid" class="alert">
+              <div *ngIf="newTagName.errors?.required">
+                <span style="font-size: x-small">Tag name is required.</span>
+              </div>
+            </div>
+            <div class="select is-small">
+              <select [(ngModel)]="newTag.color">
+                <div class="is-primary"></div>
+                <option value="is-primary" style="color: lightgreen; background-color: rgb(235, 255, 252)">Light Green</option>
+                <option value="is-link" style="color: darkblue; background-color: rgb(239, 241, 250)">Dark Blue</option>
+                <option value="is-info" style="color: lightblue; background-color: rgb(239, 245, 251)">Light Blue</option>
+                <option value="is-success" style="color: darkgreen; background-color: rgb(239, 250, 245)">Dark Green</option>
+                <option value="is-warning" style="color: yellow; background-color: rgb(255, 250, 235)">Yellow</option>
+                <option value="is-danger" style="color: red; background-color: rgb(254, 236, 240)">Red</option>
+              </select>
+            </div>
+            <button *ngIf="newTagName.valid" class="button is-info is-light is-small" (click)="addNewTag()">Add tag</button>
+            <button *ngIf="newTagName.invalid" class="button is-info is-light is-small" disabled>Add tag</button>
+          </div>
         </div>
-        <button *ngIf="newTagName.valid" class="button is-info is-light" (click)="addNewTag()">Add tag</button>
-        <button *ngIf="newTagName.invalid" class="button is-info is-light" disabled>Add tag</button>
       </div>
     </section>
     <footer class="modal-card-foot">

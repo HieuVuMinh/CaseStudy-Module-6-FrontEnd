@@ -192,8 +192,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
 
   removeThisBoard() {
     if (this.board.id != null) {
-      this.boardService.deleteById(this.board.id).subscribe();
-      this.router.navigateByUrl('/trello');
+      this.boardService.deleteById(this.board.id).subscribe(() => this.router.navigateByUrl('/trello'));
     }
   }
 }

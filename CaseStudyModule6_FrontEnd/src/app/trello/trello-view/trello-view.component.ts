@@ -59,6 +59,7 @@ export class TrelloViewComponent implements OnInit {
     color: "is-primary",
     name: ""
   }
+  deleteTagId: number = -1;
 
   // fileSrc: any | undefined = '';
   // selectedFile: any | undefined = null;
@@ -203,7 +204,16 @@ export class TrelloViewComponent implements OnInit {
   }
 
   private updateBoard() {
-    this.boardService.updateBoard(this.boardId, this.board).subscribe(() => this.getPage());
+    this.boardService.updateBoard(this.boardId, this.board).subscribe(() => {
+      if (this.deleteTagId != -1) {
+        this.tagService.deleteById(this.deleteTagId).subscribe(()=> {
+          this.deleteTagId = -1;
+          this.getPage()
+        })
+      } else {
+        this.getPage();
+      }
+    });
   }
 
   showUpdateModal(item: Card) {
@@ -385,4 +395,42 @@ export class TrelloViewComponent implements OnInit {
   }
 
 
+  showDeleteTagButton(id: any) {
+    // @ts-ignore
+    document.getElementById('delete-btn-tag-' + id).classList.remove('is-hidden');
+  }
+
+  hideDeleteTagButton(id: any) {
+    // @ts-ignore
+    document.getElementById('delete-btn-tag-' + id).classList.add('is-hidden');
+  }
+
+  deleteTag(id: any) {
+    this.deleteTagId = id;
+    // delete tag from cards
+    for (let column of this.board.columns) {
+      for (let card of column.cards) {
+        // @ts-ignore
+        for (let tag of card.tags) {
+          if (tag.id == id) {
+            // @ts-ignore
+            let deleteIndex = card.tags.indexOf(tag);
+            // @ts-ignore
+            card.tags.splice(deleteIndex, 1);
+          }
+        }
+      }
+    }
+    // delete tag from board
+    // @ts-ignore
+    for (let tag of this.board.tags) {
+      if (tag.id == id) {
+        // @ts-ignore
+        let deleteIndex = this.board.tags.indexOf(tag);
+        // @ts-ignore
+        this.board.tags.splice(deleteIndex, 1);
+      }
+    }
+    this.saveChanges();
+  }
 }
