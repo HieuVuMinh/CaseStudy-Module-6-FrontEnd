@@ -31,10 +31,10 @@
                  [cdkDropListData]="column.cards"
                  (cdkDropListDropped)="dropCard($event)">
               <div class="task" *ngFor="let item of column.cards" cdkDrag (click)="showUpdateModal(item)">
-                <span>
-                  <span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
-                </span>
-                {{item.title}}
+                <ul>
+                  <li><span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span></li>
+                  <li><span style="padding-left: 5px">{{item.title}}</span></li>
+                </ul>
               </div>
               <div class="form-create-new-card is-hidden" id="new-card-form-col-{{column.id}}">
                 <form #showAddNewCardForm="ngForm"
