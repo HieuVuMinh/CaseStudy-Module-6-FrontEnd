@@ -110,6 +110,7 @@ export class WorkspaceMemberComponent implements OnInit {
           this.membersDto.push(newMember)
         }
         this.memberService.addNewMembers(this.membersDto).subscribe()
+        this.membersDto = [];
       }
     }
   }

@@ -13,7 +13,7 @@
           <span class="icon"><i class="fa fa-table"></i></span> Members
         </a>
       </li>
-      <li *ngIf="currentUser.id == workspace.owner.id" >
+      <li *ngIf="currentUser.id == owner.id" >
         <a style="color: red" (click)="showModalDelete()">
           <span style="color: red" class="icon"><i class="fas fa-trash-alt"></i></span> Delete
         </a>
