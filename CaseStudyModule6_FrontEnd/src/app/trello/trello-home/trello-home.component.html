@@ -8,12 +8,12 @@
         </a>
       </li>
       <li>
-        <a href="#" class="">
+        <a  class="">
           <span class="icon"><i class="fa fa-table"></i></span> Template
         </a>
       </li>
       <li>
-        <a href="#" class="">
+        <a class="" (click)="scrollTo(target)">
           <span class="icon"><i class="fas fa-briefcase"></i></span> Work Space
         </a>
       </li>
@@ -58,7 +58,7 @@
     </div>
 
     <!--    Work Space-->
-    <div class="title-board">
+    <div class="title-board" #target>
       <h1><i class="fas fa-briefcase"></i>Your Workspace</h1>
     </div>
     <div class="section-board">

@@ -1,4 +1,5 @@
-<section class="main-content columns is-fullheight">
+
+<section class="main-content columns is-fullheight" style="margin-top: 138px">
 
   <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile">
     <ul class="menu-list">
@@ -12,7 +13,7 @@
           <span class="icon"><i class="fa fa-table"></i></span> Members
         </a>
       </li>
-      <li *ngIf="currentUser.id == workspace.owner.id" >
+      <li *ngIf="currentUser.id == owner.id" >
         <a style="color: red" (click)="showModalDelete()">
           <span style="color: red" class="icon"><i class="fas fa-trash-alt"></i></span> Delete
         </a>
@@ -39,7 +40,7 @@
 
   <div class="container column is-10">
     <div class="title-board">
-      <h1> <i class="far fa-clipboard"></i>Boards</h1>
+      <h1><i class="far fa-clipboard"></i>Boards</h1>
     </div>
     <div class="section-board">
       <div class="card" (click)="showAddBoardModal()" *ngIf="roleUserInWorkspace">
@@ -49,10 +50,12 @@
       </div>
       <div class="card" *ngFor="let board of workspace.boards" routerLink="/trello/boards/{{board.id}}">
         <div class="card-header"><p class="card-header-title">{{board.title}}</p></div>
-        <div class="card-content"><div class="content">
-          id: {{board.id}}<br>
-          owner: {{board.owner.username}}
-        </div></div>
+        <div class="card-content">
+          <div class="content">
+            id: {{board.id}}<br>
+            owner: {{board.owner.username}}
+          </div>
+        </div>
       </div>
     </div>
 

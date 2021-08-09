@@ -1,14 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {RegisterService} from "../service/register/register.service";
-import {AbstractControl, FormControl, FormGroup, Validators} from "@angular/forms";
-
-export function comparePassword(c: AbstractControl) {
-  const v = c.value;
-  return (v.password === v.confirmPassword) ? null : {
-    passwordnotmatch: true
-  };
-}
+import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {UserService} from "../service/user/user.service";
+import firebase from "firebase";
+import {User} from "../model/user";
 
 @Component({
   selector: 'app-sign-up',
@@ -17,13 +13,19 @@ export function comparePassword(c: AbstractControl) {
 })
 export class SignUpComponent implements OnInit {
 
+  users: User[] = [];
+  userExistence = false;
+  emailExistence = false;
+
   registerForm: FormGroup = new FormGroup({
     username: new FormControl('', [Validators.required, Validators.minLength(6)]),
-    password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$')]),
+    password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,10}$')]),
+    email: new FormControl('', [Validators.required, Validators.pattern('^[a-z][a-z0-9_\\.]{3,32}@[a-z0-9]{2,}(\\.[a-z0-9]{2,4}){1,2}$')]),
     nickname: new FormControl('', Validators.required)
   })
 
   constructor(private registerService: RegisterService,
+              private userService: UserService,
               private router: Router) {
   }
 
@@ -37,26 +39,62 @@ export class SignUpComponent implements OnInit {
   register() {
     // console.log(this.registerForm.value);
     if (this.registerForm.valid) {
-      this.registerService.createUser(this.registerForm.value).subscribe(() => {
-        alert("Create success!")
-        this.registerForm = new FormGroup({
-          username: new FormControl('', [Validators.required, Validators.minLength(6)]),
-          password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$')]),
-          nickname: new FormControl('', Validators.required)
-        });
-      });
+      this.userService.getAllUser().subscribe(users => {
+        // @ts-ignore
+        this.users = users;
+        let nameExisted = false;
+        let emailExisted = false
+        for (let user of this.users) {
+          if (user.username == this.registerForm.value.username) {
+            this.userExistence = true;
+            nameExisted = true;
+            break;
+          } else if (user.email == this.registerForm.value.email) {
+            this.emailExistence = true;
+            emailExisted = true;
+            break;
+          }
+        }
+        if (!nameExisted && !emailExisted) {
+          this.registerService.createUser(this.registerForm.value).subscribe(() => {
+            alert("Create success!")
+            this.registerForm = new FormGroup({
+              username: new FormControl('', [Validators.required, Validators.minLength(6)]),
+              password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,10}$')]),
+              email: new FormControl('', [Validators.required, Validators.pattern('^[a-z][a-z0-9_\\.]{3,32}@[a-z0-9]{2,}(\\.[a-z0-9]{2,4}){1,2}$')]),
+              nickname: new FormControl('', Validators.required)
+            });
+            this.router.navigateByUrl('/login')
+          });
+        }
+      })
+
+
     } else {
-      alert("Fail!")
+      alert("Inform must be filed!")
     }
+  }
+
+  existence() {
+    this.userExistence = false;
+    this.emailExistence = false;
   }
 
   get username() {
     return this.registerForm.get('username');
   }
+
   get password() {
     return this.registerForm.get('password');
   }
+
   get nickname() {
     return this.registerForm.get('nickname');
   }
+
+  get email() {
+    return this.registerForm.get('email');
+  }
+
+
 }

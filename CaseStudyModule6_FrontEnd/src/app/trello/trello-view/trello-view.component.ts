@@ -16,6 +16,12 @@ import {UserToken} from "../../model/user-token";
 import {Attachment} from "../../model/attachment";
 import {AttachmentService} from "../../service/attachment/attachment.service";
 import {AngularFireStorage} from "@angular/fire/storage";
+import {Tag} from "../../model/tag";
+import {TagService} from "../../service/tag/tag.service";
+import {UserService} from "../../service/user/user.service";
+import {CommentCard} from "../../model/commentCard";
+import {CommentCardService} from "../../service/comment/comment-card.service";
+import {Member} from "../../model/member";
 
 @Component({
   selector: 'app-trello-view',
@@ -23,7 +29,6 @@ import {AngularFireStorage} from "@angular/fire/storage";
   styleUrls: ['./trello-view.component.scss']
 })
 export class TrelloViewComponent implements OnInit {
-
   boardId = -1;
   board: Board = {
     id: -1,
@@ -31,24 +36,31 @@ export class TrelloViewComponent implements OnInit {
     title: '',
     columns: []
   };
+
+  commentCard: CommentCard = {}
+
   previousColumn: Column = {
     cards: [],
     id: -1,
     position: -1,
     title: ""
   };
+  commentDto: CommentCard[] = [];
   cardsDto: Card[] = [];
   columnsDto: Column[] = [];
   members: DetailedMember[] = [];
+  commentId = -1;
   selectedCard: Card = {content: "", id: -1, position: -1, title: ""};
-  columnBeforeAdd: Column[] = [];
   columnForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
+  })
+  commentForm: FormGroup = new FormGroup({
+    content: new FormControl(''),
+    cardId: new FormControl()
   })
   currentUser: UserToken = {};
   canEdit: boolean = false;
   isInWorkspace: boolean = false;
-
   newCard: Card = {
     id: -1,
     title: "",
@@ -62,6 +74,11 @@ export class TrelloViewComponent implements OnInit {
   }
 
   isAdded = false;
+  newTag: Tag = {
+    color: "is-primary",
+    name: ""
+  }
+  deleteTagId: number = -1;
 
   selectedFile: any | undefined = null;
   isSubmitted = false;
@@ -81,7 +98,10 @@ export class TrelloViewComponent implements OnInit {
               private authenticationService: AuthenticationService,
               private router: Router,
               private attachmentService: AttachmentService,
-              private storage: AngularFireStorage) {
+              private storage: AngularFireStorage,
+              private tagService: TagService,
+              private userService: UserService,
+              private commentCardService: CommentCardService) {
   }
 
   ngOnInit(): void {
@@ -208,27 +228,84 @@ export class TrelloViewComponent implements OnInit {
   }
 
   private updateBoard() {
-    this.boardService.updateBoard(this.boardId, this.board).subscribe(() => this.getPage());
+    this.boardService.updateBoard(this.boardId, this.board).subscribe(() => {
+      if (this.deleteTagId != -1) {
+        this.tagService.deleteById(this.deleteTagId).subscribe(() => {
+          this.deleteTagId = -1;
+          this.getPage()
+        })
+      } else {
+        this.getPage();
+      }
+    });
   }
 
   showUpdateCardModal(card: Card) {
-    // @ts-ignore
-    document.getElementById('modal-card-update').classList.remove('is-hidden');
-    // @ts-ignore
-    document.getElementById('modal-confirm-delete').classList.add('is-hidden');
     this.selectedCard = card;
     // @ts-ignore
     document.getElementById('modal-update-card').classList.add('is-active');
+    this.getAllCommentByCardId()
   }
 
-  closeUpdateCardModal() {
+  closeModalUpdateCard() {
     // @ts-ignore
     document.getElementById('modal-update-card').classList.remove('is-active');
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
-    this.closeUpdateCardModal()
+    this.closeModalUpdateCard()
   }
+
+  addComment() {
+    console.log(this.selectedCard)
+    let commentCard: CommentCard = {content: this.commentForm.value.content, card: this.selectedCard};
+    console.log(commentCard)
+    this.commentForm = new FormGroup({
+      content: new FormControl(''),
+      cardId: new FormControl()
+    });
+    this.commentCardService.save(commentCard).subscribe(() => {
+      this.getAllCommentByCardId();
+    })
+  }
+
+  getAllCommentByCardId() {
+    this.commentCardService.findAllByCardId(this.selectedCard.id).subscribe(comments => {
+      // @ts-ignore
+      this.commentDto = comments;
+    })
+  }
+
+  showDeleteCommentModal(id: any) {
+    // @ts-ignore
+    document.getElementById("deleteModal").classList.add("is-active")
+    this.commentId = id;
+  }
+
+  deleteComment() {
+    this.commentCardService.deleteComment(this.commentId).subscribe(() => {
+        alert("Success!")
+        this.getAllCommentByCardId();
+        this.closeDeleteCommentModal()
+      }
+    )
+  }
+
+  closeDeleteCommentModal() {
+    // @ts-ignore
+    document.getElementById("deleteModal").classList.remove("is-active")
+  }
+
+  // closeColumn(id: any) {
+  //   console.log(id);
+  //   for (let column of this.board.columns) {
+  //     if (column.id == id) {
+  //       let deleteId = this.board.columns.indexOf(column);
+  //       this.board.columns.splice(deleteId, 1);
+  //       this.saveChanges();
+  //     }
+  //   }
+  // }
 
   addColumn() {
     if (this.columnForm.valid) {
@@ -257,7 +334,7 @@ export class TrelloViewComponent implements OnInit {
 
   updateCurrentCard() {
     this.saveChanges();
-    this.closeUpdateCardModal();
+    this.closeModalUpdateCard();
   }
 
   addNewCard(id: any, length: any, addNewCardForm: NgForm) {
@@ -287,7 +364,6 @@ export class TrelloViewComponent implements OnInit {
     let buttonShowFormCreateId = 'show-form-create-new-card-' + id;
     // @ts-ignore
     document.getElementById(buttonShowFormCreateId).classList.add('is-hidden');
-
   }
 
   hiddenInputAddNewCard(id: any) {
@@ -300,7 +376,6 @@ export class TrelloViewComponent implements OnInit {
   }
 
   closeColumn(id: any) {
-    console.log(id);
     for (let column of this.board.columns) {
       if (column.id == id) {
         let deleteId = this.board.columns.indexOf(column);
@@ -308,6 +383,170 @@ export class TrelloViewComponent implements OnInit {
         this.saveChanges();
       }
     }
+  }
+
+  addNewTag() {
+    this.tagService.add(this.newTag).subscribe(tag => {
+      this.newTag = tag;
+      this.board.tags?.push(this.newTag);
+      // for (let column of this.board.columns) {
+      //   for (let card of column.cards) {
+      //     if (card.id == this.selectedCard.id) {
+      //       card.tags?.push(this.newTag);
+      //     }
+      //   }
+      // }
+      this.saveChanges();
+      this.newTag = {
+        color: "is-primary",
+        name: ""
+      }
+    });
+  }
+
+  addTagToCard(tag: Tag) {
+    this.updateSelectedCard();
+    let isValid = true;
+    // @ts-ignore
+    for (let existingTag of this.selectedCard.tags) {
+      if (existingTag.id == tag.id) {
+        isValid = false;
+        break;
+      }
+    }
+    if (isValid) {
+      // @ts-ignore
+      this.selectedCard.tags.push(tag);
+    }
+    this.saveChanges();
+  }
+
+  removeTagFromCard(tag: Tag) {
+    this.updateSelectedCard()
+    // @ts-ignore
+    for (let existingTag of this.selectedCard.tags) {
+      if (existingTag.id == tag.id) {
+        // @ts-ignore
+        let deleteIndex = this.selectedCard.tags.indexOf(existingTag);
+        // @ts-ignore
+        this.selectedCard.tags.splice(deleteIndex, 1);
+      }
+    }
+    this.saveChanges();
+  }
+
+  private updateSelectedCard() {
+    for (let column of this.board.columns) {
+      for (let card of column.cards) {
+        if (card.id == this.selectedCard.id) {
+          this.selectedCard = card;
+        }
+      }
+    }
+  }
+
+
+  showDeleteTagButton(id: any) {
+    // @ts-ignore
+    document.getElementById('delete-btn-tag-' + id).classList.remove('is-hidden');
+  }
+
+  hideDeleteTagButton(id: any) {
+    // @ts-ignore
+    document.getElementById('delete-btn-tag-' + id).classList.add('is-hidden');
+  }
+
+  deleteTag(id: any) {
+    this.deleteTagId = id;
+    // delete tag from cards
+    for (let column of this.board.columns) {
+      for (let card of column.cards) {
+        // @ts-ignore
+        for (let tag of card.tags) {
+          if (tag.id == id) {
+            // @ts-ignore
+            let deleteIndex = card.tags.indexOf(tag);
+            // @ts-ignore
+            card.tags.splice(deleteIndex, 1);
+          }
+        }
+      }
+    }
+    // delete tag from board
+    // @ts-ignore
+    for (let tag of this.board.tags) {
+      if (tag.id == id) {
+        // @ts-ignore
+        let deleteIndex = this.board.tags.indexOf(tag);
+        // @ts-ignore
+        this.board.tags.splice(deleteIndex, 1);
+      }
+    }
+    this.saveChanges();
+  }
+
+  toggleTagForm() {
+    let tagFormEle = document.getElementById('tag-form');
+    // @ts-ignore
+    if (tagFormEle.classList.contains('is-hidden')) {
+      // @ts-ignore
+      tagFormEle.classList.remove('is-hidden');
+    } else {
+      // @ts-ignore
+      tagFormEle.classList.add('is-hidden');
+    }
+  }
+
+  toggleMemberForm() {
+    let memberFormEle = document.getElementById('member-form');
+    // @ts-ignore
+    if (memberFormEle.classList.contains('is-hidden')) {
+      // @ts-ignore
+      memberFormEle.classList.remove('is-hidden');
+    } else {
+      // @ts-ignore
+      memberFormEle.classList.add('is-hidden');
+    }
+  }
+
+  displaySubmitCommentButton() {
+    // @ts-ignore
+    document.getElementById("submitComment-" + this.selectedCard.id).classList.remove('is-hidden')
+  }
+
+  showSubmitCommentButton() {
+    // @ts-ignore
+    document.getElementById("submitComment-" + this.selectedCard.id).classList.add('is-hidden')
+  }
+
+  updateMembers(event: DetailedMember[]) {
+    this.members = event;
+  }
+
+  addMemberToCard(member: DetailedMember) {
+    this.updateSelectedCard();
+    let isValid: boolean = true;
+    // @ts-ignore
+    for (let existingMember of this.selectedCard.members) {
+      if (existingMember.id == member.userId) {
+        isValid = false;
+        break;
+      }
+    }
+    // if (isValid) {
+    //   let memberDto: Member = {
+    //     // @ts-ignore
+    //     board: {id: member.boardId},
+    //     canEdit: member.canEdit,
+    //     id: member.id,
+    //     user: {id: member.userId, username: member.username}
+    //   };
+    //   // @ts-ignore
+    //   this.selectedCard.members.push(memberDto);
+    //   console.log(this.board);
+    //   console.log(member);
+    //   this.saveChanges();
+    // }
   }
 
 
@@ -319,7 +558,7 @@ export class TrelloViewComponent implements OnInit {
 
   deleteCard() {
     this.cardService.deleteById(this.selectedCard.id).subscribe(() => {
-      this.closeUpdateCardModal();
+      this.closeModalUpdateCard();
       this.getPage();
     });
   }
