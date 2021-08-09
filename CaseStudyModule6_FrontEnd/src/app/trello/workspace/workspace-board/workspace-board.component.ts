@@ -86,6 +86,14 @@ export class WorkspaceBoardComponent implements OnInit {
         }
         this.membersDto.push(memberDto)
       }
+      let memberDto: Member = {
+        board: this.board,
+        canEdit: false,
+        user: {
+          id: this.workspace.owner?.id
+        }
+      }
+      this.membersDto.push(memberDto)
       this.addNewMembers();
       }
     )
@@ -132,7 +140,7 @@ export class WorkspaceBoardComponent implements OnInit {
 
   public updateWorkspace(board: Board) {
     this.workspace.boards.push(board)
-    this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => console.log("ok"))
+    this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => {})
 
   }
 

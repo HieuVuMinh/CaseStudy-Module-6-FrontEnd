@@ -44,7 +44,7 @@
               </header>
               <ul class="header__notify-list">
                 <li class="header__notify-item" *ngFor="let notification of notifications">
-                  <a  class="header__notify-link">
+                  <a  class="header__notify-link" routerLink="{{notification.url}}">
                     <img src="https://dizibrand.com/wp-content/uploads/2019/07/trello-la-gi-dizibrand-1.png" alt=""
                          class="header__notify-img">
                     <div class="header__notify-info">
