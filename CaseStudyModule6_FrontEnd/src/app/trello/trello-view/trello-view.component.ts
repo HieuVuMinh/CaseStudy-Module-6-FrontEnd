@@ -15,6 +15,9 @@ import {AuthenticationService} from "../../service/authentication/authentication
 import {UserToken} from "../../model/user-token";
 import {Tag} from "../../model/tag";
 import {TagService} from "../../service/tag/tag.service";
+import {UserService} from "../../service/user/user.service";
+import {CommentCard} from "../../model/commentCard";
+import {CommentCardService} from "../../service/comment/comment-card.service";
 
 @Component({
   selector: 'app-trello-view',
@@ -22,7 +25,6 @@ import {TagService} from "../../service/tag/tag.service";
   styleUrls: ['./trello-view.component.scss']
 })
 export class TrelloViewComponent implements OnInit {
-
   boardId = -1;
   board: Board = {
     id: -1,
@@ -30,18 +32,27 @@ export class TrelloViewComponent implements OnInit {
     title: '',
     columns: []
   };
+
+  commentCard: CommentCard = {}
+
   previousColumn: Column = {
     cards: [],
     id: -1,
     position: -1,
     title: ""
   };
+  commentDto: CommentCard[] = [];
   cardsDto: Card[] = [];
   columnsDto: Column[] = [];
   members: DetailedMember[] = [];
+  commentId = -1;
   selectedCard: Card = {content: "", id: -1, position: -1, title: ""};
   columnForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
+  })
+  commentForm: FormGroup = new FormGroup({
+    content: new FormControl(''),
+    cardId: new FormControl()
   })
   currentUser: UserToken = {};
   canEdit: boolean = false;
@@ -75,8 +86,10 @@ export class TrelloViewComponent implements OnInit {
               private cardService: CardService,
               private memberService: MemberService,
               private authenticationService: AuthenticationService,
-              private tagService: TagService) {
-  }
+              private tagService: TagService,
+              private userService: UserService,
+              private commentCardService: CommentCardService) {
+    }
 
   ngOnInit(): void {
     this.getBoardIdByUrl();
@@ -218,6 +231,7 @@ export class TrelloViewComponent implements OnInit {
     this.selectedCard = item;
     // @ts-ignore
     document.getElementById('modal-update-card').classList.add('is-active');
+    this.getAllCommentByCardId()
   }
 
   closeUpdateModal() {
@@ -228,6 +242,57 @@ export class TrelloViewComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     this.closeUpdateModal()
   }
+
+  addComment() {
+    console.log(this.selectedCard)
+    let commentCard: CommentCard = {content: this.commentForm.value.content, card: this.selectedCard};
+    console.log(commentCard)
+    this.commentForm = new FormGroup({
+      content: new FormControl(''),
+      cardId: new FormControl()
+    });
+    this.commentCardService.save(commentCard).subscribe(() => {
+      this.getAllCommentByCardId();
+    })
+  }
+
+  getAllCommentByCardId() {
+    this.commentCardService.findAllByCardId(this.selectedCard.id).subscribe(comments => {
+      // @ts-ignore
+      this.commentDto = comments;
+    })
+  }
+
+  showDeleteCommentModal(id: any) {
+    // @ts-ignore
+    document.getElementById("deleteModal").classList.add("is-active")
+    this.commentId = id;
+  }
+
+  deleteComment() {
+    this.commentCardService.deleteComment(this.commentId).subscribe(() => {
+        alert("Success!")
+        this.getAllCommentByCardId();
+        this.closeDeleteCommentModal()
+      }
+    )
+  }
+
+  closeDeleteCommentModal() {
+    // @ts-ignore
+    document.getElementById("deleteModal").classList.remove("is-active")
+  }
+
+  // closeColumn(id: any) {
+  //   console.log(id);
+  //   for (let column of this.board.columns) {
+  //     if (column.id == id) {
+  //       let deleteId = this.board.columns.indexOf(column);
+  //       this.board.columns.splice(deleteId, 1);
+  //       this.saveChanges();
+  //     }
+  //   }
+  // }
 
   addColumn() {
     if (this.columnForm.valid) {
@@ -310,7 +375,6 @@ export class TrelloViewComponent implements OnInit {
     let buttonShowFormCreateId = 'show-form-create-new-card-' + id;
     // @ts-ignore
     document.getElementById(buttonShowFormCreateId).classList.add('is-hidden');
-
   }
 
   hiddenInputAddNewCard(id: any) {
@@ -455,4 +519,15 @@ export class TrelloViewComponent implements OnInit {
       memberFormEle.classList.add('is-hidden');
     }
   }
+
+  displaySubmitCommentButton() {
+    // @ts-ignore
+    document.getElementById("submitComment-" + this.selectedCard.id).classList.remove('is-hidden')
+  }
+
+  showSubmitCommentButton() {
+    // @ts-ignore
+    document.getElementById("submitComment-" + this.selectedCard.id).classList.add('is-hidden')
+  }
+
 }

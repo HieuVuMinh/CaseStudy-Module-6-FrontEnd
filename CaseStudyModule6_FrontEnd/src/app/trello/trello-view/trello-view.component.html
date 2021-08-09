@@ -15,7 +15,7 @@
           <div cdkDragLockAxis="x" class="board-column"
                *ngFor="let column of board.columns; index as i" cdkDrag>
             <div class="window-close" (click)="closeColumn(column.id)">
-              <i class="far fa-window-close" disabled></i>
+              <i class="far fa-trash-alt"></i>
             </div>
             <div class="column-title" cdkDragHandle>
               <input class="input title-column" type="text" style="border: none; position: revert"
@@ -117,6 +117,54 @@
               </label>
             </div>
           </div>
+          <!--        Comment-->
+          <div class="model-card-body-content">
+            <article class="media">
+              <figure class="media-left">
+                <img [src]="currentUser.image" class="user-img img-circle"/>
+              </figure>
+              <form [formGroup]="commentForm" (ngSubmit)="addComment()">
+                <div class="media-content">
+                  <div class="field">
+                    <p class="control">
+                  <textarea (click)="displaySubmitCommentButton()" class="textarea" formControlName="content"
+                            placeholder="Add a comment..."></textarea>
+                    </p>
+                  </div>
+                  <nav class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <button class="button is-primary is-light submitComment is-hidden"
+                                id="submitComment-{{this.selectedCard.id}}" type="submit">Submit
+                        </button>
+                      </div>
+                    </div>
+                  </nav>
+                </div>
+              </form>
+            </article>
+          </div>
+          <!--      comment body-->
+          <span *ngFor="let comment of commentDto">
+        <div class="model-card-body-content comment-body">
+        <article class="media media-comment-body">
+          <figure class="media-left">
+            <img src="{{currentUser.image}}" class="user-img img-circle"/>
+          </figure>
+          <div class="media-content">
+            <div class="content">
+              <p>
+                <strong>{{currentUser.username}}</strong> <small>@{{currentUser.nickname}}</small> <br/>
+                {{comment.content}}
+              </p>
+            </div>
+          </div>
+          <div class="media-right button-delete" *ngIf="canEdit">
+            <button class="delete" (click)="showDeleteCommentModal(comment.id)"></button>
+          </div>
+        </article>
+      </div>
+      </span>
         </div>
         <div class="column is-one-quarter">
           <div class="member-section">
@@ -176,6 +224,23 @@
     <footer class="modal-card-foot">
       <button class="button is-success" (click)="updateCurrentCard()">Save changes</button>
       <button class="button" (click)="closeUpdateModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
+<!--delete Comment modal-->
+<div class="modal" id="deleteModal">
+  <div class="modal-background"></div>
+  <div class="modal-card" style="width: 500px; height: 215px;">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Delete</p>
+      <button class="delete" aria-label="close"  (click)="closeDeleteCommentModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      Do you want to delete your comment?
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-danger is-light" (click)="deleteComment()" >Delete</button>
+      <button class="button is-light" (click)="closeDeleteCommentModal()">Cancel</button>
     </footer>
   </div>
 </div>
