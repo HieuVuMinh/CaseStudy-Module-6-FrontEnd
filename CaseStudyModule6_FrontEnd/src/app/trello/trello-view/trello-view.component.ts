@@ -18,6 +18,7 @@ import {TagService} from "../../service/tag/tag.service";
 import {UserService} from "../../service/user/user.service";
 import {CommentCard} from "../../model/commentCard";
 import {CommentCardService} from "../../service/comment/comment-card.service";
+import {Member} from "../../model/member";
 
 @Component({
   selector: 'app-trello-view',
@@ -89,7 +90,7 @@ export class TrelloViewComponent implements OnInit {
               private tagService: TagService,
               private userService: UserService,
               private commentCardService: CommentCardService) {
-    }
+  }
 
   ngOnInit(): void {
     this.getBoardIdByUrl();
@@ -217,7 +218,7 @@ export class TrelloViewComponent implements OnInit {
   private updateBoard() {
     this.boardService.updateBoard(this.boardId, this.board).subscribe(() => {
       if (this.deleteTagId != -1) {
-        this.tagService.deleteById(this.deleteTagId).subscribe(()=> {
+        this.tagService.deleteById(this.deleteTagId).subscribe(() => {
           this.deleteTagId = -1;
           this.getPage()
         })
@@ -530,4 +531,33 @@ export class TrelloViewComponent implements OnInit {
     document.getElementById("submitComment-" + this.selectedCard.id).classList.add('is-hidden')
   }
 
+  updateMembers(event: DetailedMember[]) {
+    this.members = event;
+  }
+
+  addMemberToCard(member: DetailedMember) {
+    this.updateSelectedCard();
+    let isValid: boolean = true;
+    // @ts-ignore
+    for (let existingMember of this.selectedCard.members) {
+      if (existingMember.id == member.userId) {
+        isValid = false;
+        break;
+      }
+    }
+    // if (isValid) {
+    //   let memberDto: Member = {
+    //     // @ts-ignore
+    //     board: {id: member.boardId},
+    //     canEdit: member.canEdit,
+    //     id: member.id,
+    //     user: {id: member.userId, username: member.username}
+    //   };
+    //   // @ts-ignore
+    //   this.selectedCard.members.push(memberDto);
+    //   console.log(this.board);
+    //   console.log(member);
+    //   this.saveChanges();
+    // }
+  }
 }

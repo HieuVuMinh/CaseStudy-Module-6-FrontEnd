@@ -7,5 +7,5 @@ export interface Card {
   content: string;
   position: number;
   tags?: Tag[];
-  members?: Member;
+  members?: Member[];
 }

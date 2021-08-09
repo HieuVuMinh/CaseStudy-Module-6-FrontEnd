@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, Output} from '@angular/core';
 import {Board} from "../../model/board";
 import {DetailedMember} from "../../model/detailed-member";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
@@ -8,6 +8,7 @@ import {Member} from "../../model/member";
 import {MemberService} from "../../service/member/member.service";
 import {BoardService} from "../../service/board/board.service";
 import {Router} from "@angular/router";
+import { EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-navbar-board-header',
@@ -23,6 +24,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
   userSearch: string = ``;
   userResult: User[] = [];
   selectedMember: DetailedMember = {boardId: -1, canEdit: false, id: -1, userId: -1, username: ""};
+  @Output() updateMemberEvent = new EventEmitter<DetailedMember[]>();
 
   constructor(public authenticationService: AuthenticationService,
               private userService: UserService,
@@ -90,7 +92,10 @@ export class NavbarBoardHeaderComponent implements OnInit {
   }
 
   private getMembers() {
-    this.memberService.getMembersByBoardId(this.board.id).subscribe(members => this.members = members);
+    this.memberService.getMembersByBoardId(this.board.id).subscribe(members => {
+      this.members = members;
+      this.updateMemberEvent.emit(this.members);
+    });
   }
 
   showDetail(member: DetailedMember) {

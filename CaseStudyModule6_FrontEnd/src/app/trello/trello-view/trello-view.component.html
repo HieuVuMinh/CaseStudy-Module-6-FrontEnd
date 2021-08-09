@@ -1,7 +1,8 @@
 <app-navbar-board-header [board]="board"
                          [members]="members"
                          [canEdit]="canEdit"
-                         [isInWorkspace]="isInWorkspace"></app-navbar-board-header>
+                         [isInWorkspace]="isInWorkspace"
+                         (updateMemberEvent)="updateMembers($event)"></app-navbar-board-header>
 <!--main content-->
 <div class="root">
   <div class="board">
@@ -32,9 +33,9 @@
                  (cdkDropListDropped)="dropCard($event)">
               <div class="task" *ngFor="let item of column.cards" cdkDrag (click)="showUpdateModal(item)">
                 <ul>
-                  <li><span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
-                  </li>
+                  <li><span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span></li>
                   <li><span style="padding-left: 5px">{{item.title}}</span></li>
+                  <li><span *ngFor="let member of item.members" class="tag is-light">{{member.user.username}}</span></li>
                 </ul>
               </div>
               <div class="form-create-new-card is-hidden" id="new-card-form-col-{{column.id}}">
@@ -95,8 +96,19 @@
       <div class="columns">
         <div class="column">
           <div>
-        <span *ngFor="let tag of selectedCard.tags" class="tag is-light" [ngClass]="tag.color"
-              (click)="removeTagFromCard(tag)">{{tag.name}}</span>
+            <ul>
+              <li>
+                <span *ngFor="let tag of selectedCard.tags" class="tag is-light" [ngClass]="tag.color"
+                      (click)="removeTagFromCard(tag)">
+                  {{tag.name}}
+                </span>
+              </li>
+              <li>
+                <span *ngFor="let member of selectedCard.members" class="tag is-light">
+                  @{{member.user.username}}
+                </span>
+              </li>
+            </ul>
           </div>
           <div class="model-card-body-content">
             <input class="input modal-card-content" type="text" placeholder="Content..."
@@ -146,25 +158,25 @@
           </div>
           <!--      comment body-->
           <span *ngFor="let comment of commentDto">
-        <div class="model-card-body-content comment-body">
-        <article class="media media-comment-body">
-          <figure class="media-left">
-            <img src="{{currentUser.image}}" class="user-img img-circle"/>
-          </figure>
-          <div class="media-content">
-            <div class="content">
-              <p>
-                <strong>{{currentUser.username}}</strong> <small>@{{currentUser.nickname}}</small> <br/>
-                {{comment.content}}
-              </p>
+            <div class="model-card-body-content comment-body">
+              <article class="media media-comment-body">
+                <figure class="media-left">
+                  <img src="{{currentUser.image}}" class="user-img img-circle"/>
+                </figure>
+                <div class="media-content">
+                  <div class="content">
+                    <p>
+                      <strong>{{currentUser.username}}</strong> <small>@{{currentUser.nickname}}</small> <br/>
+                      {{comment.content}}
+                    </p>
+                  </div>
+                </div>
+                <div class="media-right button-delete" *ngIf="canEdit">
+                  <button class="delete" (click)="showDeleteCommentModal(comment.id)"></button>
+                </div>
+              </article>
             </div>
-          </div>
-          <div class="media-right button-delete" *ngIf="canEdit">
-            <button class="delete" (click)="showDeleteCommentModal(comment.id)"></button>
-          </div>
-        </article>
-      </div>
-      </span>
+          </span>
         </div>
         <div class="column is-one-quarter">
           <div class="member-section">
@@ -173,7 +185,7 @@
               <span style="font-size: small">Add members:</span>
               <ul>
                 <li *ngFor="let member of this.members">
-                  <span class="tag">
+                  <span class="tag" style="cursor: pointer" (click)="addMemberToCard(member)">
                     <span style="font-size: small">@{{member.username}}</span>
                     <span style="font-size: small" *ngIf="member.nickname">({{member.nickname}})</span>
                   </span>
@@ -182,7 +194,8 @@
             </div>
           </div>
           <div id="tag-section">
-            <button class="button is-small" (click)="toggleTagForm()">Tags</button><br>
+            <button class="button is-small" (click)="toggleTagForm()">Tags</button>
+            <br>
             <div id="tag-form" class="is-hidden">
               <span style="font-size: small">Tags:</span>
               <ul>
@@ -192,7 +205,11 @@
                 <span class="tag is-light" [ngClass]="tag.color"
                       (click)="addTagToCard(tag)">{{tag.name}}
                 </span>
-                  <a (click)="deleteTag(tag.id)"><span class="tag is-danger is-hidden" id="delete-btn-tag-{{tag.id}}"><i class="far fa-trash-alt"></i></span></a>
+                  <a (click)="deleteTag(tag.id)">
+                  <span class="tag is-danger is-hidden" id="delete-btn-tag-{{tag.id}}">
+                    <i class="far fa-trash-alt"></i>
+                  </span>
+                  </a>
                 </li>
               </ul>
               <span style="font-size: small">Add new tag:</span>
@@ -206,15 +223,21 @@
               <div class="select is-small">
                 <select [(ngModel)]="newTag.color">
                   <div class="is-primary"></div>
-                  <option value="is-primary" style="color: lightgreen; background-color: rgb(235, 255, 252)">Light Green</option>
-                  <option value="is-link" style="color: darkblue; background-color: rgb(239, 241, 250)">Dark Blue</option>
-                  <option value="is-info" style="color: lightblue; background-color: rgb(239, 245, 251)">Light Blue</option>
-                  <option value="is-success" style="color: darkgreen; background-color: rgb(239, 250, 245)">Dark Green</option>
+                  <option value="is-primary" style="color: lightgreen; background-color: rgb(235, 255, 252)">Light
+                    Green
+                  </option>
+                  <option value="is-link" style="color: darkblue; background-color: rgb(239, 241, 250)">Dark Blue
+                  </option>
+                  <option value="is-info" style="color: lightblue; background-color: rgb(239, 245, 251)">Light Blue
+                  </option>
+                  <option value="is-success" style="color: darkgreen; background-color: rgb(239, 250, 245)">Dark Green
+                  </option>
                   <option value="is-warning" style="color: yellow; background-color: rgb(255, 250, 235)">Yellow</option>
                   <option value="is-danger" style="color: red; background-color: rgb(254, 236, 240)">Red</option>
                 </select>
               </div>
-              <button *ngIf="newTagName.valid" class="button is-info is-light is-small" (click)="addNewTag()">Add tag</button>
+              <button *ngIf="newTagName.valid" class="button is-info is-light is-small" (click)="addNewTag()">Add tag
+              </button>
               <button *ngIf="newTagName.invalid" class="button is-info is-light is-small" disabled>Add tag</button>
             </div>
           </div>
@@ -233,13 +256,13 @@
   <div class="modal-card" style="width: 500px; height: 215px;">
     <header class="modal-card-head">
       <p class="modal-card-title">Delete</p>
-      <button class="delete" aria-label="close"  (click)="closeDeleteCommentModal()"></button>
+      <button class="delete" aria-label="close" (click)="closeDeleteCommentModal()"></button>
     </header>
     <section class="modal-card-body">
       Do you want to delete your comment?
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-danger is-light" (click)="deleteComment()" >Delete</button>
+      <button class="button is-danger is-light" (click)="deleteComment()">Delete</button>
       <button class="button is-light" (click)="closeDeleteCommentModal()">Cancel</button>
     </footer>
   </div>
