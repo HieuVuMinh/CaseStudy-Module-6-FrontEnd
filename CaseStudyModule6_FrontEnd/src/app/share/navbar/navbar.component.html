@@ -1,6 +1,6 @@
 <div class="nav">
     <span class="icon-item">
-      <a class="icon-link"><i class="fas fa-bars"></i></a>
+      <a href="#" class="icon-link"><i class="fas fa-bars"></i></a>
     </span>
   <span class="icon-item">
       <a routerLink="/trello" class="icon-link"><i class="fas fa-home"></i></a>
@@ -25,12 +25,13 @@
   </div>
 
   <div class="icon-item" *ngIf="currentUser">
-    <a class="icon-link"><i class="fas fa-plus"></i></a>
+    <a href="#" class="icon-link"><i class="fas fa-plus"></i></a>
   </div>
   <div class="icon-item" *ngIf="currentUser">
-    <a class="icon-link"><i class="fab fa-plus"></i></a>
+    <a href="#" class="icon-link"><i class="fab fa-plus"></i></a>
   </div>
   <div class="icon-item" *ngIf="currentUser">
+    <a href="#" class="icon-link"><i class="fas fa-bell"></i></a>
     <div class="dropdown is-hoverable is-right">
       <div class="dropdown-trigger">
         <a  class="icon-link"><i class="fas fa-bell"></i></a>
@@ -54,9 +55,6 @@
                   </a>
                 </li>
               </ul>
-<!--              <footer class="header__notify-footer">-->
-<!--                <a href="" class="header__notify-footer-btn">Xem tất cả</a>-->
-<!--              </footer>-->
             </div>
           </div>
         </div>
@@ -84,10 +82,10 @@
               </span>
             </div>
           </div>
-          <a routerLink="/trello/information" class="dropdown-item">
+          <a (click)="openModalUpdate()" class="dropdown-item">
             Modifiers
           </a>
-          <a class="dropdown-item">
+          <a routerLink="/information" class="dropdown-item">
             Components
           </a>
           <a class="dropdown-item">
@@ -98,6 +96,63 @@
             Logout
           </a>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal-update-user">
+  <div class="modal-background" (click)="closeModalUpdate()"></div>
+  <div class="modal-card" id="updateForm">
+    <div class="login-card">
+      <div class="card-title">
+        <h1>Information</h1>
+      </div>
+      <td class="update-image"><img [src]="imgSrc" (click)="preview.click()"></td>
+      <div class="content">
+        <form #updateForm="ngForm" (ngSubmit)="updateUserInfo()">
+          <div class="update-info">
+            <div class="level options">
+              <div class="checkbox level-left">
+                <div class="update-info">
+                  <tr>
+                    <span class="tag is-info">Image</span>
+                    <div class="file has-name">
+                      <div class="file">
+                        <label class="file-label">
+                          <input class="file-input" type="file" #preview (change)="showPreview($event)">
+                          <span class="file-cta">
+      <span class="file-icon">
+        <i class="fas fa-upload"></i>
+      </span>
+      <span class="file-label">
+        Choose a file…
+      </span>
+    </span>
+                        </label>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <span class="tag is-info">Nickname</span>
+            <input type="text" class="input" name="nickname" #nickname="ngModel" required
+                   [(ngModel)]="user.nickname" placeholder="Nick name">
+            <td *ngIf="updateForm.invalid && updateForm.touched && isSubmitted">
+              <p class="notification" *ngIf="nickname.errors?.required">Can not blank</p>
+            </td>
+          </div>
+          <div class="button-update">
+            <table>
+              <td>
+                <button class="button is-danger is-light" (click)="closeModalUpdate()">Cancel</button>
+              </td>
+              <td>
+                <button class="button is-success is-light">Update</button>
+              </td>
+            </table>
+          </div>
+        </form>
       </div>
     </div>
   </div>

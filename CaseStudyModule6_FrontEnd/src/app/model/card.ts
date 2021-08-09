@@ -1,4 +1,5 @@
 import {Tag} from "./tag";
+import {Member} from "./member";
 
 export interface Card {
   id: number;
@@ -6,4 +7,5 @@ export interface Card {
   content: string;
   position: number;
   tags?: Tag[];
+  members?: Member[];
 }

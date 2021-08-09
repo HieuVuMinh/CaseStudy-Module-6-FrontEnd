@@ -1,7 +1,8 @@
 <app-navbar-board-header [board]="board"
                          [members]="members"
                          [canEdit]="canEdit"
-                         [isInWorkspace]="isInWorkspace"></app-navbar-board-header>
+                         [isInWorkspace]="isInWorkspace"
+                         (updateMemberEvent)="updateMembers($event)"></app-navbar-board-header>
 <!--main content-->
 <div class="root">
   <div class="board">
@@ -15,7 +16,7 @@
           <div cdkDragLockAxis="x" class="board-column"
                *ngFor="let column of board.columns; index as i" cdkDrag>
             <div class="window-close" (click)="closeColumn(column.id)">
-              <i class="far fa-window-close" disabled></i>
+              <i class="far fa-trash-alt"></i>
             </div>
             <div class="column-title" cdkDragHandle>
               <input class="input title-column" type="text" style="border: none; position: revert"
@@ -30,22 +31,22 @@
                  cdkDropList
                  [cdkDropListData]="column.cards"
                  (cdkDropListDropped)="dropCard($event)">
-              <div class="task" *ngFor="let item of column.cards" cdkDrag (click)="showUpdateModal(item)">
+              <div class="task" *ngFor="let item of column.cards" cdkDrag (click)="showUpdateCardModal(item)">
                 <ul>
                   <li><span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
                   </li>
                   <li><span style="padding-left: 5px">{{item.title}}</span></li>
+                  <li><span *ngFor="let member of item.members" class="tag is-light">{{member.user.username}}</span>
+                  </li>
                 </ul>
               </div>
               <div class="form-create-new-card is-hidden" id="new-card-form-col-{{column.id}}">
                 <form #showAddNewCardForm="ngForm"
                       (ngSubmit)="addNewCard(column.id,column.cards?.length,showAddNewCardForm)">
                   <input type="text" name="title" #addCard="ngModel" class="input" [(ngModel)]="newCard.title"
-                         placeholder="Title..." minlength="4" required>
+                         placeholder="Title..." required>
                   <td *ngIf="showAddNewCardForm.invalid && addCard.touched && isAdded">
                     <p class="notification is-danger is-light" *ngIf="addCard.errors?.required">Can not blank</p>
-                    <p class="notification is-danger is-light" *ngIf="addCard.errors?.minlength">At least 4
-                      characters</p>
                   </td>
                   <div class="button-option">
                     <button class="button add-new-card is-primary is-light" type="submit">
@@ -86,8 +87,8 @@
 
 <!--Modal update card-->
 <div id="modal-update-card" class="modal">
-  <div class="modal-background" (click)="closeUpdateModal()"></div>
-  <div class="modal-card">
+  <div class="modal-background" (click)="closeModalUpdateCard()"></div>
+  <div class="modal-card" style="height: 500px">
     <header class="modal-card-head">
       <input class="input modal-card-title" type="text" placeholder="Title" [(ngModel)]="selectedCard.title">
     </header>
@@ -95,70 +96,206 @@
       <div class="columns">
         <div class="column">
           <div>
-        <span *ngFor="let tag of selectedCard.tags" class="tag is-light" [ngClass]="tag.color"
-              (click)="removeTagFromCard(tag)">{{tag.name}}</span>
+            <ul>
+              <li>
+                <span *ngFor="let tag of selectedCard.tags" class="tag is-light" [ngClass]="tag.color"
+                      (click)="removeTagFromCard(tag)">
+                  {{tag.name}}
+                </span>
+              </li>
+              <li>
+                <span *ngFor="let member of selectedCard.members" class="tag is-light">
+                  @{{member.user.username}}
+                </span>
+              </li>
+            </ul>
           </div>
           <div class="model-card-body-content">
             <input class="input modal-card-content" type="text" placeholder="Content..."
                    [(ngModel)]="selectedCard.content">
           </div>
-          <div class="model-card-body-upload-file">
-            <div class="file">
-              <label class="file-label">
-                <input class="file-input" type="file" name="resume">
-                <span class="file-cta">
-              <span class="file-icon">
-                <i class="fas fa-upload"></i>
-              </span>
-              <span class="file-label">
-                Attachment
-              </span>
-            </span>
-              </label>
+
+          <!--        Comment-->
+          <div class="model-card-body-content">
+            <article class="media">
+              <figure class="media-left">
+                <img [src]="currentUser.image" class="user-img img-circle"/>
+              </figure>
+              <form [formGroup]="commentForm" (ngSubmit)="addComment()">
+                <div class="media-content">
+                  <div class="field">
+                    <p class="control">
+                  <textarea (click)="displaySubmitCommentButton()" class="textarea" formControlName="content"
+                            placeholder="Add a comment..."></textarea>
+                    </p>
+                  </div>
+                  <nav class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <button class="button is-primary is-light submitComment is-hidden"
+                                id="submitComment-{{this.selectedCard.id}}" type="submit">Submit
+                        </button>
+                      </div>
+                    </div>
+                  </nav>
+                </div>
+              </form>
+            </article>
+          </div>
+          <!--      comment body-->
+          <span *ngFor="let comment of commentDto">
+            <div class="model-card-body-content comment-body">
+              <article class="media media-comment-body">
+                <figure class="media-left">
+                  <img src="{{currentUser.image}}" class="user-img img-circle"/>
+                </figure>
+                <div class="media-content">
+                  <div class="content">
+                    <p>
+                      <strong>{{currentUser.username}}</strong> <small>@{{currentUser.nickname}}</small> <br/>
+                      {{comment.content}}
+                    </p>
+                  </div>
+                </div>
+                <div class="media-right button-delete" *ngIf="canEdit">
+                  <button class="delete" (click)="showDeleteCommentModal(comment.id)"></button>
+                </div>
+              </article>
             </div>
+          </span>
+          <!--          Upload file-->
+          <div class="content">
+            <form #uploadFileCard="ngForm" (ngSubmit)="uploadFile()">
+              <div class="update-info">
+                <div class="level options">
+                  <div class="checkbox level-left">
+                    <tr>
+                      <span class="tag is-info">Image</span>
+                      <div class="file has-name">
+                        <label class="file-label">
+                          <input class="file-input" type="file" (change)="showPreview($event)">
+                          <span class="file-cta">
+                                        <span class="file-icon">
+                                          <i class="fas fa-upload"></i>
+                                        </span>
+                                        <span class="file-label" (change)="showPreview($event)">
+                                          Choose a file…
+                                        </span>
+                                      </span>
+                        </label>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <button class="button is-success is-light">Update</button>
+            </form>
           </div>
         </div>
         <div class="column is-one-quarter">
-          <div id="tag-section" class="">
-            <span>Tags</span>
-            <ul>
-              <li *ngFor="let tag of this.board.tags"
-                  (mouseover)="showDeleteTagButton(tag.id)"
-                  (mouseout)="hideDeleteTagButton(tag.id)">
+          <div class="member-section">
+            <button class="button is-small" (click)="toggleMemberForm()">Members</button>
+            <div id="member-form" class="is-hidden">
+              <span style="font-size: small">Add members:</span>
+              <ul>
+                <li *ngFor="let member of this.members">
+                  <span class="tag" style="cursor: pointer" (click)="addMemberToCard(member)">
+                    <span style="font-size: small">@{{member.username}}</span>
+                    <span style="font-size: small" *ngIf="member.nickname">({{member.nickname}})</span>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div id="tag-section">
+            <button class="button is-small" (click)="toggleTagForm()">Tags</button>
+            <br>
+            <div id="tag-form" class="is-hidden">
+              <span style="font-size: small">Tags:</span>
+              <ul>
+                <li *ngFor="let tag of this.board.tags"
+                    (mouseover)="showDeleteTagButton(tag.id)"
+                    (mouseout)="hideDeleteTagButton(tag.id)">
                 <span class="tag is-light" [ngClass]="tag.color"
                       (click)="addTagToCard(tag)">{{tag.name}}
                 </span>
-                <a (click)="deleteTag(tag.id)"><span class="tag is-danger is-hidden" id="delete-btn-tag-{{tag.id}}"><i class="far fa-trash-alt"></i></span></a>
-              </li>
-            </ul>
-            <span style="font-size: small">Add new tag:</span>
-            <input class="input is-info is-small" [(ngModel)]="newTag.name" #newTagName="ngModel" required type="text"
-                   placeholder="Tag name">
-            <div *ngIf="newTagName.invalid" class="alert">
-              <div *ngIf="newTagName.errors?.required">
-                <span style="font-size: x-small">Tag name is required.</span>
+                  <a (click)="deleteTag(tag.id)">
+                  <span class="tag is-danger is-hidden" id="delete-btn-tag-{{tag.id}}">
+                    <i class="far fa-trash-alt"></i>
+                  </span>
+                  </a>
+                </li>
+              </ul>
+              <span style="font-size: small">Add new tag:</span>
+              <input class="input is-info is-small" [(ngModel)]="newTag.name" #newTagName="ngModel" required type="text"
+                     placeholder="Tag name">
+              <div *ngIf="newTagName.invalid" class="alert">
+                <div *ngIf="newTagName.errors?.required">
+                  <span style="font-size: x-small">Tag name is required.</span>
+                </div>
               </div>
+              <div class="select is-small">
+                <select [(ngModel)]="newTag.color">
+                  <div class="is-primary"></div>
+                  <option value="is-primary" style="color: lightgreen; background-color: rgb(235, 255, 252)">Light
+                    Green
+                  </option>
+                  <option value="is-link" style="color: darkblue; background-color: rgb(239, 241, 250)">Dark Blue
+                  </option>
+                  <option value="is-info" style="color: lightblue; background-color: rgb(239, 245, 251)">Light Blue
+                  </option>
+                  <option value="is-success" style="color: darkgreen; background-color: rgb(239, 250, 245)">Dark Green
+                  </option>
+                  <option value="is-warning" style="color: yellow; background-color: rgb(255, 250, 235)">Yellow</option>
+                  <option value="is-danger" style="color: red; background-color: rgb(254, 236, 240)">Red</option>
+                </select>
+              </div>
+              <button *ngIf="newTagName.valid" class="button is-info is-light is-small" (click)="addNewTag()">Add tag
+              </button>
+              <button *ngIf="newTagName.invalid" class="button is-info is-light is-small" disabled>Add tag</button>
             </div>
-            <div class="select is-small">
-              <select [(ngModel)]="newTag.color">
-                <div class="is-primary"></div>
-                <option value="is-primary" style="color: lightgreen; background-color: rgb(235, 255, 252)">Light Green</option>
-                <option value="is-link" style="color: darkblue; background-color: rgb(239, 241, 250)">Dark Blue</option>
-                <option value="is-info" style="color: lightblue; background-color: rgb(239, 245, 251)">Light Blue</option>
-                <option value="is-success" style="color: darkgreen; background-color: rgb(239, 250, 245)">Dark Green</option>
-                <option value="is-warning" style="color: yellow; background-color: rgb(255, 250, 235)">Yellow</option>
-                <option value="is-danger" style="color: red; background-color: rgb(254, 236, 240)">Red</option>
-              </select>
-            </div>
-            <button *ngIf="newTagName.valid" class="button is-info is-light is-small" (click)="addNewTag()">Add tag</button>
-            <button *ngIf="newTagName.invalid" class="button is-info is-light is-small" disabled>Add tag</button>
           </div>
         </div>
       </div>
     </section>
     <footer class="modal-card-foot">
       <button class="button is-success" (click)="updateCurrentCard()">Save changes</button>
-      <button class="button" (click)="closeUpdateModal()">Cancel</button>
+      <button class="button" (click)="closeModalUpdateCard()">Cancel</button>
     </footer>
   </div>
 </div>
+<div class="board-columns-add" *ngIf="canEdit">
+  <div class="board-column" style="margin-left: 0px">
+    <div class="column-title">
+      <form [formGroup]="columnForm" (ngSubmit)="addColumn()">
+        <input class="input add-column-input" type="text" formControlName="title" style="position: revert"
+               placeholder="Enter title column..." maxlength="512">
+        <div class="button-create-column">
+          <button style="position: revert" [disabled]="columnForm.invalid" class="button is-primary is-light"
+                  type="submit">Add column
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!--delete Comment modal-->
+<div class="modal" id="deleteModal">
+  <div class="modal-background"></div>
+  <div class="modal-card" style="width: 500px; height: 215px;">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Delete</p>
+      <button class="delete" aria-label="close" (click)="closeDeleteCommentModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      Do you want to delete your comment?
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-danger is-light" (click)="deleteComment()">Delete</button>
+      <button class="button is-light" (click)="closeDeleteCommentModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+
+
+
