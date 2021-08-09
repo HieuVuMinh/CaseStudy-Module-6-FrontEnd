@@ -28,6 +28,7 @@ export class WorkspaceBoardComponent implements OnInit {
     },
     columns: [],
   };
+  owner: User={};
   userSearch: string = ``;
   userResult: User[] = [];
   members: User[] = [];
@@ -63,6 +64,7 @@ export class WorkspaceBoardComponent implements OnInit {
   public findById(id: any): void {
     this.workspaceService.findById(id).subscribe(workspaces => {
       this.workspace = workspaces
+      this.owner = workspaces.owner;
       this.checkRole()
     })
   }

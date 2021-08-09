@@ -1,4 +1,5 @@
-<section class="main-content columns is-fullheight">
+
+<section class="main-content columns is-fullheight" style="margin-top: 138px">
 
   <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile">
     <ul class="menu-list">
@@ -12,7 +13,7 @@
           <span class="icon"><i class="fa fa-table"></i></span> Members
         </a>
       </li>
-      <li *ngIf="currentUser.id == workspace.owner.id">
+      <li *ngIf="currentUser.id == owner.id" >
         <a style="color: red" (click)="showModalDelete()">
           <span style="color: red" class="icon"><i class="fas fa-trash-alt"></i></span> Delete
         </a>
@@ -102,7 +103,6 @@
     </footer>
   </div>
 </div>
-
 
 
 
