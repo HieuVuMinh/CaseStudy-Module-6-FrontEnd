@@ -14,6 +14,8 @@ import {FormControl, FormGroup, NgForm, Validators} from "@angular/forms";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
 import {User} from "../../model/user";
 import {UserToken} from "../../model/user-token";
+import {Tag} from "../../model/tag";
+import {TagService} from "../../service/tag/tag.service";
 
 @Component({
   selector: 'app-trello-view',
@@ -46,15 +48,17 @@ export class TrelloViewComponent implements OnInit {
   currentUser: UserToken = {};
   canEdit: boolean = false;
   isInWorkspace: boolean = false;
-
   newCard: Card = {
     id: -1,
     title: "",
     content: "",
     position: -1
   }
-
   isAdded = false;
+  newTag: Tag = {
+    color: "is-primary",
+    name: ""
+  }
 
   // fileSrc: any | undefined = '';
   // selectedFile: any | undefined = null;
@@ -71,7 +75,8 @@ export class TrelloViewComponent implements OnInit {
               private columnService: ColumnService,
               private cardService: CardService,
               private memberService: MemberService,
-              private authenticationService: AuthenticationService) {
+              private authenticationService: AuthenticationService,
+              private tagService: TagService) {
   }
 
   ngOnInit(): void {
@@ -233,7 +238,7 @@ export class TrelloViewComponent implements OnInit {
 
   onKeydown($event: KeyboardEvent, column: Column) {
     if ($event.key === "Enter") {
-      if (column.title != ''){
+      if (column.title != '') {
         this.saveChanges();
       } else {
         this.getPage();
@@ -273,9 +278,9 @@ export class TrelloViewComponent implements OnInit {
   addNewCard(id: any, length: any, addNewCardForm: NgForm) {
     this.isAdded = true;
     this.newCard.position = length;
-    this.cardService.saveCard(this.newCard).subscribe( card =>{
+    this.cardService.saveCard(this.newCard).subscribe(card => {
       for (let column of this.board.columns) {
-        if(column.id == id && addNewCardForm.valid){
+        if (column.id == id && addNewCardForm.valid) {
           column.cards.push(card);
           this.saveChanges();
           this.newCard = {
@@ -294,7 +299,7 @@ export class TrelloViewComponent implements OnInit {
     let elementId = 'new-card-form-col-' + id;
     // @ts-ignore
     document.getElementById(elementId).classList.remove('is-hidden');
-    let buttonShowFormCreateId = 'show-form-create-new-card-'+id;
+    let buttonShowFormCreateId = 'show-form-create-new-card-' + id;
     // @ts-ignore
     document.getElementById(buttonShowFormCreateId).classList.add('is-hidden');
 
@@ -304,18 +309,80 @@ export class TrelloViewComponent implements OnInit {
     let elementId = 'new-card-form-col-' + id;
     // @ts-ignore
     document.getElementById(elementId).classList.add('is-hidden');
-    let buttonShowFormCreateId = 'show-form-create-new-card-'+id;
+    let buttonShowFormCreateId = 'show-form-create-new-card-' + id;
     // @ts-ignore
     document.getElementById(buttonShowFormCreateId).classList.remove('is-hidden');
   }
+
   closeColumn(id: any) {
-    console.log(id);
-      for (let column of this.board.columns){
-        if (column.id == id){
-          let deleteId = this.board.columns.indexOf(column);
-          this.board.columns.splice(deleteId, 1);
-          this.saveChanges();
+    for (let column of this.board.columns) {
+      if (column.id == id) {
+        let deleteId = this.board.columns.indexOf(column);
+        this.board.columns.splice(deleteId, 1);
+        this.saveChanges();
+      }
+    }
+  }
+
+  addNewTag() {
+    this.tagService.add(this.newTag).subscribe(tag => {
+      this.newTag = tag;
+      this.board.tags?.push(this.newTag);
+      // for (let column of this.board.columns) {
+      //   for (let card of column.cards) {
+      //     if (card.id == this.selectedCard.id) {
+      //       card.tags?.push(this.newTag);
+      //     }
+      //   }
+      // }
+      this.saveChanges();
+      this.newTag = {
+        color: "is-primary",
+        name: ""
+      }
+    });
+  }
+
+  addTagToCard(tag: Tag) {
+    this.updateSelectedCard();
+    let isValid = true;
+    // @ts-ignore
+    for (let existingTag of this.selectedCard.tags) {
+      if (existingTag.id == tag.id) {
+        isValid = false;
+        break;
+      }
+    }
+    if (isValid) {
+      // @ts-ignore
+      this.selectedCard.tags.push(tag);
+    }
+    this.saveChanges();
+  }
+
+  removeTagFromCard(tag: Tag) {
+    this.updateSelectedCard()
+    // @ts-ignore
+    for (let existingTag of this.selectedCard.tags) {
+      if (existingTag.id == tag.id) {
+        // @ts-ignore
+        let deleteIndex = this.selectedCard.tags.indexOf(existingTag);
+        // @ts-ignore
+        this.selectedCard.tags.splice(deleteIndex, 1);
+      }
+    }
+    this.saveChanges();
+  }
+
+  private updateSelectedCard() {
+    for (let column of this.board.columns) {
+      for (let card of column.cards) {
+        if (card.id == this.selectedCard.id) {
+          this.selectedCard = card;
         }
       }
+    }
   }
+
+
 }

@@ -7,6 +7,7 @@ import {UserService} from "../../service/user/user.service";
 import {Member} from "../../model/member";
 import {MemberService} from "../../service/member/member.service";
 import {BoardService} from "../../service/board/board.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-navbar-board-header',
@@ -26,7 +27,8 @@ export class NavbarBoardHeaderComponent implements OnInit {
   constructor(public authenticationService: AuthenticationService,
               private userService: UserService,
               private memberService: MemberService,
-              private boardService: BoardService) {
+              private boardService: BoardService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -161,6 +163,37 @@ export class NavbarBoardHeaderComponent implements OnInit {
     // @ts-ignore
     for (let member of members) {
       member.classList.remove('is-hidden');
+    }
+  }
+
+  toggleMenu() {
+    let dropdownEle = document.getElementById('menu-btn-dropdown');
+    // @ts-ignore
+    if (dropdownEle.classList.contains('is-hidden')) {
+      // @ts-ignore
+      dropdownEle.classList.remove('is-hidden');
+    } else {
+      // @ts-ignore
+      dropdownEle.classList.add('is-hidden');
+    }
+  }
+
+  toggleDeleteBoardModal() {
+    let modalEle = document.getElementById('delete-board-modal');
+    // @ts-ignore
+    if (modalEle.classList.contains('is-active')) {
+      // @ts-ignore
+      modalEle.classList.remove('is-active');
+    } else {
+      // @ts-ignore
+      modalEle.classList.add('is-active');
+    }
+  }
+
+  removeThisBoard() {
+    if (this.board.id != null) {
+      this.boardService.deleteById(this.board.id).subscribe();
+      this.router.navigateByUrl('/trello');
     }
   }
 }
