@@ -163,6 +163,7 @@ export class TrelloViewComponent implements OnInit {
   public dropColumn(event: CdkDragDrop<string[]>): void {
     moveItemInArray(this.board.columns, event.previousIndex, event.currentIndex);
     this.saveChanges();
+    this.createNoticeInBoard(`Change position column ${this.board.columns[event.previousIndex].title} with ${this.board.columns[event.currentIndex].title}`)
   }
 
   public dropCard(event: CdkDragDrop<Card[]>, column: Column): void {
