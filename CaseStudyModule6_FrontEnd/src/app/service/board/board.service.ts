@@ -45,4 +45,7 @@ export class BoardService {
   deleteById(id: number): Observable<Board> {
     return this.httpClient.delete<Board>(`${API_URL}boards/${id}`);
   }
+  deleteAllByWorkspace(boards: Board[]): Observable<Board> {
+    return this.httpClient.post<Board>(`${API_URL}boards/delete`,boards);
+  }
 }

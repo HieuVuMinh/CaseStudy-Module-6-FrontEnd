@@ -4,6 +4,8 @@ import {AuthenticationService} from "../../service/authentication/authentication
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserService} from "../../service/user/user.service";
 import {User} from "../../model/user";
+import {NotificationService} from "../../service/notification/notification.service";
+import {Notification} from "../../model/notification";
 import {AngularFireStorage} from "@angular/fire/storage";
 import {finalize} from "rxjs/operators";
 
@@ -15,17 +17,18 @@ import {finalize} from "rxjs/operators";
 export class NavbarComponent implements OnInit {
   currentUser: UserToken = {};
   user: User = {};
-  imgSrc: any | undefined = 'https://newsmd1fr.keeng.net/tiin/archive/images/20210220/145211_facebook_doi_anh_dai_dien_2.jpgs ';
+  notifications: Notification[] = [];
+  imgSrc: any;
   selectedImage: any | undefined = null;
   isSubmitted = false;
   id: any = {};
 
-
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
-              private storage: AngularFireStorage,
-              private userService: UserService) {
+              private userService: UserService,
+              private notificationService: NotificationService,
+              private storage: AngularFireStorage) {
     this.authenticationService.currentUserSubject.subscribe(user => {
       this.currentUser = user
     });
@@ -33,7 +36,9 @@ export class NavbarComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.id = this.authenticationService.getCurrentUserValue().id;
+    if (this.currentUser) {
+      this.findAllNotificationByUserId();
+    }
     this.getUserById();
   }
 
@@ -54,13 +59,12 @@ export class NavbarComponent implements OnInit {
         finalize(() => {
           fileRef.getDownloadURL().subscribe(url => {
             this.imgSrc = url;
-            this.user.image = url;
-            console.log("This.user.image: "+this.user.image);
+            this.selectedImage.source = url;
+            // console.log("this.user.image: "+this.user.image);
+            // console.log("this.id: "+this.id);
+            console.log(this.user);
             this.userService.updateById(this.id, this.user).subscribe(() => {
-                console.log("This.id : "+this.id);
-                console.log("This.user: "+this.user);
                 alert("Success");
-                this.closeModalUpdate();
               },
               () => {
                 alert("Fail")
@@ -83,7 +87,6 @@ export class NavbarComponent implements OnInit {
           finalize(() => {
             fileRef.getDownloadURL().subscribe(url => {
               this.imgSrc = url;
-              console.log("ImgSrc : "+this.imgSrc);
             });
           })).subscribe();
       }
@@ -92,10 +95,17 @@ export class NavbarComponent implements OnInit {
     }
   }
 
-
   logout() {
     this.authenticationService.logout();
     this.router.navigateByUrl('/login')
+  }
+
+  findAllNotificationByUserId() {
+    if (this.currentUser?.id != null) {
+      this.notificationService.findAllByUser(this.currentUser.id).subscribe(notifications => {
+        this.notifications = notifications
+      })
+    }
   }
 
   openModalUpdate() {

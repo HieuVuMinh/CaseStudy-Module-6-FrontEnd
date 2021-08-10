@@ -17,7 +17,7 @@
           </div>
         </div>
       </div>
-      <button class="button is-primary" (click)="updateWorkspace()" style="width: 100px">
+      <button class="button is-primary" (click)="addMemberWorkspace()" style="width: 100px">
         <i class="fas fa-user-plus"></i>
         Invite
       </button>
@@ -41,12 +41,12 @@
     <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile" style="">
       <ul class="menu-list">
         <li>
-          <a routerLink="/trello/workspaces/{{owner.id}}" >
+          <a routerLink="/trello/workspaces/{{workspace.id}}" >
             <span class="icon"><i class="fab fa-trello logo-icon"></i></span> Board
           </a>
         </li>
         <li>
-          <a routerLink="/trello/workspaces/{{owner.id}}/members" class="">
+          <a routerLink="/trello/workspaces/{{workspace.id}}/members" class="">
             <span class="icon"><i class="fa fa-table"></i></span> Members
           </a>
         </li>
@@ -76,7 +76,7 @@
 
     <div class="container column is-10">
       <div class="title-board">
-        <h1> <i class="far fa-clipboard"></i>Members</h1>
+        <input #searchMember class="input is-link" type="text" placeholder="Find Member" (keyup)="findMemberWorkspaceByKeyword(searchMember.value)">
       </div>
       <div class="user-container">
         <div class="user-info">
@@ -94,8 +94,8 @@
           </button>
         </div>
       </div>
-      <div class="user-container" *ngFor="let member of workspace.members; index as i" [class.background-current-user]="currentUser.id == member.user?.id">
-        <div class="user-info"  >
+      <div class="user-container" *ngFor="let member of listMemberWorkspace; index as i" [class.background-current-user]="currentUser.id == member.user?.id">
+        <div class="user-info">
           <div>
             <img class="user-img" src="{{member.user?.image}}">
           </div>

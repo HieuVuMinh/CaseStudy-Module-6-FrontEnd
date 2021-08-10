@@ -16,10 +16,9 @@
         <button *ngIf="!canEdit" class="button is-primary">
           {{board.title}}
         </button>
-
         <button class="button is-primary">
-          <img *ngIf="!board.owner.image" src="assets/img/nicki-eliza.jpg" class="img-circle is-48x48">
-          <img *ngIf="board.owner.image" [src]="board.owner.image" class="img-circle is-48x48">
+          <img *ngIf="!board.owner.image" src="assets/img/nicki-eliza.jpg" class="img-circle is-48x48"/>
+          <img *ngIf="board.owner.image" [src]="board.owner.image" class="img-circle is-48x48"/>
           {{board.owner.username}}
         </button>
         <button class="button is-primary">

@@ -90,6 +90,10 @@ export class TrelloViewComponent implements OnInit {
   titleColumn: Column = {cards: [], id: -1, position: -1, title: ""}
   fileSrc: any | undefined = null;
 
+  attachmentList: Attachment[] = [];
+
+  selectedAttachment: Attachment = {};
+
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
               private columnService: ColumnService,
@@ -242,6 +246,7 @@ export class TrelloViewComponent implements OnInit {
 
   showUpdateCardModal(card: Card) {
     this.selectedCard = card;
+    this.getAllAttachmentByCard();
     // @ts-ignore
     document.getElementById('modal-update-card').classList.add('is-active');
     this.getAllCommentByCardId()
@@ -250,6 +255,9 @@ export class TrelloViewComponent implements OnInit {
   closeModalUpdateCard() {
     // @ts-ignore
     document.getElementById('modal-update-card').classList.remove('is-active');
+    this.hiddenDeleteAttachmentConfirm();
+    this.closeDeleteCommentModal();
+    this.hiddenDeleteConfirm();
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
@@ -553,8 +561,10 @@ export class TrelloViewComponent implements OnInit {
           fileRef.getDownloadURL().subscribe(url => {
             this.fileSrc = url;
             this.newAttachment.source = url;
+            this.newAttachment.name = `${this.selectedFile.name.split('.').slice(0, -1).join('.')}`;
             this.attachmentService.addNewFile(this.newAttachment).subscribe(() => {
                 alert("Success");
+                this.getAllAttachmentByCard();
               },
               () => {
                 alert("Fail")
@@ -599,5 +609,34 @@ export class TrelloViewComponent implements OnInit {
     // @ts-ignore
     document.getElementById('delete-card-modal').classList.add('is-active');
     // this.closeModalUpdateCard();
+  }
+
+  getAllAttachmentByCard() {
+    this.attachmentService.getAttachmentByCard(this.selectedCard.id).subscribe(attachmentList => {
+        this.attachmentList = attachmentList;
+      }
+    )
+  }
+
+  showConfirmDeleteAttachment(attachment: Attachment) {
+    this.selectedAttachment = attachment;
+    // @ts-ignore
+    document.getElementById('delete-attachment-confirm').classList.add('is-active');
+  }
+
+  hiddenDeleteAttachmentConfirm() {
+    // @ts-ignore
+    document.getElementById('delete-attachment-confirm').classList.remove('is-active');
+  }
+
+  deleteAttachment() {
+    this.hiddenDeleteAttachmentConfirm();
+    this.attachmentService.deleteAttachmentById(this.selectedAttachment.id).subscribe(() => {
+        alert('Delete attachment success');
+        this.getAllAttachmentByCard();
+      },
+      () => {
+        alert('Delete fail');
+      });
   }
 }
