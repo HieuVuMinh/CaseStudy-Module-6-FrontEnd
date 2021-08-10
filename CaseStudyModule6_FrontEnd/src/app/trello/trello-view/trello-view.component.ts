@@ -22,6 +22,7 @@ import {UserService} from "../../service/user/user.service";
 import {CommentCard} from "../../model/commentCard";
 import {CommentCardService} from "../../service/comment/comment-card.service";
 import {Member} from "../../model/member";
+import {User} from "../../model/user";
 
 @Component({
   selector: 'app-trello-view',
@@ -518,31 +519,28 @@ export class TrelloViewComponent implements OnInit {
     this.members = event;
   }
 
-  addMemberToCard(member: DetailedMember) {
+  addUserToCard(member: DetailedMember) {
     this.updateSelectedCard();
-    let isValid: boolean = true;
+    let isValid = true;
     // @ts-ignore
-    for (let existingMember of this.selectedCard.members) {
-      if (existingMember.id == member.userId) {
+    for (let existingUser of this.selectedCard.users) {
+      if (existingUser.id == member.userId) {
         isValid = false;
         break;
       }
     }
-    // if (isValid) {
-    //   let memberDto: Member = {
-    //     // @ts-ignore
-    //     board: {id: member.boardId},
-    //     canEdit: member.canEdit,
-    //     id: member.id,
-    //     user: {id: member.userId, username: member.username}
-    //   };
-    //   // @ts-ignore
-    //   this.selectedCard.members.push(memberDto);
-    //   console.log(this.board);
-    //   console.log(member);
-    //   this.saveChanges();
-    // }
+    if (isValid) {
+      let user: User = {
+        id: member.userId,
+        username: member.username,
+      }
+      // @ts-ignore
+      this.selectedCard.users.push(user);
+    }
+    this.saveChanges();
   }
+
+
 
 
   confirmDelete() {
@@ -613,5 +611,19 @@ export class TrelloViewComponent implements OnInit {
   showFormUploadFile() {
     // @ts-ignore
     document.getElementById('form-upload-file').classList.remove('is-hidden');
+  }
+
+  removeUserFromCard(user: User) {
+    this.updateSelectedCard()
+    // @ts-ignore
+    for (let existingUser of this.selectedCard.users) {
+      if (existingUser.id == user.id) {
+        // @ts-ignore
+        let deleteIndex = this.selectedCard.users.indexOf(existingUser);
+        // @ts-ignore
+        this.selectedCard.users.splice(deleteIndex, 1);
+      }
+    }
+    this.saveChanges();
   }
 }

@@ -36,7 +36,7 @@
                   <li><span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
                   </li>
                   <li><span style="padding-left: 5px">{{item.title}}</span></li>
-                  <li><span *ngFor="let member of item.members" class="tag is-light">{{member.user.username}}</span>
+                  <li><span *ngFor="let user of item.users" class="tag is-light">@{{user.username}}</span>
                   </li>
                 </ul>
               </div>
@@ -104,8 +104,8 @@
                 </span>
               </li>
               <li>
-                <span *ngFor="let member of selectedCard.members" class="tag is-light">
-                  @{{member.user.username}}
+                <span *ngFor="let user of selectedCard.users" class="tag is-light" (click)="removeUserFromCard(user)">
+                  @{{user.username}}
                 </span>
               </li>
             </ul>
@@ -198,7 +198,7 @@
               <span style="font-size: small">Add members:</span>
               <ul>
                 <li *ngFor="let member of this.members">
-                  <span class="tag" style="cursor: pointer" (click)="addMemberToCard(member)">
+                  <span class="tag" style="cursor: pointer" (click)="addUserToCard(member)">
                     <span style="font-size: small">@{{member.username}}</span>
                     <span style="font-size: small" *ngIf="member.nickname">({{member.nickname}})</span>
                   </span>
