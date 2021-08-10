@@ -25,6 +25,8 @@ import {Member} from "../../model/member";
 import {User} from "../../model/user";
 import {Notification} from "../../model/notification";
 import {NotificationService} from "../../service/notification/notification.service";
+import {ActivityLog} from "../../model/activity-log";
+import {ActivityLogService} from "../../service/ActivityLog/activity-log.service";
 
 @Component({
   selector: 'app-trello-view',
@@ -106,11 +108,25 @@ export class TrelloViewComponent implements OnInit {
               private tagService: TagService,
               private userService: UserService,
               private commentCardService: CommentCardService,
-              private notificationService: NotificationService) {
+              private notificationService: NotificationService,
+              private activityLogService: ActivityLogService) {
   }
 
   ngOnInit(): void {
     this.getBoardIdByUrl();
+  }
+  findAllByBoardId() {
+    if (this.board.id != null) {
+      this.activityLogService.findAllByBoardId(this.boardId).subscribe(activities => {
+        this.activityLogService.activities = activities;
+        for (let notification of activities){
+          if (!notification.status){
+            this.activityLogService.unreadNotice++;
+          }
+        }
+      })
+    }
+
   }
 
   getBoardIdByUrl() {
@@ -118,6 +134,7 @@ export class TrelloViewComponent implements OnInit {
     this.activatedRoute.params.pipe(map(p => p.id)).subscribe(id => {
       this.boardId = id;
       this.getPage();
+      this.findAllByBoardId()
     });
   }
 
@@ -657,18 +674,15 @@ export class TrelloViewComponent implements OnInit {
     document.getElementById('form-upload-file').classList.remove('is-hidden');
   }
 
-  createNoticeInBoard(notificationText: string) {
-    this.userService.getMemberByBoardId(this.boardId).subscribe(members => {
-      this.receiver = members;
-      let notification: Notification = {
+  createNoticeInBoard(activityText: string) {
+      let activity: ActivityLog = {
         title: "Board: " + this.board.title,
-        content: this.currentUser.username + " " + notificationText + " in " + this.board.title + " " + this.notificationService.getTime(),
+        content: this.currentUser.username + " " + activityText + " in " + this.board.title + " " + this.notificationService.getTime(),
         url: "/trello/boards/" + this.board.id,
         status: false,
-        receiver: this.receiver
+        board: this.board
       }
-      this.notificationService.saveNotification(notification)
-    })
+      this.activityLogService.saveNotification(activity, this.boardId)
 
   }
 

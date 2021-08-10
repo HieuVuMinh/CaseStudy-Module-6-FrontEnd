@@ -69,6 +69,38 @@
                   (click)="toggleUserSearchBar()">
             <i class="fas fa-user-plus"></i>Invite
           </button>
+          <div class="icon-item" >
+            <div class="dropdown is-hoverable is-right">
+              <div class="dropdown-trigger">
+                <a class="icon-link"><i class="fas fa-bell"></i></a>
+                <span class="header__cart-notice">{{activityLogService.unreadNotice}}</span>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu5" role="menu">
+                <div class="dropdown-content" style="padding: 0">
+                  <div class="header__navbar-item header__navbar-item--has-notify">
+                    <div class="header__notify">
+                      <header class="header__notify-header">
+                        <h3>Activity</h3>
+                        <a style="color: white; font-size: 14px; margin-right: 16px; border-bottom: 1px solid">Mark all as read</a>
+                      </header>
+                      <ul class="header__notify-list">
+                        <li class="header__notify-item" *ngFor="let activity of activityLogService.activities"  [class.mark-read]="activity.status">
+                          <a  class="header__notify-link" routerLink="{{activity.url}}" >
+                            <img src="https://dizibrand.com/wp-content/uploads/2019/07/trello-la-gi-dizibrand-1.png" alt=""
+                                 class="header__notify-img">
+                            <div class="header__notify-info">
+                              <span class="header__notify-name">{{activity.title}}</span>
+                              <span class="header__notify-description">{{activity.content}}</span>
+                            </div>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="search-bar">
             <div *ngIf="searchBarIsShown" class="search-bar-input">
               <input class="input" type="text" placeholder="Search member" [(ngModel)]="userSearch"

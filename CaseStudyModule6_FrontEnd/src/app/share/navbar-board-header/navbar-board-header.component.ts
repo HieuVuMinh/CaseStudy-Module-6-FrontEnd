@@ -11,6 +11,9 @@ import {Router} from "@angular/router";
 import { EventEmitter } from '@angular/core';
 import {Notification} from "../../model/notification";
 import {NotificationService} from "../../service/notification/notification.service";
+import {ActivityLogService} from "../../service/ActivityLog/activity-log.service";
+import {ActivityLog} from "../../model/activity-log";
+import {UserToken} from "../../model/user-token";
 
 @Component({
   selector: 'app-navbar-board-header',
@@ -27,6 +30,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
   userResult: User[] = [];
   selectedMember: DetailedMember = {boardId: -1, canEdit: false, id: -1, userId: -1, username: ""};
   @Output() updateMemberEvent = new EventEmitter<DetailedMember[]>();
+  currentUser: UserToken = this.authenticationService.getCurrentUserValue()
   receiver: User[] = [];
 
   constructor(public authenticationService: AuthenticationService,
@@ -34,11 +38,14 @@ export class NavbarBoardHeaderComponent implements OnInit {
               private memberService: MemberService,
               private boardService: BoardService,
               private router: Router,
-              private notificationService: NotificationService) {
+              public notificationService: NotificationService,
+              public activityLogService: ActivityLogService) {
   }
 
   ngOnInit(): void {
+
   }
+
 
 
   toggleUserSearchBar() {
@@ -209,18 +216,17 @@ export class NavbarBoardHeaderComponent implements OnInit {
     }
     this.createNoticeInBoard("Delete")
   }
-  createNoticeInBoard(notificationText: string) {
-    this.userService.getMemberByBoardId(this.board.id).subscribe(members => {
-      this.receiver = members;
-      let notification: Notification = {
-        title: "Board: " + this.board.title,
-        content: this.authenticationService.getCurrentUserValue().username + " " + notificationText + " " + this.board.title + " " + this.notificationService.getTime(),
-        url: "/trello/boards/" + this.board.id,
-        status: false,
-        receiver: this.receiver
-      }
-      this.notificationService.saveNotification(notification)
-    })
+  createNoticeInBoard(activityText: string) {
+    let activity: ActivityLog = {
+      title: "Board: " + this.board.title,
+      content: this.currentUser.username + " " + activityText + " in " + this.board.title + " " + this.notificationService.getTime(),
+      url: "/trello/boards/" + this.board.id,
+      status: false,
+      board: this.board
+    }
+    if (this.board.id != null) {
+      this.activityLogService.saveNotification(activity, this.board.id)
+    }
 
   }
 
