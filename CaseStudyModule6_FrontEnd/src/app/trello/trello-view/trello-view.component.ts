@@ -16,16 +16,15 @@ import {UserToken} from "../../model/user-token";
 import {Attachment} from "../../model/attachment";
 import {AngularFireStorage} from "@angular/fire/storage";
 import {UserService} from "../../service/user/user.service";
-import {Member} from "../../model/member";
 import {CommentCard} from "../../model/commentCard";
 import {AttachmentService} from "../../service/attachment/attachment.service";
 import {TagService} from "../../service/tag/tag.service";
 import {CommentCardService} from "../../service/comment/comment-card.service";
-
 import {Tag} from "../../model/tag";
 import {User} from "../../model/user";
 import {Notification} from "../../model/notification";
-import {NotificationService} from "../../service/notification/notification.service";
+import { NotificationService } from 'src/app/service/notification/notification.service';
+
 @Component({
   selector: 'app-trello-view',
   templateUrl: './trello-view.component.html',
