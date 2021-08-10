@@ -108,6 +108,11 @@ export class NavbarComponent implements OnInit {
     if (this.currentUser?.id != null) {
       this.notificationService.findAllByUser(this.currentUser.id).subscribe(notifications => {
         this.notificationService.notification = notifications
+        for (let notification of notifications){
+          if (!notification.status){
+            this.notificationService.unreadNotice++;
+          }
+        }
       })
     }
   }
@@ -127,9 +132,15 @@ export class NavbarComponent implements OnInit {
   }
 
   markReadNotification(notification: Notification){
-    if (notification.id != null) {
+    if (notification.id != null && !notification.status) {
       notification.status = true;
-      this.notificationService.updateNotification(notification.id, notification).subscribe()
+      this.notificationService.updateNotification(notification.id, notification).subscribe(() => this.notificationService.unreadNotice--)
+    }
+  }
+
+  markAllAsRead(){
+    if (this.currentUser.id != null) {
+      this.notificationService.markAllAsRead(this.currentUser.id).subscribe(() => this.notificationService.unreadNotice = 0)
     }
   }
 

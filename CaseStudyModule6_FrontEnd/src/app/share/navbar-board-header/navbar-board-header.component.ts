@@ -219,15 +219,9 @@ export class NavbarBoardHeaderComponent implements OnInit {
         status: false,
         receiver: this.receiver
       }
-      this.saveNotification(notification)
+      this.notificationService.saveNotification(notification)
     })
 
   }
 
-  saveNotification(notification: Notification) {
-    this.notificationService.createNotification(notification).subscribe( () => {
-        // @ts-ignore
-      this.notificationService.findAllByUser(this.authenticationService.getCurrentUserValue().id).subscribe( notifications => this.notificationService.notification = notifications )
-    })
-  }
 }

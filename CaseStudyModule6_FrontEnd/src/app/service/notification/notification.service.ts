@@ -9,7 +9,7 @@ import {Notification} from "../../model/notification";
 })
 export class NotificationService {
   notification: Notification[] = [];
-
+  unreadNotice:number = 0;
   constructor(private http: HttpClient) {  }
 
   getTime(){
@@ -27,5 +27,14 @@ export class NotificationService {
   }
   updateNotification(id: number, notification: Notification):Observable<Notification>{
     return this.http.put<Notification>(`${environment.api_url}notifications/${id}`,notification)
+  }
+  markAllAsRead(userId: number):Observable<Notification>{
+    return this.http.put<Notification>(`${environment.api_url}notifications/read-all`,userId)
+  }
+  saveNotification(notification: Notification) {
+    this.createNotification(notification).subscribe( () => {
+      // @ts-ignore
+      this.notificationService.findAllByUser(this.authenticationService.getCurrentUserValue().id).subscribe( notifications => this.notificationService.notification = notifications )
+    })
   }
 }

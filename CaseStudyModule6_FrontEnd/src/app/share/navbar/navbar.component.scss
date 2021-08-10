@@ -376,7 +376,9 @@ button:focus {
 .header__notify-header {
   height: 40px;
   background-color: rgb(100,181,216);
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .header__notify-header h3 {
   color: white;
@@ -394,9 +396,8 @@ button:focus {
   overflow-y: auto;
   background-color: rgb(187,227,246);
 }
-::-webkit-scrollbar {
-  width: 15px;
-  //background-color: #3c97bf;
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 2px rgba(0,0,0,0.1);
 }
 .header__notify-item {
   display: flex;
@@ -434,13 +435,26 @@ button:focus {
 }
 .header__notify-footer {
   display: flex;
+  background-color: rgb(100,181,216);
 }
 .header__notify-footer-btn {
   text-decoration: none;
-  color: black;
-  padding: 8px 32px;
+  color: white;
+  padding: 2px 32px;
   margin: auto;
-  font-size: 1.6rem;
+  font-size: 16px;
   font-weight: 400;
+}
+.header__cart-notice {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  padding: 1px 4px;
+  background-color: rgb(100,181,216);
+  color: white;
+  font-size: 12px;
+  line-height: 12px;
+  border-radius: 10px;
+  border: 1px solid rgb(100,181,216);
 }
 

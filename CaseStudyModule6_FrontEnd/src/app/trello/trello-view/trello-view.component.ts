@@ -662,16 +662,7 @@ export class TrelloViewComponent implements OnInit {
         status: false,
         receiver: this.receiver
       }
-      this.saveNotification(notification)
-    })
-
-  }
-
-  saveNotification(notification: Notification) {
-    this.notificationService.createNotification(notification).subscribe(() => {
-      if (this.currentUser.id != null) {
-        this.notificationService.findAllByUser(this.currentUser.id).subscribe( notifications => this.notificationService.notification = notifications )
-      }
+      this.notificationService.saveNotification(notification)
     })
 
   }
