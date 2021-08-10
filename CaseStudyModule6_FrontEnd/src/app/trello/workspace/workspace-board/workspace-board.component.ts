@@ -28,6 +28,7 @@ export class WorkspaceBoardComponent implements OnInit {
     },
     columns: [],
   };
+  owner: User={};
   userSearch: string = ``;
   userResult: User[] = [];
   members: User[] = [];
@@ -63,6 +64,7 @@ export class WorkspaceBoardComponent implements OnInit {
   public findById(id: any): void {
     this.workspaceService.findById(id).subscribe(workspaces => {
       this.workspace = workspaces
+      this.owner = workspaces.owner;
       this.checkRole()
     })
   }
@@ -84,6 +86,14 @@ export class WorkspaceBoardComponent implements OnInit {
         }
         this.membersDto.push(memberDto)
       }
+      let memberDto: Member = {
+        board: this.board,
+        canEdit: false,
+        user: {
+          id: this.workspace.owner?.id
+        }
+      }
+      this.membersDto.push(memberDto)
       this.addNewMembers();
       }
     )
@@ -130,7 +140,7 @@ export class WorkspaceBoardComponent implements OnInit {
 
   public updateWorkspace(board: Board) {
     this.workspace.boards.push(board)
-    this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => console.log("ok"))
+    this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => {})
 
   }
 
@@ -146,6 +156,8 @@ export class WorkspaceBoardComponent implements OnInit {
   }
 
   deleteWorkspace(id: number) {
+    let board: Board[] = this.workspace.boards;
+    this.boardService.deleteAllByWorkspace(board).subscribe()
     this.workspaceService.delete(id).subscribe(() => this.router.navigateByUrl(`/trello`))
   }
 }

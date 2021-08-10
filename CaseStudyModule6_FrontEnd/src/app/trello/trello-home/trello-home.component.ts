@@ -71,4 +71,8 @@ export class TrelloHomeComponent implements OnInit {
         this.router.navigateByUrl(`/trello/workspaces/${workspaces.id}`)
       })
   }
+
+  scrollTo(el: HTMLElement) {
+    el.scrollIntoView();
+  }
 }

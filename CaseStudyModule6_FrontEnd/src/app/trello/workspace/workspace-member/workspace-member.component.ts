@@ -10,6 +10,11 @@ import {MemberWorkspace} from "../../../model/member-workspace";
 import {MemberWorkspaceService} from "../../../service/memberworkspace/member-workspace.service";
 import {MemberService} from "../../../service/member/member.service";
 import {Member} from "../../../model/member";
+import {NotificationService} from "../../../service/notification/notification.service";
+import {Notification} from "../../../model/notification";
+
+declare var $: any;
+declare var Swal: any;
 
 @Component({
   selector: 'app-workspace-member',
@@ -17,8 +22,8 @@ import {Member} from "../../../model/member";
   styleUrls: ['./workspace-member.component.scss']
 })
 export class WorkspaceMemberComponent implements OnInit {
-  workspace: Workspace ={boards: [], id: 0, members: [], owner: undefined, title: "", type: ""}
-  owner: User={}
+  workspace: Workspace = {boards: [], id: 0, members: [], owner: undefined, title: "", type: ""}
+  owner: User = {}
   userList: Boolean = true;
   users: User[] = [];
   addUserList: User[] = [];
@@ -28,13 +33,18 @@ export class WorkspaceMemberComponent implements OnInit {
   roleUserInWorkspace: boolean = false;
   modalDelete = false;
   membersDto: Member[] = [];
+  listMemberWorkspace: MemberWorkspace[] = [];
+  notifications: Notification[] = [];
+  notification: Notification = {};
+
   constructor(private workspaceService: WorkspaceService,
               private userService: UserService,
               private activatedRoute: ActivatedRoute,
               private authenticationService: AuthenticationService,
               private memberWorkspaceService: MemberWorkspaceService,
               private router: Router,
-              private memberService: MemberService,) {
+              private memberService: MemberService,
+              private notificationService: NotificationService) {
 
   }
 
@@ -52,6 +62,7 @@ export class WorkspaceMemberComponent implements OnInit {
     this.workspaceService.findById(id).subscribe(workspaces => {
       this.workspace = workspaces
       this.owner = workspaces.owner
+      this.listMemberWorkspace = this.workspace.members;
       this.checkRole()
     })
   }
@@ -85,8 +96,9 @@ export class WorkspaceMemberComponent implements OnInit {
     }
   }
 
-  public updateWorkspace() {
+  public addMemberWorkspace() {
     if (this.addUserList.length > 0) {
+      let memberWorkspace: MemberWorkspace
       for (let user of this.addUserList) {
         this.memberWorkspace = {
           user: user,
@@ -94,24 +106,56 @@ export class WorkspaceMemberComponent implements OnInit {
         }
         this.memberWorkspaceService.create(this.memberWorkspace).subscribe((memberWorkspace) => {
           this.workspace.members.push(memberWorkspace);
-          this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => this.addUserList = [])
+          this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => {
+          })
         })
       }
-      for (let board of this.workspace.boards) {
 
-        for (let member of this.addUserList) {
-          let newMember: Member = {
-            board: board,
-            canEdit: false,
-            user: {
-              id: member.id
-            }
-          }
-          this.membersDto.push(newMember)
-        }
-        this.memberService.addNewMembers(this.membersDto).subscribe()
-      }
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Success',
+        showConfirmButton: false,
+        timer: 1000
+      });
+      this.createNotificationAddToWorkspace()
+      this.addMemberWorkspaceToBoard()
+      this.addUserList = []
     }
+  }
+
+  addMemberWorkspaceToBoard() {
+    for (let board of this.workspace.boards) {
+
+      for (let member of this.addUserList) {
+        let newMember: Member = {
+          board: board,
+          canEdit: false,
+          user: {
+            id: member.id
+          }
+        }
+        this.membersDto.push(newMember)
+      }
+      this.memberService.addNewMembers(this.membersDto).subscribe()
+      this.membersDto = [];
+    }
+  }
+
+  createNotificationAddToWorkspace() {
+    let receivers: User[] = [];
+    for (let member of this.addUserList) {
+      receivers.push(member)
+    }
+    let notification: Notification = {
+      title: this.workspace.title,
+      content:this.currentUser.username + " Added you to the workspace at " + this.getTime(),
+      url: "/trello/workspaces/" + this.workspace.id,
+      receiver: receivers
+    }
+
+    this.notificationService.createNotification(notification).subscribe()
+    this.notifications = []
   }
 
   public selectUser(username: any, user: User) {
@@ -124,9 +168,39 @@ export class WorkspaceMemberComponent implements OnInit {
     this.addUserList.splice(i, 1)
   }
 
+  getTime(){
+    let today = new Date();
+    let date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
+    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    return  time + ' ' + date;
+  }
+
   public removeMembers(i: number) {
-    this.workspace.members.splice(i, 1)
-    this.workspaceService.update(this.workspace.id,this.workspace).subscribe()
+    let removeMemberBoard: MemberWorkspace[] = this.workspace.members.splice(i, 1)
+    this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => {
+
+      let receivers: User[] = [];
+      for (let member of removeMemberBoard) {
+        if (member.user) {
+          receivers.push(member.user)
+        }
+      }
+      let notification: Notification = {
+        title: this.workspace.title,
+        content:this.currentUser.username +  " Remove you from group  to the workspace at " + this.getTime(),
+        url: "/trello",
+        receiver: receivers
+      }
+
+      this.notificationService.createNotification(notification).subscribe()
+      receivers = []
+    })
+    for (let board of this.workspace.boards) {
+      for (let member of removeMemberBoard) {
+        this.memberService.deleteMemberBoardWorkspace(board.id, member.user?.id).subscribe()
+      }
+    }
+    this.memberWorkspaceService.delete(removeMemberBoard).subscribe()
   }
 
   public showModal() {
@@ -140,9 +214,6 @@ export class WorkspaceMemberComponent implements OnInit {
   }
 
   checkRole() {
-    if (this.currentUser.id == this.workspace.owner?.id) {
-      this.roleUserInWorkspace = true
-    }
     for (let member of this.workspace.members) {
       if ((this.currentUser.id == member.user?.id && member.role == "Admin")) {
         this.roleUserInWorkspace = true
@@ -160,12 +231,47 @@ export class WorkspaceMemberComponent implements OnInit {
 
   deleteWorkspace(id: number) {
     this.workspaceService.delete(id).subscribe(() => {
-      this.router.navigateByUrl(`/trello/workspaces`)
+      this.router.navigateByUrl(`/trello`)
     })
   }
 
-  updateMember(member: MemberWorkspace, role: string){
+  updateMember(member: MemberWorkspace, role: string) {
     member.role = role;
     this.memberWorkspaceService.update(member.id, member).subscribe()
+    let receivers: User[] = [];
+    if (member.user) {
+      receivers.push(member.user)
+    }
+
+    if (role == "Admin"){
+      let notification: Notification = {
+        title: this.workspace.title,
+        content: this.currentUser.username +  " has changed your permissions from Member => Admin " + this.getTime(),
+        url: "/trello/workspace/" + this.workspace.id +"/member",
+        receiver: receivers
+      }
+
+      this.notificationService.createNotification(notification).subscribe()
+    } else if (role == 'Member') {
+      let notification: Notification = {
+        title: this.workspace.title,
+        content: this.currentUser.username +  " has changed your permissions from Admin => Member " + this.getTime(),
+        url: "/trello/workspace/" + this.workspace.id +"/member",
+        receiver: receivers
+      }
+
+      this.notificationService.createNotification(notification).subscribe()
+      receivers = []
+    }
+  }
+
+  findMemberWorkspaceByKeyword(keyword: String) {
+    if (keyword != "") {
+      this.memberWorkspaceService.findByKeyword(keyword, this.workspace.id).subscribe(memberWorkspace => {
+        this.listMemberWorkspace = memberWorkspace;
+      })
+    } else {
+      this.listMemberWorkspace = this.workspace.members;
+    }
   }
 }

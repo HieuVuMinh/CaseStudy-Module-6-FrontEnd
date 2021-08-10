@@ -41,4 +41,11 @@ export class BoardService {
   isBoardInWorkspace(id: number): Observable<boolean> {
     return this.httpClient.get<boolean>(`${API_URL}boards/${id}/is-in-workspace`);
   }
+
+  deleteById(id: number): Observable<Board> {
+    return this.httpClient.delete<Board>(`${API_URL}boards/${id}`);
+  }
+  deleteAllByWorkspace(boards: Board[]): Observable<Board> {
+    return this.httpClient.post<Board>(`${API_URL}boards/delete`,boards);
+  }
 }

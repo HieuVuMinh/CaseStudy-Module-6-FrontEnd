@@ -1,23 +1,29 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Board} from "../../model/board";
 import {Column} from "../../model/column";
 import {Card} from "../../model/card";
 import {BoardService} from "../../service/board/board.service";
 import {ColumnService} from "../../service/column/column.service";
 import {CardService} from "../../service/card/card.service";
-import {map} from "rxjs/operators";
+import {finalize, map} from "rxjs/operators";
 import {DetailedMember} from "../../model/detailed-member";
 import {MemberService} from "../../service/member/member.service";
 import {FormControl, FormGroup, NgForm, Validators} from "@angular/forms";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
-import {User} from "../../model/user";
 import {UserToken} from "../../model/user-token";
+import {Attachment} from "../../model/attachment";
+import {AttachmentService} from "../../service/attachment/attachment.service";
+import {AngularFireStorage} from "@angular/fire/storage";
+import {Tag} from "../../model/tag";
+import {TagService} from "../../service/tag/tag.service";
 import {UserService} from "../../service/user/user.service";
 import {CommentCard} from "../../model/commentCard";
 import {CommentCardService} from "../../service/comment/comment-card.service";
 import {Member} from "../../model/member";
+import {Reply} from "../../model/reply";
+import {ReplyService} from "../../service/reply/reply.service";
 
 @Component({
   selector: 'app-trello-view',
@@ -25,8 +31,6 @@ import {Member} from "../../model/member";
   styleUrls: ['./trello-view.component.scss']
 })
 export class TrelloViewComponent implements OnInit {
-  user: User = {};
-
   boardId = -1;
   board: Board = {
     id: -1,
@@ -36,6 +40,7 @@ export class TrelloViewComponent implements OnInit {
   };
 
   commentCard: CommentCard = {}
+  reply: Reply = {}
 
   previousColumn: Column = {
     cards: [],
@@ -43,13 +48,14 @@ export class TrelloViewComponent implements OnInit {
     position: -1,
     title: ""
   };
+  repliesDto: Reply[] = [];
   commentDto: CommentCard[] = [];
   cardsDto: Card[] = [];
   columnsDto: Column[] = [];
   members: DetailedMember[] = [];
   commentId = -1;
+  replyId = -1;
   selectedCard: Card = {content: "", id: -1, position: -1, title: ""};
-  columnBeforeAdd: Column[] = [];
   columnForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
   })
@@ -57,10 +63,12 @@ export class TrelloViewComponent implements OnInit {
     content: new FormControl(''),
     cardId: new FormControl()
   })
+  replyForm: FormGroup = new FormGroup({
+    content: new FormControl('')
+  })
   currentUser: UserToken = {};
   canEdit: boolean = false;
   isInWorkspace: boolean = false;
-
   newCard: Card = {
     id: -1,
     title: "",
@@ -68,43 +76,45 @@ export class TrelloViewComponent implements OnInit {
     position: -1
   }
 
-  isAdded = false;
+  newAttachment: Attachment = {
+    id: -1,
+    source: ""
+  }
 
-  // fileSrc: any | undefined = '';
-  // selectedFile: any | undefined = null;
-  // isSubmitted = false;
-  // attachmentList: Attachment [] = [];
+  isAdded = false;
+  newTag: Tag = {
+    color: "is-primary",
+    name: ""
+  }
+  deleteTagId: number = -1;
+
+  selectedFile: any | undefined = null;
+  isSubmitted = false;
+
   titleForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
   })
 
   titleColumn: Column = {cards: [], id: -1, position: -1, title: ""}
+  fileSrc: any | undefined = null;
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
               private columnService: ColumnService,
               private cardService: CardService,
               private memberService: MemberService,
+              private authenticationService: AuthenticationService,
+              private router: Router,
+              private attachmentService: AttachmentService,
+              private storage: AngularFireStorage,
+              private tagService: TagService,
               private userService: UserService,
-              private commentCardService: CommentCardService,
-              private authenticationService: AuthenticationService) {
-    this.authenticationService.currentUserSubject.subscribe(user => {
-      this.currentUser = user
-    });
+              private replyService: ReplyService,
+              private commentCardService: CommentCardService) {
   }
 
   ngOnInit(): void {
     this.getBoardIdByUrl();
-    if (this.currentUser) {
-      // @ts-ignore
-      this.getUserById(this.currentUser.id)
-    }
-  }
-
-  getUserById(id: number) {
-    this.userService.getUserById(id).subscribe(user => {
-      this.user = user;
-    })
   }
 
   getBoardIdByUrl() {
@@ -227,25 +237,35 @@ export class TrelloViewComponent implements OnInit {
   }
 
   private updateBoard() {
-    this.boardService.updateBoard(this.boardId, this.board).subscribe(() => this.getPage());
+    this.boardService.updateBoard(this.boardId, this.board).subscribe(() => {
+      if (this.deleteTagId != -1) {
+        this.tagService.deleteById(this.deleteTagId).subscribe(() => {
+          this.deleteTagId = -1;
+          this.getPage()
+        })
+      } else {
+        this.getPage();
+      }
+    });
   }
 
-  showUpdateModal(item: Card) {
-    this.selectedCard = item;
+  showUpdateCardModal(card: Card) {
+    this.selectedCard = card;
     // @ts-ignore
     document.getElementById('modal-update-card').classList.add('is-active');
     this.getAllCommentByCardId()
   }
 
-  closeUpdateModal() {
+  closeModalUpdateCard() {
     // @ts-ignore
     document.getElementById('modal-update-card').classList.remove('is-active');
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
-    this.closeUpdateModal()
+    this.closeModalUpdateCard()
   }
 
+// comment
   addComment() {
     let member: DetailedMember = {boardId: 0, canEdit: false, id: 0, userId: 0, username: ""}
     for (let m of this.members) {
@@ -256,7 +276,6 @@ export class TrelloViewComponent implements OnInit {
     // @ts-ignore
     let memberDto: Member = {board: {id: member.id}, canEdit: member.canEdit, id: member.id, user: {id: member.userId}}
     let commentCard: CommentCard = {content: this.commentForm.value.content, card: this.selectedCard, member: memberDto};
-    console.log(commentCard)
     this.commentForm = new FormGroup({
       content: new FormControl('')
     });
@@ -269,11 +288,62 @@ export class TrelloViewComponent implements OnInit {
     this.commentCardService.findAllByCardId(this.selectedCard.id).subscribe(comments => {
       // @ts-ignore
       this.commentDto = comments;
-      console.log(this.commentDto)
-      console.log(this.members)
     })
   }
 
+// Reply
+  showDeleteReplyModal(id: any) {
+    // @ts-ignore
+    document.getElementById("deleteReplyModal").classList.add("is-active")
+    this.replyId = id;
+  }
+  // closeColumn(id: any) {
+  //   console.log(id);
+  //   for (let column of this.board.columns) {
+  //     if (column.id == id) {
+  //       let deleteId = this.board.columns.indexOf(column);
+  //       this.board.columns.splice(deleteId, 1);
+  //       this.saveChanges();
+  //     }
+  //   }
+  // }
+
+  deleteReply() {
+    let commentCard1: CommentCard = {};
+    for (let comment of this.commentDto) {
+      if (comment.id == this.commentId){
+        commentCard1 = comment;
+        break;
+      }
+    }
+    // @ts-ignore
+    for (let reply of commentCard1.replies) {
+      if (reply.id == this.replyId){
+        let deleteReplyId = commentCard1.replies?.indexOf(reply);
+        // @ts-ignore
+        commentCard1.replies?.splice(deleteReplyId, 1);
+      }
+    }
+    for (let comment of this.commentDto) {
+      if (comment.id == this.commentId){
+        comment = commentCard1;
+        break;
+      }
+    }
+    this.commentCardService.updateAllComment(this.commentDto).subscribe(() =>{
+      this.replyService.deleteReplyById(this.replyId).subscribe(()=>{
+        alert("success!")
+      })
+      this.closeDeleteReplyModal()
+    })
+  }
+
+  closeDeleteReplyModal() {
+    // @ts-ignore
+    document.getElementById("deleteReplyModal").classList.remove("is-active")
+  }
+
+// Modal
   showDeleteCommentModal(id: any) {
     // @ts-ignore
     document.getElementById("deleteModal").classList.add("is-active")
@@ -293,17 +363,6 @@ export class TrelloViewComponent implements OnInit {
     // @ts-ignore
     document.getElementById("deleteModal").classList.remove("is-active")
   }
-
-  // closeColumn(id: any) {
-  //   console.log(id);
-  //   for (let column of this.board.columns) {
-  //     if (column.id == id) {
-  //       let deleteId = this.board.columns.indexOf(column);
-  //       this.board.columns.splice(deleteId, 1);
-  //       this.saveChanges();
-  //     }
-  //   }
-  // }
 
   addColumn() {
     if (this.columnForm.valid) {
@@ -332,32 +391,8 @@ export class TrelloViewComponent implements OnInit {
 
   updateCurrentCard() {
     this.saveChanges();
-    this.closeUpdateModal();
+    this.closeModalUpdateCard();
   }
-
-  // uploadFile() {
-  //   this.isSubmitted = true;
-  //   if (this.selectedFile != null) {
-  //     const filePath = `${this.selectedFile.name.split('.').slice(0, -1).join('.')}_${new Date().getTime()}`;
-  //     const fileRef = this.storage.ref(filePath);
-  //     this.storage.upload(filePath, this.selectedFile).snapshotChanges().pipe(
-  //       finalize(() => {
-  //         fileRef.getDownloadURL().subscribe(url => {
-  //           console.log("Url: " + url);
-  //           this.fileSrc = url;
-  //           console.log("This img after upload: " + this.fileSrc)
-  //           this.attachmentList.push(url);
-  //           this.userService.updateById(this.id, this.user).subscribe(() => {
-  //               alert("Success")
-  //             },
-  //             () => {
-  //               alert("Fail")
-  //             });
-  //         });
-  //       })).subscribe();
-  //   }
-  // }
-
 
   addNewCard(id: any, length: any, addNewCardForm: NgForm) {
     this.isAdded = true;
@@ -398,13 +433,136 @@ export class TrelloViewComponent implements OnInit {
   }
 
   closeColumn(id: any) {
-    console.log(id);
     for (let column of this.board.columns) {
       if (column.id == id) {
         let deleteId = this.board.columns.indexOf(column);
         this.board.columns.splice(deleteId, 1);
         this.saveChanges();
       }
+    }
+  }
+
+  addNewTag() {
+    this.tagService.add(this.newTag).subscribe(tag => {
+      this.newTag = tag;
+      this.board.tags?.push(this.newTag);
+      // for (let column of this.board.columns) {
+      //   for (let card of column.cards) {
+      //     if (card.id == this.selectedCard.id) {
+      //       card.tags?.push(this.newTag);
+      //     }
+      //   }
+      // }
+      this.saveChanges();
+      this.newTag = {
+        color: "is-primary",
+        name: ""
+      }
+    });
+  }
+
+  addTagToCard(tag: Tag) {
+    this.updateSelectedCard();
+    let isValid = true;
+    // @ts-ignore
+    for (let existingTag of this.selectedCard.tags) {
+      if (existingTag.id == tag.id) {
+        isValid = false;
+        break;
+      }
+    }
+    if (isValid) {
+      // @ts-ignore
+      this.selectedCard.tags.push(tag);
+    }
+    this.saveChanges();
+  }
+
+  removeTagFromCard(tag: Tag) {
+    this.updateSelectedCard()
+    // @ts-ignore
+    for (let existingTag of this.selectedCard.tags) {
+      if (existingTag.id == tag.id) {
+        // @ts-ignore
+        let deleteIndex = this.selectedCard.tags.indexOf(existingTag);
+        // @ts-ignore
+        this.selectedCard.tags.splice(deleteIndex, 1);
+      }
+    }
+    this.saveChanges();
+  }
+
+  private updateSelectedCard() {
+    for (let column of this.board.columns) {
+      for (let card of column.cards) {
+        if (card.id == this.selectedCard.id) {
+          this.selectedCard = card;
+        }
+      }
+    }
+  }
+
+
+  showDeleteTagButton(id: any) {
+    // @ts-ignore
+    document.getElementById('delete-btn-tag-' + id).classList.remove('is-hidden');
+  }
+
+  hideDeleteTagButton(id: any) {
+    // @ts-ignore
+    document.getElementById('delete-btn-tag-' + id).classList.add('is-hidden');
+  }
+
+  deleteTag(id: any) {
+    this.deleteTagId = id;
+    // delete tag from cards
+    for (let column of this.board.columns) {
+      for (let card of column.cards) {
+        // @ts-ignore
+        for (let tag of card.tags) {
+          if (tag.id == id) {
+            // @ts-ignore
+            let deleteIndex = card.tags.indexOf(tag);
+            // @ts-ignore
+            card.tags.splice(deleteIndex, 1);
+          }
+        }
+      }
+    }
+    // delete tag from board
+    // @ts-ignore
+    for (let tag of this.board.tags) {
+      if (tag.id == id) {
+        // @ts-ignore
+        let deleteIndex = this.board.tags.indexOf(tag);
+        // @ts-ignore
+        this.board.tags.splice(deleteIndex, 1);
+      }
+    }
+    this.saveChanges();
+  }
+
+  toggleTagForm() {
+    let tagFormEle = document.getElementById('tag-form');
+    // @ts-ignore
+    if (tagFormEle.classList.contains('is-hidden')) {
+      // @ts-ignore
+      tagFormEle.classList.remove('is-hidden');
+    } else {
+      // @ts-ignore
+      tagFormEle.classList.add('is-hidden');
+    }
+  }
+
+  toggleMemberForm() {
+    let memberFormEle = document.getElementById('member-form');
+    // @ts-ignore
+    if (memberFormEle.classList.contains('is-hidden')) {
+      // @ts-ignore
+      memberFormEle.classList.remove('is-hidden');
+    } else {
+      // @ts-ignore
+      memberFormEle.classList.add('is-hidden');
     }
   }
 
@@ -416,6 +574,149 @@ export class TrelloViewComponent implements OnInit {
   showSubmitCommentButton() {
     // @ts-ignore
     document.getElementById("submitComment-" + this.selectedCard.id).classList.add('is-hidden')
+  }
+
+  updateMembers(event: DetailedMember[]) {
+    this.members = event;
+  }
+
+  addMemberToCard(member: DetailedMember) {
+    this.updateSelectedCard();
+    let isValid: boolean = true;
+    // @ts-ignore
+    for (let existingMember of this.selectedCard.members) {
+      if (existingMember.id == member.userId) {
+        isValid = false;
+        break;
+      }
+    }
+    // if (isValid) {
+    //   let memberDto: Member = {
+    //     // @ts-ignore
+    //     board: {id: member.boardId},
+    //     canEdit: member.canEdit,
+    //     id: member.id,
+    //     user: {id: member.userId, username: member.username}
+    //   };
+    //   // @ts-ignore
+    //   this.selectedCard.members.push(memberDto);
+    //   console.log(this.board);
+    //   console.log(member);
+    //   this.saveChanges();
+    // }
+  }
+
+
+  confirmDelete() {
+    // @ts-ignore
+    document.getElementById('modal-confirm-delete').classList.remove('is-hidden');
+  }
+
+  deleteCard() {
+    this.cardService.deleteById(this.selectedCard.id).subscribe(() => {
+      this.closeModalUpdateCard();
+      this.getPage();
+    });
+  }
+
+  uploadFile() {
+    this.isSubmitted = true;
+    let isMember = false;
+    for (let member of this.members) {
+      if (member.userId == this.currentUser.id) {
+        // @ts-ignore
+        this.newAttachment.member = member;
+        isMember = true;
+        this.newAttachment.card = this.selectedCard;
+        break;
+      }
+    }
+    if (isMember && this.selectedFile != null) {
+      const filePath = `${this.selectedFile.name.split('.').slice(0, -1).join('.')}_${new Date().getTime()}`;
+      const fileRef = this.storage.ref(filePath);
+      this.storage.upload(filePath, this.selectedFile).snapshotChanges().pipe(
+        finalize(() => {
+          fileRef.getDownloadURL().subscribe(url => {
+            this.fileSrc = url;
+            this.newAttachment.source = url;
+            this.attachmentService.addNewFile(this.newAttachment).subscribe(() => {
+                alert("Success");
+              },
+              () => {
+                alert("Fail")
+              });
+          });
+        })).subscribe();
+    }
+  }
+
+  showPreview(event: any) {
+    if (event.target.files && event.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => this.fileSrc = event.target.result;
+      reader.readAsDataURL(event.target.files[0]);
+      this.selectedFile = event.target.files[0];
+      if (this.selectedFile != null) {
+        const filePath = `${this.selectedFile.name.split('.').splice(0, -1).join('.')}_${new Date().getTime()}`;
+        const fileRef = this.storage.ref(filePath);
+        this.storage.upload(filePath, this.selectedFile).snapshotChanges().pipe(
+          finalize(() => {
+            fileRef.getDownloadURL().subscribe(url => {
+              this.fileSrc = url;
+            });
+          })).subscribe();
+      }
+    } else {
+      this.selectedFile = null;
+    }
+  }
+
+  showFormUploadFile() {
+    // @ts-ignore
+    document.getElementById('form-upload-file').classList.remove('is-hidden');
+  }
+
+  showReplyForm(id: any) {
+    this.commentId = id;
+    // @ts-ignore
+    let replyForm = document.getElementById("reply-" + id);
+    // @ts-ignore
+    if (replyForm.classList.contains('is-hidden')) {
+      // @ts-ignore
+      replyForm.classList.remove("is-hidden");
+    } else {
+      // @ts-ignore
+      replyForm.classList.add("is-hidden");
+    }
+  }
+
+  addReply(commentId: any) {
+    let member: DetailedMember = {boardId: 0, canEdit: false, id: 0, userId: 0, username: ""}
+    for (let m of this.members) {
+      if (m.userId == this.currentUser.id){
+        member = m;
+      }
+    }
+    // @ts-ignore
+    let memberDto: Member = {board: {id: member.id}, canEdit: member.canEdit, id: member.id, user: {id: member.userId}}
+    let reply: Reply = {content: this.replyForm.value.content, member: memberDto}
+    this.replyForm = new FormGroup({
+      content: new FormControl('')
+    })
+    this.replyService.saveReply(reply).subscribe(reply => {
+      this.reply = reply;
+      for (let com of this.commentDto){
+        if (com.id == commentId){
+          com.replies?.push(this.reply);
+          break;
+        }
+      }
+      this.commentCardService.updateAllComment(this.commentDto).subscribe(() =>{
+        this.getAllCommentByCardId();
+        this.showReplyForm(commentId);
+        console.log(this.commentDto)
+      })
+    })
   }
 
 }

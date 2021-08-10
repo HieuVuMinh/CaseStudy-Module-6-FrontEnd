@@ -34,4 +34,7 @@ export class MemberService {
   deleteMember(id: any): Observable<Member> {
     return this.httpClient.delete<Member>(`${API_URL}members/${id}`);
   }
+  deleteMemberBoardWorkspace(boardId: any, userId: any): Observable<Member> {
+    return this.httpClient.delete<Member>(`${API_URL}members/${boardId}/${userId}`, );
+  }
 }

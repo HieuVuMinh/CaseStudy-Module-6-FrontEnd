@@ -22,7 +22,6 @@
           <img *ngIf="board.owner.image" [src]="board.owner.image" class="img-circle is-48x48">
           {{board.owner.username}}
         </button>
-
         <button class="button is-primary">
           <i class="far fa-star"></i>
         </button>
@@ -55,9 +54,17 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
-          <button class="button is-primary"><i class="fas fa-ellipsis-h"></i>
+          <div style="position: relative">
+            <div id="menu-btn-dropdown" class="is-hidden" style="position: absolute; top: 25px">
+              <button class="button is-info is-light">Activity Log</button>
+              <button *ngIf="canEdit" class="button is-danger is-light" (click)="toggleDeleteBoardModal()">Remove Board</button>
+            </div>
+          </div>
+          <button class="button is-primary" (click)="toggleMenu()">
+            <i class="fas fa-ellipsis-h"></i>
             Menu
           </button>
+
           <button *ngIf="canEdit && !isInWorkspace" class="button is-primary"
                   (click)="toggleUserSearchBar()">
             <i class="fas fa-user-plus"></i>Invite
@@ -135,4 +142,22 @@
     </footer>
   </div>
 </div>
-<!--All user modal-->
+<!--delete board modal-->
+<div class="modal" id="delete-board-modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Delete Board</p>
+      <button class="delete" aria-label="close" (click)="toggleDeleteBoardModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="notification is-danger is-light">
+        Are you sure you want to delete this board?
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-danger is-light" (click)="removeThisBoard()">Remove Board</button>
+      <button class="button is-light" (click)="toggleDeleteBoardModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
