@@ -1,5 +1,5 @@
 import {Tag} from "./tag";
-import {Member} from "./member";
+import {User} from "./user";
 
 export interface Card {
   id: number;
@@ -7,5 +7,5 @@ export interface Card {
   content: string;
   position: number;
   tags?: Tag[];
-  members?: Member[];
+  users?: User[];
 }

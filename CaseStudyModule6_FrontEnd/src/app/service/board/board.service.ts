@@ -48,4 +48,8 @@ export class BoardService {
   deleteAllByWorkspace(boards: Board[]): Observable<Board> {
     return this.httpClient.post<Board>(`${API_URL}boards/delete`,boards);
   }
+
+  findAllByKeyword(keyword: string, searcherId: number | undefined): Observable<Board[]> {
+    return this.httpClient.get<Board[]>(`${API_URL}boards/search/${keyword}/by/${searcherId}`);
+  }
 }

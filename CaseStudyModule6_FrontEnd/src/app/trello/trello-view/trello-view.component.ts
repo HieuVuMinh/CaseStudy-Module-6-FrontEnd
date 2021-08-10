@@ -209,6 +209,8 @@ export class TrelloViewComponent implements OnInit {
   }
 
   private updateDto() {
+    this.columnsDto = [];
+    this.cardsDto = [];
     for (let column of this.board.columns) {
       this.columnsDto.push(column);
       for (let card of column.cards) {
@@ -393,20 +395,13 @@ export class TrelloViewComponent implements OnInit {
         this.createNoticeInBoard(notification)
       }
     }
-
   }
 
   addNewTag() {
     this.tagService.add(this.newTag).subscribe(tag => {
       this.newTag = tag;
-      this.board.tags?.push(this.newTag);
-      // for (let column of this.board.columns) {
-      //   for (let card of column.cards) {
-      //     if (card.id == this.selectedCard.id) {
-      //       card.tags?.push(this.newTag);
-      //     }
-      //   }
-      // }
+      // @ts-ignore
+      this.board.tags.push(this.newTag);
       this.saveChanges();
       this.newTag = {
         color: "is-primary",
@@ -532,33 +527,59 @@ export class TrelloViewComponent implements OnInit {
 
   updateMembers(event: DetailedMember[]) {
     this.members = event;
+    this.removeNonMembersFromCards();
   }
 
-  addMemberToCard(member: DetailedMember) {
+  private removeNonMembersFromCards() {
+    for (let column of this.board.columns) {
+      for (let card of column.cards) {
+        // @ts-ignore
+        for (let user of card.users) {
+          if (!this.isBoardMember(user)) {
+            // @ts-ignore
+            let deleteIndex = card.users.indexOf(user);
+            // @ts-ignore
+            card.users.splice(deleteIndex,1);
+          }
+        }
+      }
+    }
+    this.saveChanges();
+  }
+
+  private isBoardMember(user: User): boolean {
+    let isBoardMember = false;
+    for (let member of this.members) {
+      if (member.userId == user.id) {
+        isBoardMember = true;
+        break;
+      }
+    }
+    return isBoardMember;
+  }
+
+  addUserToCard(member: DetailedMember) {
     this.updateSelectedCard();
-    let isValid: boolean = true;
+    let isValid = true;
     // @ts-ignore
-    for (let existingMember of this.selectedCard.members) {
-      if (existingMember.id == member.userId) {
+    for (let existingUser of this.selectedCard.users) {
+      if (existingUser.id == member.userId) {
         isValid = false;
         break;
       }
     }
-    // if (isValid) {
-    //   let memberDto: Member = {
-    //     // @ts-ignore
-    //     board: {id: member.boardId},
-    //     canEdit: member.canEdit,
-    //     id: member.id,
-    //     user: {id: member.userId, username: member.username}
-    //   };
-    //   // @ts-ignore
-    //   this.selectedCard.members.push(memberDto);
-    //   console.log(this.board);
-    //   console.log(member);
-    //   this.saveChanges();
-    // }
+    if (isValid) {
+      let user: User = {
+        id: member.userId,
+        username: member.username,
+      }
+      // @ts-ignore
+      this.selectedCard.users.push(user);
+    }
+    this.saveChanges();
   }
+
+
 
 
   confirmDelete() {
@@ -653,5 +674,19 @@ export class TrelloViewComponent implements OnInit {
       }
     })
 
+  }
+
+  removeUserFromCard(user: User) {
+    this.updateSelectedCard()
+    // @ts-ignore
+    for (let existingUser of this.selectedCard.users) {
+      if (existingUser.id == user.id) {
+        // @ts-ignore
+        let deleteIndex = this.selectedCard.users.indexOf(existingUser);
+        // @ts-ignore
+        this.selectedCard.users.splice(deleteIndex, 1);
+      }
+    }
+    this.saveChanges();
   }
 }
