@@ -163,7 +163,10 @@ export class TrelloViewComponent implements OnInit {
   public dropColumn(event: CdkDragDrop<string[]>): void {
     moveItemInArray(this.board.columns, event.previousIndex, event.currentIndex);
     this.saveChanges();
-    this.createNoticeInBoard(`Change position column ${this.board.columns[event.previousIndex].title} with ${this.board.columns[event.currentIndex].title}`)
+    if (event.previousIndex != event.currentIndex) {
+      this.createNoticeInBoard(`Change position column ${this.board.columns[event.previousIndex].title} with ${this.board.columns[event.currentIndex].title}`)
+    }
+
   }
 
   public dropCard(event: CdkDragDrop<Card[]>, column: Column): void {
@@ -177,7 +180,10 @@ export class TrelloViewComponent implements OnInit {
     }
     this.setPreviousColumn(event);
     this.saveChanges()
-    this.createNoticeInBoard(`moved ${event.container.data[0].title} from ${this.previousColumn.title} to ${column.title}`)
+    if (this.previousColumn.id != column.id) {
+      this.createNoticeInBoard(`moved ${event.container.data[0].title} from ${this.previousColumn.title} to ${column.title}`)
+    }
+
   }
 
 
@@ -363,8 +369,8 @@ export class TrelloViewComponent implements OnInit {
           break;
         }
       }
-        let notification = "Add new card: " + card.title
-        this.createNoticeInBoard(notification)
+      let notification = "Add new card: " + card.title
+      this.createNoticeInBoard(notification)
     })
   }
 
@@ -540,7 +546,7 @@ export class TrelloViewComponent implements OnInit {
             // @ts-ignore
             let deleteIndex = card.users.indexOf(user);
             // @ts-ignore
-            card.users.splice(deleteIndex,1);
+            card.users.splice(deleteIndex, 1);
           }
         }
       }
@@ -579,8 +585,6 @@ export class TrelloViewComponent implements OnInit {
     }
     this.saveChanges();
   }
-
-
 
 
   confirmDelete() {

@@ -19,7 +19,6 @@ import {BoardService} from "../../service/board/board.service";
 export class NavbarComponent implements OnInit {
   currentUser: UserToken = {};
   user: User = {};
-  notifications: Notification[] = [];
   imgSrc: any | undefined = 'https://newsmd1fr.keeng.net/tiin/archive/images/20210220/145211_facebook_doi_anh_dai_dien_2.jpgs ';
   selectedImage: any | undefined = null;
   isSubmitted = false;
