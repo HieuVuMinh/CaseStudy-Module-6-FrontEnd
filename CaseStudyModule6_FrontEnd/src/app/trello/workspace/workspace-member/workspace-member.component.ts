@@ -36,6 +36,7 @@ export class WorkspaceMemberComponent implements OnInit {
   listMemberWorkspace: MemberWorkspace[] = [];
   notifications: Notification[] = [];
   notification: Notification = {};
+  selectPage = "member";
 
   constructor(private workspaceService: WorkspaceService,
               private userService: UserService,

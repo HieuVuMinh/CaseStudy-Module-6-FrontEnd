@@ -18,7 +18,6 @@ import {AuthenticationService} from "../../../service/authentication/authenticat
   styleUrls: ['./workspace-board.component.scss']
 })
 export class WorkspaceBoardComponent implements OnInit {
-
   workspace: Workspace = {type: "", boards: [], id: 0, members: [], owner: undefined, title: ""};
   user: User = {};
   board: Board = {

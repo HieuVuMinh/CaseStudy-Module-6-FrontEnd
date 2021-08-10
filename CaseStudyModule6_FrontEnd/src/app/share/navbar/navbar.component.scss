@@ -344,10 +344,11 @@ button:focus {
   content: "";
   border-width: 20px 27px;
   border-style: solid;
-  border-color: transparent transparent white transparent;
+  border-color: transparent transparent rgb(100,181,216) transparent;
   position: absolute;
   right: 4px;
   top: -29px;
+
 }
 .header__notify::after {
   content: "";
@@ -371,10 +372,11 @@ button:focus {
 }
 .header__notify-header {
   height: 40px;
-  background-color: white;
+  background-color: rgb(100,181,216);
+  text-align: center;
 }
 .header__notify-header h3 {
-  color: #999;
+  color: white;
   margin: 0 0 0 12px;
   font-weight: 400;
   font-size: 1.4rem;
@@ -387,6 +389,7 @@ button:focus {
   max-height: 400px;
   flex-grow: 1;
   overflow-y: auto;
+  background-color: rgb(187,227,246);
 }
 ::-webkit-scrollbar {
   width: 15px;
