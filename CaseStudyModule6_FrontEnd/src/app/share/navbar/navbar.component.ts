@@ -140,7 +140,11 @@ export class NavbarComponent implements OnInit {
 
   markAllAsRead(){
     if (this.currentUser.id != null) {
-      this.notificationService.markAllAsRead(this.currentUser.id).subscribe(() => this.notificationService.unreadNotice = 0)
+      this.notificationService.markAllAsRead(this.currentUser.id).subscribe(() =>{
+        this.notificationService.unreadNotice = 0
+        // @ts-ignore
+        this.notificationService.findAllByUser(this.currentUser.id).subscribe( notifications => this.notificationService.notification = notifications)
+      } )
     }
   }
 
