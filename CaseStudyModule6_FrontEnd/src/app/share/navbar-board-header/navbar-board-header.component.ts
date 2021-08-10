@@ -225,6 +225,9 @@ export class NavbarBoardHeaderComponent implements OnInit {
   }
 
   saveNotification(notification: Notification) {
-    this.notificationService.createNotification(notification).subscribe()
+    this.notificationService.createNotification(notification).subscribe( () => {
+        // @ts-ignore
+      this.notificationService.findAllByUser(this.authenticationService.getCurrentUserValue().id).subscribe( notifications => this.notificationService.notification = notifications )
+    })
   }
 }

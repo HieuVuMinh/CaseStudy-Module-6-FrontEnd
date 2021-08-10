@@ -30,8 +30,8 @@
                  id="{{column.id}}"
                  cdkDropList
                  [cdkDropListData]="column.cards"
-                 (cdkDropListDropped)="dropCard($event)">
-              <div class="task" *ngFor="let item of column.cards" cdkDrag (click)="showUpdateCardModal(item)">
+                 (cdkDropListDropped)="dropCard($event, column)">
+              <div class="task" *ngFor="let item of column.cards" cdkDrag [cdkDragData]="item" (click)="showUpdateCardModal(item)">
                 <ul>
                   <li><span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
                   </li>

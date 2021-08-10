@@ -165,7 +165,7 @@ export class TrelloViewComponent implements OnInit {
     this.saveChanges();
   }
 
-  public dropCard(event: CdkDragDrop<Card[]>): void {
+  public dropCard(event: CdkDragDrop<Card[]>, column: Column): void {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -176,6 +176,7 @@ export class TrelloViewComponent implements OnInit {
     }
     this.setPreviousColumn(event);
     this.saveChanges()
+    this.createNoticeInBoard(`moved ${event.container.data[0].title} from ${this.previousColumn.title} to ${column.title}`)
   }
 
 
@@ -646,7 +647,11 @@ export class TrelloViewComponent implements OnInit {
   }
 
   saveNotification(notification: Notification) {
-    this.notificationService.createNotification(notification).subscribe()
-  }
+    this.notificationService.createNotification(notification).subscribe(() => {
+      if (this.currentUser.id != null) {
+        this.notificationService.findAllByUser(this.currentUser.id).subscribe( notifications => this.notificationService.notification = notifications )
+      }
+    })
 
+  }
 }

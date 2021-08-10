@@ -28,7 +28,7 @@ export class NavbarComponent implements OnInit {
               private router: Router,
               private activatedRoute: ActivatedRoute,
               private userService: UserService,
-              private notificationService: NotificationService,
+              public notificationService: NotificationService,
               private storage: AngularFireStorage) {
     this.authenticationService.currentUserSubject.subscribe(user => {
       this.currentUser = user
@@ -102,7 +102,7 @@ export class NavbarComponent implements OnInit {
   findAllNotificationByUserId(){
     if (this.currentUser?.id != null) {
       this.notificationService.findAllByUser(this.currentUser.id).subscribe(notifications => {
-        this.notifications = notifications
+        this.notificationService.notification = notifications
       })
     }
   }
