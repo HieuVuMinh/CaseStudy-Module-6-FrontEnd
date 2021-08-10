@@ -8,6 +8,8 @@ import {NotificationService} from "../../service/notification/notification.servi
 import {Notification} from "../../model/notification";
 import {AngularFireStorage} from "@angular/fire/storage";
 import {finalize} from "rxjs/operators";
+import {Board} from "../../model/board";
+import {BoardService} from "../../service/board/board.service";
 
 @Component({
   selector: 'app-navbar',
@@ -22,14 +24,16 @@ export class NavbarComponent implements OnInit {
   selectedImage: any | undefined = null;
   isSubmitted = false;
   id: any = {};
-
+  boardResults: Board[] = [];
+  searchString: string = '';
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
               private userService: UserService,
               private notificationService: NotificationService,
-              private storage: AngularFireStorage) {
+              private storage: AngularFireStorage,
+              private boardService: BoardService) {
     this.authenticationService.currentUserSubject.subscribe(user => {
       this.currentUser = user
     });
@@ -99,7 +103,8 @@ export class NavbarComponent implements OnInit {
     this.authenticationService.logout();
     this.router.navigateByUrl('/login')
   }
-  findAllNotificationByUserId(){
+
+  findAllNotificationByUserId() {
     if (this.currentUser?.id != null) {
       this.notificationService.findAllByUser(this.currentUser.id).subscribe(notifications => {
         this.notifications = notifications
@@ -119,5 +124,19 @@ export class NavbarComponent implements OnInit {
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     this.closeModalUpdate();
+  }
+
+  search() {
+    // @ts-ignore
+    if (this.searchString == '') {
+      this.boardResults = [];
+    } else {
+      this.boardService.findAllByKeyword(this.searchString).subscribe(boards => this.boardResults = boards);
+    }
+  }
+
+  clearSearch() {
+    this.searchString = '';
+    this.boardResults = [];
   }
 }
