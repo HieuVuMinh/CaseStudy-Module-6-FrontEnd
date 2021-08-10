@@ -3,6 +3,8 @@ import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Notification} from "../../model/notification";
+import {UserToken} from "../../model/user-token";
+import {AuthenticationService} from "../authentication/authentication.service";
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +12,9 @@ import {Notification} from "../../model/notification";
 export class NotificationService {
   notification: Notification[] = [];
   unreadNotice:number = 0;
-  constructor(private http: HttpClient) {  }
+  currentUser: UserToken = this.authenticationService.getCurrentUserValue();
+  constructor(private http: HttpClient,
+              private authenticationService: AuthenticationService) {  }
 
   getTime(){
     let today = new Date();
@@ -33,8 +37,9 @@ export class NotificationService {
   }
   saveNotification(notification: Notification) {
     this.createNotification(notification).subscribe( () => {
+      this.unreadNotice++;
       // @ts-ignore
-      this.notificationService.findAllByUser(this.authenticationService.getCurrentUserValue().id).subscribe( notifications => this.notificationService.notification = notifications )
+      this.findAllByUser(this.currentUser.id).subscribe( notifications => this.notification = notifications )
     })
   }
 }
