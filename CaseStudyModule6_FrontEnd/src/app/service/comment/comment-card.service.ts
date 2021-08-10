@@ -3,6 +3,7 @@ import {environment} from "../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {CommentCard} from "../../model/commentCard";
+import {Board} from "../../model/board";
 
 const API_URL = `${environment.api_url}`;
 
@@ -19,6 +20,10 @@ export class CommentCardService {
 
   findAllByCardId(cardId: any): Observable<CommentCard> {
     return this.httpClient.get<CommentCard>(`${API_URL}comments/${cardId}/comment-card`);
+  }
+
+  updateAllComment(commentCards: CommentCard[]): Observable<CommentCard[]> {
+    return this.httpClient.put<CommentCard[]>(`${API_URL}comments`, commentCards);
   }
 
   deleteComment(id: any): Observable<CommentCard> {

@@ -27,6 +27,8 @@ import {Notification} from "../../model/notification";
 import {NotificationService} from "../../service/notification/notification.service";
 import {ActivityLog} from "../../model/activity-log";
 import {ActivityLogService} from "../../service/ActivityLog/activity-log.service";
+import {Reply} from "../../model/reply";
+import {ReplyService} from "../../service/reply/reply.service";
 
 @Component({
   selector: 'app-trello-view',
@@ -43,6 +45,7 @@ export class TrelloViewComponent implements OnInit {
   };
 
   commentCard: CommentCard = {}
+  reply: Reply = {}
 
   previousColumn: Column = {
     cards: [],
@@ -50,12 +53,14 @@ export class TrelloViewComponent implements OnInit {
     position: -1,
     title: ""
   };
+  repliesDto: Reply[] = [];
   commentDto: CommentCard[] = [];
   cardsDto: Card[] = [];
   columnsDto: Column[] = [];
   tags: Tag[] = [];
   members: DetailedMember[] = [];
   commentId = -1;
+  replyId = -1;
   selectedCard: Card = {content: "", id: -1, position: -1, title: ""};
   columnForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
@@ -63,6 +68,9 @@ export class TrelloViewComponent implements OnInit {
   commentForm: FormGroup = new FormGroup({
     content: new FormControl(''),
     cardId: new FormControl()
+  })
+  replyForm: FormGroup = new FormGroup({
+    content: new FormControl('')
   })
   currentUser: UserToken = {};
   canEdit: boolean = false;
@@ -112,6 +120,7 @@ export class TrelloViewComponent implements OnInit {
               private storage: AngularFireStorage,
               private tagService: TagService,
               private userService: UserService,
+              private replyService: ReplyService,
               private commentCardService: CommentCardService,
               private notificationService: NotificationService,
               private activityLogService: ActivityLogService) {
@@ -299,11 +308,19 @@ export class TrelloViewComponent implements OnInit {
     this.closeModalUpdateCard()
   }
 
+// comment
   addComment() {
-    let commentCard: CommentCard = {content: this.commentForm.value.content, card: this.selectedCard};
+    let member: DetailedMember = {boardId: 0, canEdit: false, id: 0, userId: 0, username: ""}
+    for (let m of this.members) {
+      if (m.userId == this.currentUser.id){
+        member = m;
+      }
+    }
+    // @ts-ignore
+    let memberDto: Member = {board: {id: member.id}, canEdit: member.canEdit, id: member.id, user: {id: member.userId}}
+    let commentCard: CommentCard = {content: this.commentForm.value.content, card: this.selectedCard, member: memberDto};
     this.commentForm = new FormGroup({
-      content: new FormControl(''),
-      cardId: new FormControl()
+      content: new FormControl('')
     });
     this.commentCardService.save(commentCard).subscribe(() => {
       this.getAllCommentByCardId();
@@ -317,9 +334,10 @@ export class TrelloViewComponent implements OnInit {
     })
   }
 
+// Modal comment
   showDeleteCommentModal(id: any) {
     // @ts-ignore
-    document.getElementById("deleteModal").classList.add("is-active")
+    document.getElementById("deleteCommentModal").classList.add("is-active")
     this.commentId = id;
   }
 
@@ -334,7 +352,49 @@ export class TrelloViewComponent implements OnInit {
 
   closeDeleteCommentModal() {
     // @ts-ignore
-    document.getElementById("deleteModal").classList.remove("is-active")
+    document.getElementById("deleteCommentModal").classList.remove("is-active")
+  }
+
+// Reply
+  showDeleteReplyModal(id: any) {
+    // @ts-ignore
+    document.getElementById("deleteReplyModal").classList.add("is-active")
+    this.replyId = id;
+  }
+
+  deleteReply() {
+    let commentCard1: CommentCard = {};
+    for (let comment of this.commentDto) {
+      if (comment.id == this.commentId){
+        commentCard1 = comment;
+        break;
+      }
+    }
+    // @ts-ignore
+    for (let reply of commentCard1.replies) {
+      if (reply.id == this.replyId){
+        let deleteReplyId = commentCard1.replies?.indexOf(reply);
+        // @ts-ignore
+        commentCard1.replies?.splice(deleteReplyId, 1);
+      }
+    }
+    for (let comment of this.commentDto) {
+      if (comment.id == this.commentId){
+        comment = commentCard1;
+        break;
+      }
+    }
+    this.commentCardService.updateAllComment(this.commentDto).subscribe(() =>{
+      this.replyService.deleteReplyById(this.replyId).subscribe(()=>{
+        alert("success!")
+      })
+      this.closeDeleteReplyModal()
+    })
+  }
+
+  closeDeleteReplyModal() {
+    // @ts-ignore
+    document.getElementById("deleteReplyModal").classList.remove("is-active")
   }
 
   addColumn() {
@@ -601,9 +661,6 @@ export class TrelloViewComponent implements OnInit {
     this.saveChanges();
   }
 
-
-
-
   deleteCard() {
     this.cardService.deleteById(this.selectedCard.id).subscribe(() => {
       this.hiddenDeleteConfirm();
@@ -790,4 +847,50 @@ export class TrelloViewComponent implements OnInit {
     }
     return true;
   }
+
+  showReplyForm(id: any) {
+    this.commentId = id;
+    // @ts-ignore
+    let replyForm = document.getElementById("reply-" + id);
+    // @ts-ignore
+    if (replyForm.classList.contains('is-hidden')) {
+      // @ts-ignore
+      replyForm.classList.remove("is-hidden");
+    } else {
+      // @ts-ignore
+      replyForm.classList.add("is-hidden");
+    }
+  }
+
+  addReply(commentId: any) {
+    let member: DetailedMember = {boardId: 0, canEdit: false, id: 0, userId: 0, username: ""}
+    for (let m of this.members) {
+      if (m.userId == this.currentUser.id){
+        member = m;
+      }
+    }
+    // @ts-ignore
+    let memberDto: Member = {board: {id: member.id}, canEdit: member.canEdit, id: member.id, user: {id: member.userId}}
+    let reply: Reply = {content: this.replyForm.value.content, member: memberDto}
+    this.replyForm = new FormGroup({
+      content: new FormControl('')
+    })
+    this.replyService.saveReply(reply).subscribe(reply => {
+      this.reply = reply;
+      // @ts-ignore
+      this.reply.member?.user.username = member.username
+      // @ts-ignore
+      this.reply.member?.user.nickname = member.nickname
+
+      for (let com of this.commentDto){
+        if (com.id == commentId){
+          com.replies?.push(this.reply);
+          break;
+        }
+      }
+      this.commentCardService.updateAllComment(this.commentDto).subscribe(() =>{
+      })
+    })
+  }
+
 }

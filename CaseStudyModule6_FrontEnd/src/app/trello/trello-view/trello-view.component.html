@@ -86,16 +86,17 @@
     </div>
   </div>
 </div>
+
 <!--Modal update card-->
 <div id="modal-update-card" class="modal">
   <div class="modal-background" (click)="closeModalUpdateCard()"></div>
-  <div class="modal-card" style="height: 500px">
+  <div class="modal-card">
     <header class="modal-card-head">
       <input class="input modal-card-title" type="text" placeholder="Title" [(ngModel)]="selectedCard.title">
     </header>
     <section class="modal-card-body">
-      <div class="columns">
-        <div class="column">
+      <div class="columns columns-card-body">
+        <div class="column column-card-body">
           <div>
             <ul>
               <li>
@@ -117,8 +118,8 @@
                    [(ngModel)]="selectedCard.content">
           </div>
 
-          <!--        Comment-->
-          <div class="model-card-body-content">
+          <!--Comment-->
+          <div class="model-card-body-content" *ngIf="canEdit">
             <article class="media">
               <figure class="media-left">
                 <img [src]="currentUser.image" class="user-img img-circle"/>
@@ -144,25 +145,65 @@
               </form>
             </article>
           </div>
-          <!--      comment body-->
+          <!--comment body-->
           <span *ngFor="let comment of commentDto">
-            <div class="model-card-body-content comment-body">
+            <div class="model-card-body-content comment-body" *ngIf="canEdit">
               <article class="media media-comment-body">
                 <figure class="media-left">
-                  <img src="{{currentUser.image}}" class="user-img img-circle"/>
+                  <img src="{{comment.member?.user?.image}}" class="user-img img-circle"/>
                 </figure>
                 <div class="media-content">
                   <div class="content">
                     <p>
-                      <strong>{{currentUser.username}}</strong> <small>@{{currentUser.nickname}}</small> <br/>
+                      <strong>{{comment.member?.user?.username}}</strong> <small>@{{comment.member?.user?.nickname}}</small> <br/>
                       {{comment.content}}
                     </p>
                   </div>
                 </div>
-                <div class="media-right button-delete" *ngIf="canEdit">
+                <div class="media-right button-delete-comment" *ngIf="canEdit">
                   <button class="delete" (click)="showDeleteCommentModal(comment.id)"></button>
+                  <p>
+                    <a class="reply-button" (click)="showReplyForm(comment.id)">Reply</a>
+                  </p>
                 </div>
               </article>
+            </div>
+            <!--reply-->
+            <div class="comment-body is-hidden" id="reply-{{comment.id}}">
+              <!--reply body-->
+              <div *ngFor="let reply of comment.replies" class="model-card-body-content model-card-body-content-reply">
+              <article class="media" style="margin-left: 45px;">
+                <figure class="media-left">
+                  <img [src]="reply.member?.user?.image" class="user-img img-circle"/>
+                </figure>
+                <div class="media-content">
+                  <div class="content">
+                    <p>
+                      <strong>{{reply.member?.user?.username}}</strong> <small>@{{reply.member?.user?.nickname}}</small> <br/>
+                      {{reply.content}}
+                    </p>
+                  </div>
+                </div>
+                <div class="media-right button-delete-reply" *ngIf="canEdit">
+                  <button class="delete" (click)="showDeleteReplyModal(reply.id)"></button>
+                </div>
+              </article>
+            </div>
+              <!--reply input-->
+              <div class="model-card-body-content" >
+              <article class="media" style="margin-left: 45px;">
+                <form [formGroup]="replyForm" (ngSubmit)="addReply(comment.id)">
+                  <div class="media-content">
+                    <div class="field">
+                      <p class="control">
+                        <input class="input reply-input" type="text" formControlName="content" placeholder="Add a reply...">
+                        <button class="button is-primary is-light submitComment " type="submit">Reply</button>
+                      </p>
+                    </div>
+                  </div>
+                </form>
+              </article>
+            </div>
             </div>
           </span>
         </div>
@@ -181,6 +222,7 @@
               </ul>
             </div>
           </div>
+          <!--tag-->
           <div id="tag-section">
             <button class="button is-small" (click)="toggleTagForm()">Tags</button>
             <br>
@@ -229,6 +271,7 @@
               <button *ngIf="newTagName.invalid" class="button is-info is-light is-small" disabled>Add tag</button>
             </div>
           </div>
+          <!--end tag -->
           <!--          Upload file-->
           <div class="content">
             <form #uploadFileCard="ngForm" (ngSubmit)="uploadFile()">
@@ -270,8 +313,9 @@
     </footer>
   </div>
 </div>
+
 <!--delete Comment modal-->
-<div class="modal" id="deleteModal">
+<div class="modal" id="deleteCommentModal">
   <div class="modal-background"></div>
   <div class="modal-card" style="width: 500px; height: 215px;">
     <header class="modal-card-head">
@@ -282,7 +326,7 @@
       Do you want to delete your comment?
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-danger is-light" (click)="showDeleteCommentModal(commentId)">Delete</button>
+      <button class="button is-danger is-light" (click)="deleteComment()">Delete</button>
       <button class="button is-light" (click)="closeDeleteCommentModal()">Cancel</button>
     </footer>
   </div>
@@ -324,6 +368,20 @@
   </div>
 </div>
 
-
-
-
+<!--delete Comment modal-->
+<div class="modal" id="deleteReplyModal">
+  <div class="modal-background"></div>
+  <div class="modal-card" style="width: 500px; height: 215px;">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Delete</p>
+      <button class="delete" aria-label="close" (click)="closeDeleteReplyModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      Do you want to delete this Reply?
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-danger is-light" (click)="deleteReply()">Delete</button>
+      <button class="button is-light" (click)="closeDeleteReplyModal()">Cancel</button>
+    </footer>
+  </div>
+</div>

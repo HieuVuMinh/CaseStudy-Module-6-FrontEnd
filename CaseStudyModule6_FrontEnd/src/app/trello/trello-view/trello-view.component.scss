@@ -154,7 +154,7 @@ h1.app-name {
         display: flex;
         flex-direction: column;
         flex-grow: 1;
-        flex-basis: 0; // to force the columns to all be the same size, regardless of content
+        flex-basis: 0;
         min-width: 300px;
         margin: 50px 50px 50px 0px;
         padding: 15px;
@@ -238,11 +238,19 @@ h1.app-name {
   display: inline-block;
 }
 
-.button-delete {
+.button-delete-comment {
   display: none;
 }
 
-.media-comment-body:hover .button-delete {
+.media-comment-body:hover .button-delete-comment {
+  display: inline-block;
+}
+
+.button-delete-reply {
+  display: none;
+}
+
+.model-card-body-content-reply:hover .button-delete-reply {
   display: inline-block;
 }
 
@@ -251,10 +259,16 @@ h1.app-name {
   width: 20px;
 }
 
+.modal-card-body {
+  .column-card-body{
+      width: 1px;
+  }
+}
+
 .model-card-body-content {
   display: flex;
   float: left;
-  width: 79%;
+  width: 481px;
   margin-right: 10px;
   margin-bottom: 20px;
 }
@@ -296,15 +310,23 @@ h1.app-name {
 .textarea {
   max-height: 40em;
   min-height: 4em;
-  width: 552px;
+  width: 433px;
 }
 
 .comment-body {
   margin-left: 50px;
 
   .media-comment-body {
-    width: 550px;
+    width: 433px;
   }
+}
+
+.button-delete-reply{
+  margin-left: 30px;
+}
+
+.file {
+  margin-bottom: 5px;
 }
 
 .delete-attachment-confirm {
@@ -316,5 +338,12 @@ h1.app-name {
   display: inline-block;
 }
 
+.reply-input {
+  width: 310px;
+  margin-right: 6px;
+}
+.reply-button{
+  text-decoration: none;
+}
 
 
