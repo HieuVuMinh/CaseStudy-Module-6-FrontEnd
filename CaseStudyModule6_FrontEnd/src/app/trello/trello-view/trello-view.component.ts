@@ -204,6 +204,8 @@ export class TrelloViewComponent implements OnInit {
   }
 
   private updateDto() {
+    this.columnsDto = [];
+    this.cardsDto = [];
     for (let column of this.board.columns) {
       this.columnsDto.push(column);
       for (let card of column.cards) {
@@ -517,6 +519,35 @@ export class TrelloViewComponent implements OnInit {
 
   updateMembers(event: DetailedMember[]) {
     this.members = event;
+    this.removeNonMembersFromCards();
+  }
+
+  private removeNonMembersFromCards() {
+    for (let column of this.board.columns) {
+      for (let card of column.cards) {
+        // @ts-ignore
+        for (let user of card.users) {
+          if (!this.isBoardMember(user)) {
+            // @ts-ignore
+            let deleteIndex = card.users.indexOf(user);
+            // @ts-ignore
+            card.users.splice(deleteIndex,1);
+          }
+        }
+      }
+    }
+    this.saveChanges();
+  }
+
+  private isBoardMember(user: User): boolean {
+    let isBoardMember = false;
+    for (let member of this.members) {
+      if (member.userId == user.id) {
+        isBoardMember = true;
+        break;
+      }
+    }
+    return isBoardMember;
   }
 
   addUserToCard(member: DetailedMember) {
