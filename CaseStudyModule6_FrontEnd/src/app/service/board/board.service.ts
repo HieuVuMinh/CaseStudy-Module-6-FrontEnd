@@ -49,7 +49,7 @@ export class BoardService {
     return this.httpClient.post<Board>(`${API_URL}boards/delete`,boards);
   }
 
-  findAllByKeyword(keyword: string): Observable<Board[]> {
-    return this.httpClient.get<Board[]>(`${API_URL}boards/search/${keyword}`);
+  findAllByKeyword(keyword: string, searcherId: number | undefined): Observable<Board[]> {
+    return this.httpClient.get<Board[]>(`${API_URL}boards/search/${keyword}/by/${searcherId}`);
   }
 }

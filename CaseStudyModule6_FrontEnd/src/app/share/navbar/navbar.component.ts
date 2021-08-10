@@ -131,7 +131,7 @@ export class NavbarComponent implements OnInit {
     if (this.searchString == '') {
       this.boardResults = [];
     } else {
-      this.boardService.findAllByKeyword(this.searchString).subscribe(boards => this.boardResults = boards);
+      this.boardService.findAllByKeyword(this.searchString, this.currentUser.id).subscribe(boards => this.boardResults = boards);
     }
   }
 

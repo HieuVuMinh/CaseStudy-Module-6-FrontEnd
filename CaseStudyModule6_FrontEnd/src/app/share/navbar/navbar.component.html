@@ -22,7 +22,10 @@
     <div style="position: relative" id="search-results">
       <div *ngIf="boardResults.length" style="position: absolute; top: 40px; width: 200px" class="dropdown-content">
         <a routerLink="/trello/boards/{{boardResult.id}}" (click)="clearSearch()" *ngFor="let boardResult of this.boardResults" class="dropdown-item">
-          {{boardResult.title}}
+          <ul>
+            <li><span style="font-weight: bold">{{boardResult.title}}</span></li>
+            <li><span>@{{boardResult.owner.username}}</span></li>
+          </ul>
         </a>
       </div>
     </div>
