@@ -36,6 +36,7 @@ export class WorkspaceMemberComponent implements OnInit {
   listMemberWorkspace: MemberWorkspace[] = [];
   notifications: Notification[] = [];
   notification: Notification = {};
+  selectPage = "member";
 
   constructor(private workspaceService: WorkspaceService,
               private userService: UserService,
@@ -149,7 +150,8 @@ export class WorkspaceMemberComponent implements OnInit {
     }
     let notification: Notification = {
       title: this.workspace.title,
-      content:this.currentUser.username + " Added you to the workspace at " + this.getTime(),
+      content:this.currentUser.username + " Added you to the workspace at " + this.notificationService.getTime(),
+      status: false,
       url: "/trello/workspaces/" + this.workspace.id,
       receiver: receivers
     }
@@ -168,13 +170,6 @@ export class WorkspaceMemberComponent implements OnInit {
     this.addUserList.splice(i, 1)
   }
 
-  getTime(){
-    let today = new Date();
-    let date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
-    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    return  time + ' ' + date;
-  }
-
   public removeMembers(i: number) {
     let removeMemberBoard: MemberWorkspace[] = this.workspace.members.splice(i, 1)
     this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => {
@@ -187,8 +182,9 @@ export class WorkspaceMemberComponent implements OnInit {
       }
       let notification: Notification = {
         title: this.workspace.title,
-        content:this.currentUser.username +  " Remove you from group  to the workspace at " + this.getTime(),
+        content:this.currentUser.username +  " Remove you from group  to the workspace at " + this.notificationService.getTime(),
         url: "/trello",
+        status: false,
         receiver: receivers
       }
 
@@ -246,8 +242,9 @@ export class WorkspaceMemberComponent implements OnInit {
     if (role == "Admin"){
       let notification: Notification = {
         title: this.workspace.title,
-        content: this.currentUser.username +  " has changed your permissions from Member => Admin " + this.getTime(),
+        content: this.currentUser.username +  " has changed your permissions from Member => Admin " + this.notificationService.getTime(),
         url: "/trello/workspace/" + this.workspace.id +"/member",
+        status: false,
         receiver: receivers
       }
 
@@ -255,8 +252,9 @@ export class WorkspaceMemberComponent implements OnInit {
     } else if (role == 'Member') {
       let notification: Notification = {
         title: this.workspace.title,
-        content: this.currentUser.username +  " has changed your permissions from Admin => Member " + this.getTime(),
+        content: this.currentUser.username +  " has changed your permissions from Admin => Member " + this.notificationService.getTime(),
         url: "/trello/workspace/" + this.workspace.id +"/member",
+        status: false,
         receiver: receivers
       }
 

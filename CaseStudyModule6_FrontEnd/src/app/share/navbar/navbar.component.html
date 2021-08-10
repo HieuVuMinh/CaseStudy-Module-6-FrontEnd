@@ -18,6 +18,19 @@
       </a>
     </span>
 
+  <div id="search-section">
+    <div style="position: relative" id="search-results">
+      <div *ngIf="boardResults.length" style="position: absolute; top: 40px; width: 200px" class="dropdown-content">
+        <a routerLink="/trello/boards/{{boardResult.id}}" (click)="clearSearch()" *ngFor="let boardResult of this.boardResults" class="dropdown-item">
+          <ul>
+            <li><span style="font-weight: bold">{{boardResult.title}}</span></li>
+            <li><span>@{{boardResult.owner.username}}</span></li>
+          </ul>
+        </a>
+      </div>
+    </div>
+    <input id="search-input" class="input" type="text" placeholder="Search..." style="width: 200px" [(ngModel)]="searchString" (keyup)="search()">
+  </div>
   <div class="nav-brand-start">
     <div class="nav-item-start">
       <h1><i class="fab fa-trello logo-icon"></i>Trello Hope</h1>
@@ -40,11 +53,11 @@
           <div class="header__navbar-item header__navbar-item--has-notify">
             <div class="header__notify">
               <header class="header__notify-header">
-                <h3>Notification</h3>
+                <h3>Notifications</h3>
               </header>
               <ul class="header__notify-list">
                 <li class="header__notify-item" *ngFor="let notification of notifications">
-                  <a class="header__notify-link" routerLink="{{notification.url}}">
+                  <a  class="header__notify-link" routerLink="{{notification.url}}">
                     <img src="https://dizibrand.com/wp-content/uploads/2019/07/trello-la-gi-dizibrand-1.png" alt=""
                          class="header__notify-img">
                     <div class="header__notify-info">

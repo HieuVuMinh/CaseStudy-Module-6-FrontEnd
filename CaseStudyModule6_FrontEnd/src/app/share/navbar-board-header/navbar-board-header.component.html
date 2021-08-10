@@ -124,19 +124,21 @@
     </section>
     <footer class="modal-card-foot">
       <button class="button is-danger is-light"
-              *ngIf="canEdit" (click)="removeSelectedMember()">
+              *ngIf="canEdit && (selectedMember.userId != authenticationService.getCurrentUserValue().id)" (click)="removeSelectedMember()">
         Remove member
       </button>
-      <button class="button is-secondary is-light"
-              *ngIf="canEdit && selectedMember.canEdit"
-              (click)="makeSelectedMemberObserver()">
+      <span *ngIf="canEdit && (selectedMember.userId != authenticationService.getCurrentUserValue().id)">
+        <button class="button is-secondary is-light"
+                *ngIf="selectedMember.canEdit"
+                (click)="makeSelectedMemberObserver()">
         Make observer
       </button>
       <button class="button is-success is-light"
-              *ngIf="canEdit && !selectedMember.canEdit"
+              *ngIf="!selectedMember.canEdit"
               (click)="makeSelectedMemberEditor()">
         Make editor
       </button>
+      </span>
       <button class="button is-light" (click)="closeModal()">Cancel</button>
     </footer>
   </div>

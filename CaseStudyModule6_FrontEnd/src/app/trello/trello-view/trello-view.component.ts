@@ -21,8 +21,11 @@ import {CommentCard} from "../../model/commentCard";
 import {AttachmentService} from "../../service/attachment/attachment.service";
 import {TagService} from "../../service/tag/tag.service";
 import {CommentCardService} from "../../service/comment/comment-card.service";
-import {Tag} from "../../model/tag";
 
+import {Tag} from "../../model/tag";
+import {User} from "../../model/user";
+import {Notification} from "../../model/notification";
+import {NotificationService} from "../../service/notification/notification.service";
 @Component({
   selector: 'app-trello-view',
   templateUrl: './trello-view.component.html',
@@ -89,6 +92,7 @@ export class TrelloViewComponent implements OnInit {
 
   titleColumn: Column = {cards: [], id: -1, position: -1, title: ""}
   fileSrc: any | undefined = null;
+  receiver: User[] = [];
 
   attachmentList: Attachment[] = [];
 
@@ -105,7 +109,8 @@ export class TrelloViewComponent implements OnInit {
               private storage: AngularFireStorage,
               private tagService: TagService,
               private userService: UserService,
-              private commentCardService: CommentCardService) {
+              private commentCardService: CommentCardService,
+              private notificationService: NotificationService) {
   }
 
   ngOnInit(): void {
@@ -164,7 +169,7 @@ export class TrelloViewComponent implements OnInit {
     this.saveChanges();
   }
 
-  public dropCard(event: CdkDragDrop<Card[]>): void {
+  public dropCard(event: CdkDragDrop<Card[]>, column: Column): void {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -175,6 +180,7 @@ export class TrelloViewComponent implements OnInit {
     }
     this.setPreviousColumn(event);
     this.saveChanges()
+    this.createNoticeInBoard(`moved ${event.container.data[0].title} from ${this.previousColumn.title} to ${column.title}`)
   }
 
 
@@ -207,6 +213,8 @@ export class TrelloViewComponent implements OnInit {
   }
 
   private updateDto() {
+    this.columnsDto = [];
+    this.cardsDto = [];
     for (let column of this.board.columns) {
       this.columnsDto.push(column);
       for (let card of column.cards) {
@@ -351,6 +359,8 @@ export class TrelloViewComponent implements OnInit {
           break;
         }
       }
+        let notification = "Add new card: " + card.title
+        this.createNoticeInBoard(notification)
     })
   }
 
@@ -378,6 +388,8 @@ export class TrelloViewComponent implements OnInit {
         let deleteId = this.board.columns.indexOf(column);
         this.board.columns.splice(deleteId, 1);
         this.saveChanges();
+        let notification = "Delete column: " + column.title
+        this.createNoticeInBoard(notification)
       }
     }
   }
@@ -385,14 +397,8 @@ export class TrelloViewComponent implements OnInit {
   addNewTag() {
     this.tagService.add(this.newTag).subscribe(tag => {
       this.newTag = tag;
-      this.board.tags?.push(this.newTag);
-      // for (let column of this.board.columns) {
-      //   for (let card of column.cards) {
-      //     if (card.id == this.selectedCard.id) {
-      //       card.tags?.push(this.newTag);
-      //     }
-      //   }
-      // }
+      // @ts-ignore
+      this.board.tags.push(this.newTag);
       this.saveChanges();
       this.newTag = {
         color: "is-primary",
@@ -518,19 +524,59 @@ export class TrelloViewComponent implements OnInit {
 
   updateMembers(event: DetailedMember[]) {
     this.members = event;
+    this.removeNonMembersFromCards();
   }
 
-  addMemberToCard(member: DetailedMember) {
+  private removeNonMembersFromCards() {
+    for (let column of this.board.columns) {
+      for (let card of column.cards) {
+        // @ts-ignore
+        for (let user of card.users) {
+          if (!this.isBoardMember(user)) {
+            // @ts-ignore
+            let deleteIndex = card.users.indexOf(user);
+            // @ts-ignore
+            card.users.splice(deleteIndex,1);
+          }
+        }
+      }
+    }
+    this.saveChanges();
+  }
+
+  private isBoardMember(user: User): boolean {
+    let isBoardMember = false;
+    for (let member of this.members) {
+      if (member.userId == user.id) {
+        isBoardMember = true;
+        break;
+      }
+    }
+    return isBoardMember;
+  }
+
+  addUserToCard(member: DetailedMember) {
     this.updateSelectedCard();
-    let isValid: boolean = true;
+    let isValid = true;
     // @ts-ignore
-    for (let existingMember of this.selectedCard.members) {
-      if (existingMember.id == member.userId) {
+    for (let existingUser of this.selectedCard.users) {
+      if (existingUser.id == member.userId) {
         isValid = false;
         break;
       }
     }
+    if (isValid) {
+      let user: User = {
+        id: member.userId,
+        username: member.username,
+      }
+      // @ts-ignore
+      this.selectedCard.users.push(user);
+    }
+    this.saveChanges();
   }
+
+
 
 
   deleteCard() {
@@ -638,5 +684,43 @@ export class TrelloViewComponent implements OnInit {
       () => {
         alert('Delete fail');
       });
+  }
+
+  createNoticeInBoard(notificationText: string) {
+    this.userService.getMemberByBoardId(this.boardId).subscribe(members => {
+      this.receiver = members;
+      let notification: Notification = {
+        title: "Board: " + this.board.title,
+        content: this.currentUser.username + " " + notificationText + " in " + this.board.title + " " + this.notificationService.getTime(),
+        url: "/trello/boards/" + this.board.id,
+        status: false,
+        receiver: this.receiver
+      }
+      this.saveNotification(notification)
+    })
+
+  }
+
+  saveNotification(notification: Notification) {
+    this.notificationService.createNotification(notification).subscribe(() => {
+      if (this.currentUser.id != null) {
+        this.notificationService.findAllByUser(this.currentUser.id).subscribe( notifications => this.notificationService.notification = notifications )
+      }
+    })
+
+  }
+
+  removeUserFromCard(user: User) {
+    this.updateSelectedCard()
+    // @ts-ignore
+    for (let existingUser of this.selectedCard.users) {
+      if (existingUser.id == user.id) {
+        // @ts-ignore
+        let deleteIndex = this.selectedCard.users.indexOf(existingUser);
+        // @ts-ignore
+        this.selectedCard.users.splice(deleteIndex, 1);
+      }
+    }
+    this.saveChanges();
   }
 }
