@@ -388,14 +388,8 @@ export class TrelloViewComponent implements OnInit {
   addNewTag() {
     this.tagService.add(this.newTag).subscribe(tag => {
       this.newTag = tag;
-      this.board.tags?.push(this.newTag);
-      // for (let column of this.board.columns) {
-      //   for (let card of column.cards) {
-      //     if (card.id == this.selectedCard.id) {
-      //       card.tags?.push(this.newTag);
-      //     }
-      //   }
-      // }
+      // @ts-ignore
+      this.board.tags.push(this.newTag);
       this.saveChanges();
       this.newTag = {
         color: "is-primary",
@@ -480,6 +474,7 @@ export class TrelloViewComponent implements OnInit {
         let deleteIndex = this.board.tags.indexOf(tag);
         // @ts-ignore
         this.board.tags.splice(deleteIndex, 1);
+        break;
       }
     }
     this.saveChanges();
