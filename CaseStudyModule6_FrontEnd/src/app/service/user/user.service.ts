@@ -33,4 +33,8 @@ export class UserService {
   findUsersByKeyword(keyword: string): Observable<User[]> {
     return this.http.get<User[]>(`${API_URL}users/search/${keyword}`);
   }
+
+  getMemberByBoardId(boardId: any): Observable<User[]> {
+    return this.http.get<User[]>(`${API_URL}users/board/${boardId}`);
+  }
 }

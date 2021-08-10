@@ -9,6 +9,8 @@ import {MemberService} from "../../service/member/member.service";
 import {BoardService} from "../../service/board/board.service";
 import {Router} from "@angular/router";
 import { EventEmitter } from '@angular/core';
+import {Notification} from "../../model/notification";
+import {NotificationService} from "../../service/notification/notification.service";
 
 @Component({
   selector: 'app-navbar-board-header',
@@ -25,12 +27,14 @@ export class NavbarBoardHeaderComponent implements OnInit {
   userResult: User[] = [];
   selectedMember: DetailedMember = {boardId: -1, canEdit: false, id: -1, userId: -1, username: ""};
   @Output() updateMemberEvent = new EventEmitter<DetailedMember[]>();
+  receiver: User[] = [];
 
   constructor(public authenticationService: AuthenticationService,
               private userService: UserService,
               private memberService: MemberService,
               private boardService: BoardService,
-              private router: Router) {
+              private router: Router,
+              private notificationService: NotificationService) {
   }
 
   ngOnInit(): void {
@@ -119,11 +123,13 @@ export class NavbarBoardHeaderComponent implements OnInit {
   makeSelectedMemberEditor() {
     this.selectedMember.canEdit = true;
     this.updateSelectedMember();
+    this.createNoticeInBoard("allow " + this.selectedMember.username + "edit board")
   }
 
   makeSelectedMemberObserver() {
     this.selectedMember.canEdit = false;
     this.updateSelectedMember();
+    this.createNoticeInBoard("remove edit permissions of " + this.selectedMember.username)
   }
 
   updateSelectedMember() {
@@ -143,7 +149,9 @@ export class NavbarBoardHeaderComponent implements OnInit {
   updateBoardTitle() {
     if (this.board.id != null) {
       this.boardService.updateBoard(this.board.id, this.board).subscribe(board => this.board = board);
+      this.createNoticeInBoard("Update title ")
     }
+
   }
 
   showUserPreview(member: DetailedMember) {
@@ -199,5 +207,24 @@ export class NavbarBoardHeaderComponent implements OnInit {
     if (this.board.id != null) {
       this.boardService.deleteById(this.board.id).subscribe(() => this.router.navigateByUrl('/trello'));
     }
+    this.createNoticeInBoard("Delete")
+  }
+  createNoticeInBoard(notificationText: string) {
+    this.userService.getMemberByBoardId(this.board.id).subscribe(members => {
+      this.receiver = members;
+      let notification: Notification = {
+        title: "Board: " + this.board.title,
+        content: this.authenticationService.getCurrentUserValue().username + " " + notificationText + " " + this.board.title + " " + this.notificationService.getTime(),
+        url: "/trello/boards/" + this.board.id,
+        status: false,
+        receiver: this.receiver
+      }
+      this.saveNotification(notification)
+    })
+
+  }
+
+  saveNotification(notification: Notification) {
+    this.notificationService.createNotification(notification).subscribe()
   }
 }

@@ -40,11 +40,11 @@
           <div class="header__navbar-item header__navbar-item--has-notify">
             <div class="header__notify">
               <header class="header__notify-header">
-                <h3>Notification</h3>
+                <h3>Notifications</h3>
               </header>
               <ul class="header__notify-list">
-                <li class="header__notify-item" *ngFor="let notification of notifications">
-                  <a  class="header__notify-link" routerLink="{{notification.url}}">
+                <li class="header__notify-item" *ngFor="let notification of notifications" (click)="markReadNotification(notification)">
+                  <a  class="header__notify-link" routerLink="{{notification.url}}" [class.mark-read]="notification.status">
                     <img src="https://dizibrand.com/wp-content/uploads/2019/07/trello-la-gi-dizibrand-1.png" alt=""
                          class="header__notify-img">
                     <div class="header__notify-info">

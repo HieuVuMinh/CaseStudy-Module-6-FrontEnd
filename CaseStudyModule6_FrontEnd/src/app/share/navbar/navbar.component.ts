@@ -120,4 +120,11 @@ export class NavbarComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     this.closeModalUpdate();
   }
+
+  markReadNotification(notification: Notification){
+    if (notification.id != null) {
+      notification.status = true;
+      this.notificationService.updateNotification(notification.id, notification).subscribe()
+    }
+  }
 }

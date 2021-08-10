@@ -22,6 +22,9 @@ import {UserService} from "../../service/user/user.service";
 import {CommentCard} from "../../model/commentCard";
 import {CommentCardService} from "../../service/comment/comment-card.service";
 import {Member} from "../../model/member";
+import {User} from "../../model/user";
+import {Notification} from "../../model/notification";
+import {NotificationService} from "../../service/notification/notification.service";
 
 @Component({
   selector: 'app-trello-view',
@@ -89,6 +92,7 @@ export class TrelloViewComponent implements OnInit {
 
   titleColumn: Column = {cards: [], id: -1, position: -1, title: ""}
   fileSrc: any | undefined = null;
+  receiver: User[] = [];
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
@@ -101,7 +105,8 @@ export class TrelloViewComponent implements OnInit {
               private storage: AngularFireStorage,
               private tagService: TagService,
               private userService: UserService,
-              private commentCardService: CommentCardService) {
+              private commentCardService: CommentCardService,
+              private notificationService: NotificationService) {
   }
 
   ngOnInit(): void {
@@ -354,6 +359,8 @@ export class TrelloViewComponent implements OnInit {
           break;
         }
       }
+        let notification = "Add new card: " + card.title
+        this.createNoticeInBoard(notification)
     })
   }
 
@@ -381,8 +388,11 @@ export class TrelloViewComponent implements OnInit {
         let deleteId = this.board.columns.indexOf(column);
         this.board.columns.splice(deleteId, 1);
         this.saveChanges();
+        let notification = "Delete column: " + column.title
+        this.createNoticeInBoard(notification)
       }
     }
+
   }
 
   addNewTag() {
@@ -619,4 +629,24 @@ export class TrelloViewComponent implements OnInit {
     // @ts-ignore
     document.getElementById('form-upload-file').classList.remove('is-hidden');
   }
+
+  createNoticeInBoard(notificationText: string) {
+    this.userService.getMemberByBoardId(this.boardId).subscribe(members => {
+      this.receiver = members;
+      let notification: Notification = {
+        title: "Board: " + this.board.title,
+        content: this.currentUser.username + " " + notificationText + " in " + this.board.title + " " + this.notificationService.getTime(),
+        url: "/trello/boards/" + this.board.id,
+        status: false,
+        receiver: this.receiver
+      }
+      this.saveNotification(notification)
+    })
+
+  }
+
+  saveNotification(notification: Notification) {
+    this.notificationService.createNotification(notification).subscribe()
+  }
+
 }

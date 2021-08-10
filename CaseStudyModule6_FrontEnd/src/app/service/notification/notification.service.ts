@@ -12,10 +12,20 @@ export class NotificationService {
 
   constructor(private http: HttpClient) {  }
 
+  getTime(){
+    let today = new Date();
+    let date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
+    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    return  time + ' ' + date;
+  }
+
   findAllByUser(userId: number): Observable<Notification[]>{
     return this.http.get<Notification[]>(`${environment.api_url}notifications/${userId}`);
   }
   createNotification(notification: Notification): Observable<Notification> {
     return this.http.post<Notification>(`${environment.api_url}notifications`,notification)
+  }
+  updateNotification(id: number, notification: Notification):Observable<Notification>{
+    return this.http.put<Notification>(`${environment.api_url}notifications/${id}`,notification)
   }
 }

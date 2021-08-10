@@ -370,6 +370,9 @@ button:focus {
     transform: scale(1);
   }
 }
+.mark-read{
+  background-color: #DDDDDD;
+}
 .header__notify-header {
   height: 40px;
   background-color: rgb(100,181,216);
@@ -399,7 +402,7 @@ button:focus {
   display: flex;
 }
 .header__notify-item:hover {
-  background-color: #f7f7f7;
+  background-color: #DDDDDD;
 }
 .header__notify-item--viewed {
   background-color: rgba(238, 75, 43, 0.09);
