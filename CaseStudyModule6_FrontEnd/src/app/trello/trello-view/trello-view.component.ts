@@ -561,7 +561,7 @@ export class TrelloViewComponent implements OnInit {
           fileRef.getDownloadURL().subscribe(url => {
             this.fileSrc = url;
             this.newAttachment.source = url;
-            this.newAttachment.name = `${this.selectedFile.name.split('.').slice(0, -1).join('.')}`;
+            this.newAttachment.name = `${this.selectedFile.name}`;
             this.attachmentService.addNewFile(this.newAttachment).subscribe(() => {
                 alert("Success");
                 this.getAllAttachmentByCard();
