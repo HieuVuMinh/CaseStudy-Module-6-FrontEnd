@@ -20,7 +20,7 @@
 
   <div id="search-section">
     <div style="position: relative" id="search-results">
-      <div *ngIf="boardResults.length" style="position: absolute; top: 40px; width: 200px" class="dropdown-content">
+      <div *ngIf="boardResults.length" style="position: absolute; top: 40px; width: 200px; z-index: 1" class="dropdown-content">
         <a routerLink="/trello/boards/{{boardResult.id}}" (click)="clearSearch()" *ngFor="let boardResult of this.boardResults" class="dropdown-item">
           <ul>
             <li><span style="font-weight: bold">{{boardResult.title}}</span></li>

@@ -2,7 +2,8 @@
                          [members]="members"
                          [canEdit]="canEdit"
                          [isInWorkspace]="isInWorkspace"
-                         (updateMemberEvent)="updateMembers($event)"></app-navbar-board-header>
+                         (updateMemberEvent)="updateMembers($event)"
+                         (filterEvent)="filterBoard($event)"></app-navbar-board-header>
 <!--main content-->
 <div class="root">
   <div class="board">

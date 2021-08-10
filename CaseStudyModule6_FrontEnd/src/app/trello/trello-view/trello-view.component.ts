@@ -362,8 +362,8 @@ export class TrelloViewComponent implements OnInit {
           break;
         }
       }
-        let notification = "Add new card: " + card.title
-        this.createNoticeInBoard(notification)
+      let notification = "Add new card: " + card.title
+      this.createNoticeInBoard(notification)
     })
   }
 
@@ -539,7 +539,7 @@ export class TrelloViewComponent implements OnInit {
             // @ts-ignore
             let deleteIndex = card.users.indexOf(user);
             // @ts-ignore
-            card.users.splice(deleteIndex,1);
+            card.users.splice(deleteIndex, 1);
           }
         }
       }
@@ -578,8 +578,6 @@ export class TrelloViewComponent implements OnInit {
     }
     this.saveChanges();
   }
-
-
 
 
   confirmDelete() {
@@ -670,7 +668,7 @@ export class TrelloViewComponent implements OnInit {
   saveNotification(notification: Notification) {
     this.notificationService.createNotification(notification).subscribe(() => {
       if (this.currentUser.id != null) {
-        this.notificationService.findAllByUser(this.currentUser.id).subscribe( notifications => this.notificationService.notification = notifications )
+        this.notificationService.findAllByUser(this.currentUser.id).subscribe(notifications => this.notificationService.notification = notifications)
       }
     })
 
@@ -688,5 +686,64 @@ export class TrelloViewComponent implements OnInit {
       }
     }
     this.saveChanges();
+  }
+
+  filterBoard(event: number[][]) {
+    let tagFilter: number[] = event[0];
+    let memberFilter: number[] = event[1];
+    let hasFilter = !(tagFilter.length == 0 && memberFilter.length == 0)
+    console.log(tagFilter)
+    console.log(memberFilter)
+    console.log(hasFilter)
+    this.boardService.getBoardById(this.boardId).subscribe(board => {
+      this.board = board;
+      if (hasFilter) {
+        for (let column of this.board.columns) {
+          for (let i = 0; i < column.cards.length; i++) {
+            let card = column.cards[i];
+            // @ts-ignore
+            if (!this.isValidTag(card, tagFilter)) {
+              column.cards.splice(i, 1);
+              i--;
+            } else if (!this.isValidMember(card, memberFilter)) {
+              column.cards.splice(i, 1);
+              i--;
+            }
+          }
+        }
+      }
+    })
+  }
+
+  isValidTag(card: Card, tagFilter: number[]) {
+    if (tagFilter.length == 0) return true;
+    for (let tagId of tagFilter) {
+      let isInCard: boolean = false;
+      // @ts-ignore
+      for (let tag of card.tags) {
+        if (tagId == tag.id) {
+          isInCard = true;
+          break;
+        }
+      }
+      if (!isInCard) return false;
+    }
+    return true;
+  }
+
+  isValidMember(card: Card, memberFilter: number[]) {
+    if (memberFilter.length == 0) return true;
+    for (let userId of memberFilter) {
+      let isInCard: boolean = false;
+      // @ts-ignore
+      for (let user of card.users) {
+        if (userId == user.id) {
+          isInCard = true;
+          break;
+        }
+      }
+      if (!isInCard) return false;
+    }
+    return true;
   }
 }
