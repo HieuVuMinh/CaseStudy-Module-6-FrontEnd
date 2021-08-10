@@ -8,9 +8,10 @@ import {Member} from "../../model/member";
 import {MemberService} from "../../service/member/member.service";
 import {BoardService} from "../../service/board/board.service";
 import {Router} from "@angular/router";
-import { EventEmitter } from '@angular/core';
+import {EventEmitter} from '@angular/core';
 import {Notification} from "../../model/notification";
 import {NotificationService} from "../../service/notification/notification.service";
+import {Tag} from "../../model/tag";
 import {ActivityLogService} from "../../service/ActivityLog/activity-log.service";
 import {ActivityLog} from "../../model/activity-log";
 import {UserToken} from "../../model/user-token";
@@ -21,7 +22,8 @@ import {UserToken} from "../../model/user-token";
   styleUrls: ['./navbar-board-header.component.scss']
 })
 export class NavbarBoardHeaderComponent implements OnInit {
-  @Input() board: Board = {columns: [], owner: {}, title: ""}
+  @Input() board: Board = {columns: [], owner: {}, title: "", tags: []};
+  @Input() tags: Tag[] = [];
   @Input() members: DetailedMember[] = [];
   @Input() canEdit: boolean = false;
   @Input() isInWorkspace: boolean = false;
@@ -32,6 +34,9 @@ export class NavbarBoardHeaderComponent implements OnInit {
   @Output() updateMemberEvent = new EventEmitter<DetailedMember[]>();
   currentUser: UserToken = this.authenticationService.getCurrentUserValue()
   receiver: User[] = [];
+  tagFilter: number[] = [];
+  memberFilter: number[] = [];
+  @Output() filterEvent = new EventEmitter<number[][]>();
 
   constructor(public authenticationService: AuthenticationService,
               private userService: UserService,
@@ -43,9 +48,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
   }
-
 
 
   toggleUserSearchBar() {
@@ -230,4 +233,55 @@ export class NavbarBoardHeaderComponent implements OnInit {
 
   }
 
+  toggleElement(elementId: string) {
+    let element = document.getElementById(elementId);
+    // @ts-ignore
+    if (element.classList.contains('is-hidden')) {
+      // @ts-ignore
+      element.classList.remove('is-hidden');
+    } else {
+      // @ts-ignore
+      element.classList.add('is-hidden');
+    }
+  }
+
+  filterBoard() {
+    this.updateFilterDto();
+    this.filterEvent.emit([this.tagFilter, this.memberFilter]);
+  }
+
+  private updateFilterDto() {
+    this.tagFilter = [];
+    this.memberFilter = [];
+
+    let tagOptionElements = document.getElementsByClassName('tag-filter-option');
+    // @ts-ignore
+    for (let tagOptionElement of tagOptionElements) {
+      if (tagOptionElement.checked) {
+        this.tagFilter.push(tagOptionElement.value);
+      }
+    }
+    let memberOptionElements = document.getElementsByClassName('member-filter-option');
+    // @ts-ignore
+    for (let memberOptionElement of memberOptionElements) {
+      if (memberOptionElement.checked) {
+        this.memberFilter.push(memberOptionElement.value);
+      }
+    }
+  }
+
+  clearFilterBoard() {
+    this.filterEvent.emit([[], []]);
+    this.clearCheckedOptions();
+  }
+
+  private clearCheckedOptions() {
+    let optionElements = document.getElementsByClassName('filter-option');
+    // @ts-ignore
+    for (let optionElement of optionElements) {
+      if (optionElement.checked) {
+        optionElement.checked = false;
+      }
+    }
+  }
 }

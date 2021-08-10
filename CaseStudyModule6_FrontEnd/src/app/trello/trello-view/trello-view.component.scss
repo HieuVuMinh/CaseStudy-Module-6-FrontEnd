@@ -307,5 +307,14 @@ h1.app-name {
   }
 }
 
+.delete-attachment-confirm {
+  display: none;
+  color: red;
+}
+
+.media-attachment-body:hover .delete-attachment-confirm {
+  display: inline-block;
+}
+
 
 

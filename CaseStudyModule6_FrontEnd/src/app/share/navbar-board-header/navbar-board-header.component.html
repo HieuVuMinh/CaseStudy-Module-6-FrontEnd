@@ -16,10 +16,9 @@
         <button *ngIf="!canEdit" class="button is-primary">
           {{board.title}}
         </button>
-
         <button class="button is-primary">
-          <img *ngIf="!board.owner.image" src="assets/img/nicki-eliza.jpg" class="img-circle is-48x48">
-          <img *ngIf="board.owner.image" [src]="board.owner.image" class="img-circle is-48x48">
+          <img *ngIf="!board.owner.image" src="assets/img/nicki-eliza.jpg" class="img-circle is-48x48"/>
+          <img *ngIf="board.owner.image" [src]="board.owner.image" class="img-circle is-48x48"/>
           {{board.owner.username}}
         </button>
         <button class="button is-primary">
@@ -54,6 +53,36 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
+          <div style="position: relative">
+            <div id="filter-btn-dropdown" class="columns has-background-white is-hidden" style="position: absolute; top: 40px; border-radius: 5px; z-index: 1">
+              <div class="column is-one-fifth">
+                <button class="button is-small" (click)="filterBoard()">Sort</button>
+                <button class="button is-small" (click)="clearFilterBoard()">Clear</button>
+              </div>
+              <div class="column" style="width: max-content">
+                Tags
+                <ul class="checkbox">
+                  <li *ngFor="let tag of tags">
+                    <input type="checkbox" [value]="tag.id" class="tag-filter-option filter-option">
+                    <span class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="column">
+                Members
+                <ul class="checkbox">
+                  <li *ngFor="let member of members">
+                    <input type="checkbox" [value]="member.userId" class="member-filter-option filter-option">
+                    <span class="tag is-light">@{{member.username}}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <button class="button is-primary" (click)="toggleElement('filter-btn-dropdown')">
+            <i class="fas fa-filter"></i>
+            Filter
+          </button>
           <div style="position: relative">
             <div id="menu-btn-dropdown" class="is-hidden" style="position: absolute; top: 25px">
               <button class="button is-info is-light">Activity Log</button>

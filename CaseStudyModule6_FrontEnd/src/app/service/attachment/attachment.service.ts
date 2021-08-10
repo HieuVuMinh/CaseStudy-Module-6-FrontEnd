@@ -17,4 +17,12 @@ export class AttachmentService {
   addNewFile(attachment: Attachment): Observable<Attachment> {
     return this.httpClient.post<Attachment>(`${API_URL}attachments`, attachment);
   }
+
+  getAttachmentByCard(cardId : number): Observable<Attachment[]>{
+    return this.httpClient.get<Attachment[]>(`${API_URL}attachments/card/${cardId}`);
+  }
+
+  deleteAttachmentById(id: any): Observable<Attachment>{
+    return this.httpClient.delete<Attachment>(`${API_URL}attachments/${id}`);
+  }
 }
