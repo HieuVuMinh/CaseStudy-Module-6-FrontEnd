@@ -14,18 +14,17 @@ import {FormControl, FormGroup, NgForm, Validators} from "@angular/forms";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
 import {UserToken} from "../../model/user-token";
 import {Attachment} from "../../model/attachment";
-import {AttachmentService} from "../../service/attachment/attachment.service";
 import {AngularFireStorage} from "@angular/fire/storage";
-import {Tag} from "../../model/tag";
-import {TagService} from "../../service/tag/tag.service";
 import {UserService} from "../../service/user/user.service";
-import {CommentCard} from "../../model/commentCard";
-import {CommentCardService} from "../../service/comment/comment-card.service";
 import {Member} from "../../model/member";
+import {CommentCard} from "../../model/commentCard";
+import {AttachmentService} from "../../service/attachment/attachment.service";
+import {TagService} from "../../service/tag/tag.service";
+import {CommentCardService} from "../../service/comment/comment-card.service";
+import {Tag} from "../../model/tag";
 import {User} from "../../model/user";
 import {Notification} from "../../model/notification";
 import {NotificationService} from "../../service/notification/notification.service";
-
 @Component({
   selector: 'app-trello-view',
   templateUrl: './trello-view.component.html',
@@ -94,6 +93,10 @@ export class TrelloViewComponent implements OnInit {
   titleColumn: Column = {cards: [], id: -1, position: -1, title: ""}
   fileSrc: any | undefined = null;
   receiver: User[] = [];
+
+  attachmentList: Attachment[] = [];
+
+  selectedAttachment: Attachment = {};
 
   constructor(private activatedRoute: ActivatedRoute,
               private boardService: BoardService,
@@ -253,6 +256,7 @@ export class TrelloViewComponent implements OnInit {
 
   showUpdateCardModal(card: Card) {
     this.selectedCard = card;
+    this.getAllAttachmentByCard();
     // @ts-ignore
     document.getElementById('modal-update-card').classList.add('is-active');
     this.getAllCommentByCardId()
@@ -261,6 +265,9 @@ export class TrelloViewComponent implements OnInit {
   closeModalUpdateCard() {
     // @ts-ignore
     document.getElementById('modal-update-card').classList.remove('is-active');
+    this.hiddenDeleteAttachmentConfirm();
+    this.closeDeleteCommentModal();
+    this.hiddenDeleteConfirm();
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
@@ -306,17 +313,6 @@ export class TrelloViewComponent implements OnInit {
     // @ts-ignore
     document.getElementById("deleteModal").classList.remove("is-active")
   }
-
-  // closeColumn(id: any) {
-  //   console.log(id);
-  //   for (let column of this.board.columns) {
-  //     if (column.id == id) {
-  //       let deleteId = this.board.columns.indexOf(column);
-  //       this.board.columns.splice(deleteId, 1);
-  //       this.saveChanges();
-  //     }
-  //   }
-  // }
 
   addColumn() {
     if (this.columnForm.valid) {
@@ -365,8 +361,8 @@ export class TrelloViewComponent implements OnInit {
           break;
         }
       }
-      let notification = "Add new card: " + card.title
-      this.createNoticeInBoard(notification)
+        let notification = "Add new card: " + card.title
+        this.createNoticeInBoard(notification)
     })
   }
 
@@ -583,14 +579,11 @@ export class TrelloViewComponent implements OnInit {
   }
 
 
-  confirmDelete() {
-    console.log(this.selectedCard.id);
-    // @ts-ignore
-    document.getElementById('modal-confirm-delete').classList.remove('is-hidden');
-  }
+
 
   deleteCard() {
     this.cardService.deleteById(this.selectedCard.id).subscribe(() => {
+      this.hiddenDeleteConfirm();
       this.closeModalUpdateCard();
       this.getPage();
     });
@@ -616,8 +609,10 @@ export class TrelloViewComponent implements OnInit {
           fileRef.getDownloadURL().subscribe(url => {
             this.fileSrc = url;
             this.newAttachment.source = url;
+            this.newAttachment.name = `${this.selectedFile.name}`;
             this.attachmentService.addNewFile(this.newAttachment).subscribe(() => {
                 alert("Success");
+                this.getAllAttachmentByCard();
               },
               () => {
                 alert("Fail")
@@ -653,6 +648,46 @@ export class TrelloViewComponent implements OnInit {
     document.getElementById('form-upload-file').classList.remove('is-hidden');
   }
 
+  hiddenDeleteConfirm() {
+    // @ts-ignore
+    document.getElementById('delete-card-modal').classList.remove('is-active');
+  }
+
+  showDeleteCardModal() {
+    // @ts-ignore
+    document.getElementById('delete-card-modal').classList.add('is-active');
+    // this.closeModalUpdateCard();
+  }
+
+  getAllAttachmentByCard() {
+    this.attachmentService.getAttachmentByCard(this.selectedCard.id).subscribe(attachmentList => {
+        this.attachmentList = attachmentList;
+      }
+    )
+  }
+
+  showConfirmDeleteAttachment(attachment: Attachment) {
+    this.selectedAttachment = attachment;
+    // @ts-ignore
+    document.getElementById('delete-attachment-confirm').classList.add('is-active');
+  }
+
+  hiddenDeleteAttachmentConfirm() {
+    // @ts-ignore
+    document.getElementById('delete-attachment-confirm').classList.remove('is-active');
+  }
+
+  deleteAttachment() {
+    this.hiddenDeleteAttachmentConfirm();
+    this.attachmentService.deleteAttachmentById(this.selectedAttachment.id).subscribe(() => {
+        alert('Delete attachment success');
+        this.getAllAttachmentByCard();
+      },
+      () => {
+        alert('Delete fail');
+      });
+  }
+
   createNoticeInBoard(notificationText: string) {
     this.userService.getMemberByBoardId(this.boardId).subscribe(members => {
       this.receiver = members;
@@ -671,7 +706,7 @@ export class TrelloViewComponent implements OnInit {
   saveNotification(notification: Notification) {
     this.notificationService.createNotification(notification).subscribe(() => {
       if (this.currentUser.id != null) {
-        this.notificationService.findAllByUser(this.currentUser.id).subscribe(notifications => this.notificationService.notification = notifications)
+        this.notificationService.findAllByUser(this.currentUser.id).subscribe( notifications => this.notificationService.notification = notifications )
       }
     })
 

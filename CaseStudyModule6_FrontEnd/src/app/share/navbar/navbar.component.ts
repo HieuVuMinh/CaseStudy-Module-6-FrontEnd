@@ -20,12 +20,13 @@ export class NavbarComponent implements OnInit {
   currentUser: UserToken = {};
   user: User = {};
   notifications: Notification[] = [];
-  imgSrc: any | undefined = 'https://newsmd1fr.keeng.net/tiin/archive/images/20210220/145211_facebook_doi_anh_dai_dien_2.jpgs ';
+  imgSrc: any;
   selectedImage: any | undefined = null;
   isSubmitted = false;
   id: any = {};
   boardResults: Board[] = [];
   searchString: string = '';
+
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
@@ -41,10 +42,8 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.currentUser) {
-      this.findAllNotificationByUserId()
+      this.findAllNotificationByUserId();
     }
-
-    this.id = this.authenticationService.getCurrentUserValue().id;
     this.getUserById();
   }
 
@@ -65,10 +64,12 @@ export class NavbarComponent implements OnInit {
         finalize(() => {
           fileRef.getDownloadURL().subscribe(url => {
             this.imgSrc = url;
-            this.user.image = url;
+            this.selectedImage.source = url;
+            // console.log("this.user.image: "+this.user.image);
+            // console.log("this.id: "+this.id);
+            console.log(this.user);
             this.userService.updateById(this.id, this.user).subscribe(() => {
                 alert("Success");
-                this.closeModalUpdate();
               },
               () => {
                 alert("Fail")

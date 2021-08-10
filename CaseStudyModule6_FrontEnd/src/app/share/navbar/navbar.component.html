@@ -56,8 +56,8 @@
                 <h3>Notifications</h3>
               </header>
               <ul class="header__notify-list">
-                <li class="header__notify-item" *ngFor="let notification of notificationService.notification" (click)="markReadNotification(notification)">
-                  <a  class="header__notify-link" routerLink="{{notification.url}}" [class.mark-read]="notification.status">
+                <li class="header__notify-item" *ngFor="let notification of notifications">
+                  <a  class="header__notify-link" routerLink="{{notification.url}}">
                     <img src="https://dizibrand.com/wp-content/uploads/2019/07/trello-la-gi-dizibrand-1.png" alt=""
                          class="header__notify-img">
                     <div class="header__notify-info">
@@ -77,13 +77,13 @@
     <div class="dropdown is-hoverable is-right">
       <div class="dropdown-trigger">
         <a href="#" class="icon-link" aria-haspopup="true" aria-controls="dropdown-menu4">
-          <img src="{{user.image}}" class="img-circle"/></a>
+          <img [src]="user.image" class="img-circle"/></a>
       </div>
       <div class="dropdown-menu" id="dropdown-menu4" role="menu">
         <div class="dropdown-content">
           <div href="#" class="dropdown-item">
             <div>
-              <img src="{{user.image}}" class="user-img img-circle"/>
+              <img [src]="user.image" class="img-circle">
             </div>
             <div class="user">
               <div class="username">
@@ -127,23 +127,22 @@
             <div class="level options">
               <div class="checkbox level-left">
                 <div class="update-info">
-                  <tr>
-                    <span class="tag is-info">Image</span>
-                    <div class="file has-name">
-                      <div class="file">
-                        <label class="file-label">
-                          <input class="file-input" type="file" #preview (change)="showPreview($event)">
-                          <span class="file-cta">
+                  <span class="tag is-info">Image</span>
+                  <div class="file has-name">
+                    <div class="file">
+                      <label class="file-label">
+                        <input class="file-input" type="file" #preview (change)="showPreview($event)">
+                        <span class="file-cta">
       <span class="file-icon">
         <i class="fas fa-upload"></i>
       </span>
       <span class="file-label">
         Choose a file…
       </span>
-    </span>
-                        </label>
-                      </div>
+                          </span>
+                      </label>
                     </div>
+                  </div>
                 </div>
               </div>
             </div>

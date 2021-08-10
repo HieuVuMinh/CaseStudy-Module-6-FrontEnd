@@ -6,4 +6,5 @@ export interface Attachment {
   member?: Member;
   source?: string;
   card?: Card;
+  name?: any;
 }
