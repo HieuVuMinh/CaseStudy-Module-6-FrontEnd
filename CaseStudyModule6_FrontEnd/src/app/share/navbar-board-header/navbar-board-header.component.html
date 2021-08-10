@@ -56,14 +56,14 @@
         <div class="buttons">
           <div style="position: relative">
             <div id="filter-btn-dropdown" class="columns has-background-white is-hidden" style="position: absolute; top: 40px; border-radius: 5px; z-index: 1">
-              <div class="column">
+              <div class="column is-one-fifth">
                 <button class="button is-small" (click)="filterBoard()">Sort</button>
                 <button class="button is-small" (click)="clearFilterBoard()">Clear</button>
               </div>
               <div class="column" style="width: max-content">
                 Tags
                 <ul class="checkbox">
-                  <li *ngFor="let tag of board.tags">
+                  <li *ngFor="let tag of tags">
                     <input type="checkbox" [value]="tag.id" class="tag-filter-option filter-option">
                     <span class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
                   </li>

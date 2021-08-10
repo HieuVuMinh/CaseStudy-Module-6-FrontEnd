@@ -19,7 +19,8 @@ import {Tag} from "../../model/tag";
   styleUrls: ['./navbar-board-header.component.scss']
 })
 export class NavbarBoardHeaderComponent implements OnInit {
-  @Input() board: Board = {columns: [], owner: {}, title: "", tags: []}
+  @Input() board: Board = {columns: [], owner: {}, title: "", tags: []};
+  @Input() tags: Tag[] = [];
   @Input() members: DetailedMember[] = [];
   @Input() canEdit: boolean = false;
   @Input() isInWorkspace: boolean = false;

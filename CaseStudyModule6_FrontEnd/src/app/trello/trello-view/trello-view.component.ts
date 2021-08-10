@@ -51,6 +51,7 @@ export class TrelloViewComponent implements OnInit {
   commentDto: CommentCard[] = [];
   cardsDto: Card[] = [];
   columnsDto: Column[] = [];
+  tags: Tag[] = [];
   members: DetailedMember[] = [];
   commentId = -1;
   selectedCard: Card = {content: "", id: -1, position: -1, title: ""};
@@ -128,6 +129,8 @@ export class TrelloViewComponent implements OnInit {
   getBoard() {
     this.boardService.getBoardById(this.boardId).subscribe(board => {
       this.board = board;
+      // @ts-ignore
+      this.tags = this.board.tags;
       this.getMembers();
     })
   }
