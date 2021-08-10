@@ -288,7 +288,29 @@ export class TrelloViewComponent implements OnInit {
     this.commentCardService.findAllByCardId(this.selectedCard.id).subscribe(comments => {
       // @ts-ignore
       this.commentDto = comments;
+      console.log(this.commentDto)
     })
+  }
+
+// Modal comment
+  showDeleteCommentModal(id: any) {
+    // @ts-ignore
+    document.getElementById("deleteCommentModal").classList.add("is-active")
+    this.commentId = id;
+  }
+
+  deleteComment() {
+    this.commentCardService.deleteComment(this.commentId).subscribe(() => {
+        alert("Success!")
+        this.getAllCommentByCardId();
+        this.closeDeleteCommentModal()
+      }
+    )
+  }
+
+  closeDeleteCommentModal() {
+    // @ts-ignore
+    document.getElementById("deleteCommentModal").classList.remove("is-active")
   }
 
 // Reply
@@ -297,16 +319,6 @@ export class TrelloViewComponent implements OnInit {
     document.getElementById("deleteReplyModal").classList.add("is-active")
     this.replyId = id;
   }
-  // closeColumn(id: any) {
-  //   console.log(id);
-  //   for (let column of this.board.columns) {
-  //     if (column.id == id) {
-  //       let deleteId = this.board.columns.indexOf(column);
-  //       this.board.columns.splice(deleteId, 1);
-  //       this.saveChanges();
-  //     }
-  //   }
-  // }
 
   deleteReply() {
     let commentCard1: CommentCard = {};
@@ -341,27 +353,6 @@ export class TrelloViewComponent implements OnInit {
   closeDeleteReplyModal() {
     // @ts-ignore
     document.getElementById("deleteReplyModal").classList.remove("is-active")
-  }
-
-// Modal
-  showDeleteCommentModal(id: any) {
-    // @ts-ignore
-    document.getElementById("deleteModal").classList.add("is-active")
-    this.commentId = id;
-  }
-
-  deleteComment() {
-    this.commentCardService.deleteComment(this.commentId).subscribe(() => {
-        alert("Success!")
-        this.getAllCommentByCardId();
-        this.closeDeleteCommentModal()
-      }
-    )
-  }
-
-  closeDeleteCommentModal() {
-    // @ts-ignore
-    document.getElementById("deleteModal").classList.remove("is-active")
   }
 
   addColumn() {
@@ -705,6 +696,12 @@ export class TrelloViewComponent implements OnInit {
     })
     this.replyService.saveReply(reply).subscribe(reply => {
       this.reply = reply;
+      // @ts-ignore
+      this.reply.member?.user.username = member.username
+      // @ts-ignore
+      this.reply.member?.user.nickname = member.nickname
+
+      console.log(this.reply)
       for (let com of this.commentDto){
         if (com.id == commentId){
           com.replies?.push(this.reply);
@@ -712,9 +709,6 @@ export class TrelloViewComponent implements OnInit {
         }
       }
       this.commentCardService.updateAllComment(this.commentDto).subscribe(() =>{
-        this.getAllCommentByCardId();
-        this.showReplyForm(commentId);
-        console.log(this.commentDto)
       })
     })
   }
