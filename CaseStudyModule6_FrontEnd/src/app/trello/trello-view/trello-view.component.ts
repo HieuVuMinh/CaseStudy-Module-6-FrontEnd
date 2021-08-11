@@ -16,7 +16,6 @@ import {UserToken} from "../../model/user-token";
 import {Attachment} from "../../model/attachment";
 import {AngularFireStorage} from "@angular/fire/storage";
 import {UserService} from "../../service/user/user.service";
-import {Member} from "../../model/member";
 import {CommentCard} from "../../model/commentCard";
 import {AttachmentService} from "../../service/attachment/attachment.service";
 import {TagService} from "../../service/tag/tag.service";
@@ -29,6 +28,8 @@ import {ActivityLog} from "../../model/activity-log";
 import {ActivityLogService} from "../../service/ActivityLog/activity-log.service";
 import {Reply} from "../../model/reply";
 import {ReplyService} from "../../service/reply/reply.service";
+import {ToastService} from "../../service/toast/toast.service";
+
 import {RedirectService} from "../../service/redirect/redirect.service";
 
 @Component({
@@ -122,7 +123,8 @@ export class TrelloViewComponent implements OnInit {
               private commentCardService: CommentCardService,
               private notificationService: NotificationService,
               private activityLogService: ActivityLogService,
-              public redirectService: RedirectService) {
+              public redirectService: RedirectService,
+              private toastService: ToastService) {
   }
 
   ngOnInit(): void {
@@ -668,6 +670,7 @@ export class TrelloViewComponent implements OnInit {
       this.hiddenDeleteConfirm();
       this.closeModalUpdateCard();
       this.getPage();
+      this.toastService.showMessageSuccess("Delete success", 'is-success');
     });
   }
 
