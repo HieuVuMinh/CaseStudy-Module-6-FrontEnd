@@ -10,6 +10,7 @@ import {AngularFireStorage} from "@angular/fire/storage";
 import {finalize} from "rxjs/operators";
 import {Board} from "../../model/board";
 import {BoardService} from "../../service/board/board.service";
+import {ToastService} from "../../service/toast/toast.service";
 
 @Component({
   selector: 'app-navbar',
@@ -33,7 +34,8 @@ export class NavbarComponent implements OnInit {
               private userService: UserService,
               public notificationService: NotificationService,
               private storage: AngularFireStorage,
-              private boardService: BoardService) {
+              private boardService: BoardService,
+              private toastService: ToastService) {
     this.authenticationService.currentUserSubject.subscribe(user => {
       this.currentUser = user
     });
@@ -68,10 +70,10 @@ export class NavbarComponent implements OnInit {
             // console.log("this.id: "+this.id);
             console.log(this.user);
             this.userService.updateById(this.id, this.user).subscribe(() => {
-                alert("Success");
+                this.toastService.showMessageSuccess("Update success", 'is-success');
               },
               () => {
-                alert("Fail")
+                this.toastService.showMessageSuccess("Fail !", 'is-danger');
               });
           });
         })).subscribe();

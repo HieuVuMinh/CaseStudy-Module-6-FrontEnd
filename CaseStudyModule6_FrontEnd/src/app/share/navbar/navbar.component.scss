@@ -205,8 +205,9 @@ $grey-lighter: hsl(0, 0%, 86%);
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   background: #F7F7F7;
+  width: 24rem;
+  height: 40rem;
 
   .login-card {
     background: #fff;
