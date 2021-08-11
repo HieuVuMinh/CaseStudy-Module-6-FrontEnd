@@ -66,7 +66,7 @@ export class RecoverPasswordComponent implements OnInit {
         nickname: new FormControl(this.user.nickname)
       })
       this.userService.updateById(id, this.finalConfirmForm.value).subscribe(() => {
-        this.toastService.showMessageSuccess('Change success!', 'is-success');
+        this.toastService.showMessageSuccess('Changed password success!', 'is-success');
         this.router.navigateByUrl('/login')
       })
     }
