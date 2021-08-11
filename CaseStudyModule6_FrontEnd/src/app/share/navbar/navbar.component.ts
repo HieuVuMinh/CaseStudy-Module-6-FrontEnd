@@ -158,11 +158,8 @@ export class NavbarComponent implements OnInit {
     if (this.searchString == '') {
       this.searchResults = [];
     } else {
-      //find all boards by current user
-      //search through cards of board to find matching with keyword
-      //load into searchResults
-      this.searchResults = [];
       this.boardService.findAllAvailableToSearcher(this.currentUser.id).subscribe(boards => {
+        let searchResults = [];
         for (let board of boards) {
           for (let column of board.columns) {
             for (let card of column.cards) {
@@ -180,12 +177,13 @@ export class NavbarComponent implements OnInit {
                 } else if (keywordInCardContent) {
                   searchResult.preview = this.createPreview(card.content, this.searchString);
                 }
-                this.searchResults.push(searchResult);
-                if (this.searchResults.length == 5) return;
+                searchResults.push(searchResult);
+                if (searchResults.length == 5) break;
               }
             }
           }
         }
+        this.searchResults = searchResults;
       });
     }
   }

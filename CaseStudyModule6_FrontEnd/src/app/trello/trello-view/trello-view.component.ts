@@ -115,7 +115,7 @@ export class TrelloViewComponent implements OnInit {
               private columnService: ColumnService,
               private cardService: CardService,
               private memberService: MemberService,
-              private authenticationService: AuthenticationService,
+              public authenticationService: AuthenticationService,
               private router: Router,
               private attachmentService: AttachmentService,
               private storage: AngularFireStorage,
@@ -318,9 +318,10 @@ export class TrelloViewComponent implements OnInit {
 
 // comment
   addComment() {
+    let currentUserId = this.authenticationService.getCurrentUserValue().id;
     let member: DetailedMember = {boardId: 0, canEdit: false, id: 0, userId: 0, username: ""}
     for (let m of this.members) {
-      if (m.userId == this.currentUser.id) {
+      if (m.userId == currentUserId) {
         member = m;
       }
     }
@@ -872,12 +873,13 @@ export class TrelloViewComponent implements OnInit {
     // @ts-ignore
     for (let existingUser of this.redirectService.card.users) {
       if (existingUser.id == user.id) {
+        let username = user.username;
         // @ts-ignore
         let deleteIndex = this.redirectService.card.users.indexOf(existingUser);
         // @ts-ignore
         this.redirectService.card.users.splice(deleteIndex, 1);
         // @ts-ignore
-        this.createNoticeInBoard(`deleted user ${this.redirectService.card.users[deleteIndex].username} from card ${this.redirectService.card.title}`, this.redirectService.card)
+        this.createNoticeInBoard(`deleted user ${username} from card ${this.redirectService.card.title}`, this.redirectService.card)
       }
     }
     this.saveChanges();

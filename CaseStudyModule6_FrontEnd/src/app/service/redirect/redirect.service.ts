@@ -1,9 +1,12 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Card} from "../../model/card";
 import {Attachment} from "../../model/attachment";
 import {CommentCard} from "../../model/commentCard";
 import {AttachmentService} from "../attachment/attachment.service";
 import {CommentCardService} from "../comment/comment-card.service";
+import {User} from "../../model/user";
+import {AuthenticationService} from "../authentication/authentication.service";
+import {UserService} from "../user/user.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +16,17 @@ export class RedirectService {
   card: Card = {content: "", id: 0, position: 0, title: ""};
   attachments: Attachment[] = [];
   comments: CommentCard[] = [];
+  user: User = {};
 
   constructor(private attachmentService: AttachmentService,
-              private commentCardService: CommentCardService) { }
+              private commentCardService: CommentCardService,
+              private authenticationService: AuthenticationService,
+              private userService: UserService) {
+  }
 
-  showModal(card: Card){
+  showModal(card: Card) {
     this.card = card;
+    this.getUser();
     this.getAttachments();
     this.getComments();
     this.modalClass = 'is-active';
@@ -38,11 +46,18 @@ export class RedirectService {
     )
   }
 
-  showCardModal(){
+  showCardModal() {
     this.modalClass = 'is-active';
   }
 
-  hideCardModal(){
+  hideCardModal() {
     this.modalClass = '';
+  }
+
+  private getUser() {
+    let userId = this.authenticationService.getCurrentUserValue().id;
+    if (userId != null) {
+      this.userService.getUserById(userId).subscribe(user => this.user = user);
+    }
   }
 }
