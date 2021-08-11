@@ -110,7 +110,6 @@
                     <div class="header__notify">
                       <header class="header__notify-header">
                         <h3>Activity</h3>
-                        <a style="color: white; font-size: 14px; margin-right: 16px; border-bottom: 1px solid">Mark all as read</a>
                       </header>
                       <ul class="header__notify-list">
                         <li class="header__notify-item" *ngFor="let activity of activityLogService.activities"  [class.mark-read]="activity.status">

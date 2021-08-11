@@ -909,5 +909,4 @@ export class TrelloViewComponent implements OnInit {
       })
     })
   }
-
 }
