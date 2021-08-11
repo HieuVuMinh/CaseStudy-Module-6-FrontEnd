@@ -12,9 +12,7 @@ import {MemberService} from "../../../service/member/member.service";
 import {Member} from "../../../model/member";
 import {NotificationService} from "../../../service/notification/notification.service";
 import {Notification} from "../../../model/notification";
-
-declare var $: any;
-declare var Swal: any;
+import {ToastService} from "../../../service/toast/toast.service";
 
 @Component({
   selector: 'app-workspace-member',
@@ -45,7 +43,8 @@ export class WorkspaceMemberComponent implements OnInit {
               private memberWorkspaceService: MemberWorkspaceService,
               private router: Router,
               private memberService: MemberService,
-              private notificationService: NotificationService) {
+              private notificationService: NotificationService,
+              private toastService: ToastService) {
 
   }
 
@@ -111,14 +110,7 @@ export class WorkspaceMemberComponent implements OnInit {
           })
         })
       }
-
-      Swal.fire({
-        position: 'center',
-        icon: 'success',
-        title: 'Success',
-        showConfirmButton: false,
-        timer: 1000
-      });
+      this.toastService.showMessageSuccess("Invite Success!", "is-success");
       this.createNotificationAddToWorkspace()
       this.addMemberWorkspaceToBoard()
       this.addUserList = []
