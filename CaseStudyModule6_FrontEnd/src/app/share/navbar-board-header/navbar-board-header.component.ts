@@ -99,6 +99,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
       this.resetSearch();
       this.getMembers();
     });
+    this.createNoticeInBoard(`add ${member.user.username}`)
   }
 
   private resetSearch() {
@@ -127,6 +128,8 @@ export class NavbarBoardHeaderComponent implements OnInit {
 
   removeSelectedMember() {
     this.memberService.deleteMember(this.selectedMember.id).subscribe(() => {
+      // @ts-ignore
+      this.createNoticeInBoard(`delete ${this.selectedMember.user.username}`)
       this.getMembers();
       this.closeModal();
     });
@@ -286,4 +289,5 @@ export class NavbarBoardHeaderComponent implements OnInit {
       }
     }
   }
+
 }
