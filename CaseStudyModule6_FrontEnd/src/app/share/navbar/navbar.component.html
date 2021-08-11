@@ -20,7 +20,7 @@
 
   <div id="search-section">
     <div style="position: relative" id="search-results">
-      <div *ngIf="boardResults.length" style="position: absolute; top: 40px; width: 200px" class="dropdown-content">
+      <div *ngIf="boardResults.length" style="position: absolute; top: 40px; width: 200px; z-index: 1" class="dropdown-content">
         <a routerLink="/trello/boards/{{boardResult.id}}" (click)="clearSearch()" *ngFor="let boardResult of this.boardResults" class="dropdown-item">
           <ul>
             <li><span style="font-weight: bold">{{boardResult.title}}</span></li>
@@ -47,6 +47,7 @@
     <div class="dropdown is-hoverable is-right">
       <div class="dropdown-trigger">
         <a class="icon-link"><i class="fas fa-bell"></i></a>
+        <span class="header__cart-notice">{{notificationService.unreadNotice}}</span>
       </div>
       <div class="dropdown-menu" id="dropdown-menu5" role="menu">
         <div class="dropdown-content" style="padding: 0">
@@ -54,10 +55,11 @@
             <div class="header__notify">
               <header class="header__notify-header">
                 <h3>Notifications</h3>
+                <a (click)="markAllAsRead()" style="color: white; font-size: 14px; margin-right: 16px; border-bottom: 1px solid">Mark all as read</a>
               </header>
               <ul class="header__notify-list">
-                <li class="header__notify-item" *ngFor="let notification of notifications">
-                  <a  class="header__notify-link" routerLink="{{notification.url}}">
+                <li class="header__notify-item" *ngFor="let notification of notificationService.notification" (click)="markReadNotification(notification)" [class.mark-read]="notification.status">
+                  <a  class="header__notify-link" routerLink="{{notification.url}}" >
                     <img src="https://dizibrand.com/wp-content/uploads/2019/07/trello-la-gi-dizibrand-1.png" alt=""
                          class="header__notify-img">
                     <div class="header__notify-info">

@@ -8,9 +8,13 @@ import {Member} from "../../model/member";
 import {MemberService} from "../../service/member/member.service";
 import {BoardService} from "../../service/board/board.service";
 import {Router} from "@angular/router";
-import { EventEmitter } from '@angular/core';
+import {EventEmitter} from '@angular/core';
 import {Notification} from "../../model/notification";
 import {NotificationService} from "../../service/notification/notification.service";
+import {Tag} from "../../model/tag";
+import {ActivityLogService} from "../../service/ActivityLog/activity-log.service";
+import {ActivityLog} from "../../model/activity-log";
+import {UserToken} from "../../model/user-token";
 
 @Component({
   selector: 'app-navbar-board-header',
@@ -18,7 +22,8 @@ import {NotificationService} from "../../service/notification/notification.servi
   styleUrls: ['./navbar-board-header.component.scss']
 })
 export class NavbarBoardHeaderComponent implements OnInit {
-  @Input() board: Board = {columns: [], owner: {}, title: ""}
+  @Input() board: Board = {columns: [], owner: {}, title: "", tags: []};
+  @Input() tags: Tag[] = [];
   @Input() members: DetailedMember[] = [];
   @Input() canEdit: boolean = false;
   @Input() isInWorkspace: boolean = false;
@@ -27,14 +32,19 @@ export class NavbarBoardHeaderComponent implements OnInit {
   userResult: User[] = [];
   selectedMember: DetailedMember = {boardId: -1, canEdit: false, id: -1, userId: -1, username: ""};
   @Output() updateMemberEvent = new EventEmitter<DetailedMember[]>();
+  currentUser: UserToken = this.authenticationService.getCurrentUserValue()
   receiver: User[] = [];
+  tagFilter: number[] = [];
+  memberFilter: number[] = [];
+  @Output() filterEvent = new EventEmitter<number[][]>();
 
   constructor(public authenticationService: AuthenticationService,
               private userService: UserService,
               private memberService: MemberService,
               private boardService: BoardService,
               private router: Router,
-              private notificationService: NotificationService) {
+              public notificationService: NotificationService,
+              public activityLogService: ActivityLogService) {
   }
 
   ngOnInit(): void {
@@ -209,25 +219,69 @@ export class NavbarBoardHeaderComponent implements OnInit {
     }
     this.createNoticeInBoard("Delete")
   }
-  createNoticeInBoard(notificationText: string) {
-    this.userService.getMemberByBoardId(this.board.id).subscribe(members => {
-      this.receiver = members;
-      let notification: Notification = {
-        title: "Board: " + this.board.title,
-        content: this.authenticationService.getCurrentUserValue().username + " " + notificationText + " " + this.board.title + " " + this.notificationService.getTime(),
-        url: "/trello/boards/" + this.board.id,
-        status: false,
-        receiver: this.receiver
-      }
-      this.saveNotification(notification)
-    })
+  createNoticeInBoard(activityText: string) {
+    let activity: ActivityLog = {
+      title: "Board: " + this.board.title,
+      content: this.currentUser.username + " " + activityText + " in " + this.board.title + " " + this.notificationService.getTime(),
+      url: "/trello/boards/" + this.board.id,
+      status: false,
+      board: this.board
+    }
+    if (this.board.id != null) {
+      this.activityLogService.saveNotification(activity, this.board.id)
+    }
 
   }
 
-  saveNotification(notification: Notification) {
-    this.notificationService.createNotification(notification).subscribe( () => {
-        // @ts-ignore
-      this.notificationService.findAllByUser(this.authenticationService.getCurrentUserValue().id).subscribe( notifications => this.notificationService.notification = notifications )
-    })
+  toggleElement(elementId: string) {
+    let element = document.getElementById(elementId);
+    // @ts-ignore
+    if (element.classList.contains('is-hidden')) {
+      // @ts-ignore
+      element.classList.remove('is-hidden');
+    } else {
+      // @ts-ignore
+      element.classList.add('is-hidden');
+    }
+  }
+
+  filterBoard() {
+    this.updateFilterDto();
+    this.filterEvent.emit([this.tagFilter, this.memberFilter]);
+  }
+
+  private updateFilterDto() {
+    this.tagFilter = [];
+    this.memberFilter = [];
+
+    let tagOptionElements = document.getElementsByClassName('tag-filter-option');
+    // @ts-ignore
+    for (let tagOptionElement of tagOptionElements) {
+      if (tagOptionElement.checked) {
+        this.tagFilter.push(tagOptionElement.value);
+      }
+    }
+    let memberOptionElements = document.getElementsByClassName('member-filter-option');
+    // @ts-ignore
+    for (let memberOptionElement of memberOptionElements) {
+      if (memberOptionElement.checked) {
+        this.memberFilter.push(memberOptionElement.value);
+      }
+    }
+  }
+
+  clearFilterBoard() {
+    this.filterEvent.emit([[], []]);
+    this.clearCheckedOptions();
+  }
+
+  private clearCheckedOptions() {
+    let optionElements = document.getElementsByClassName('filter-option');
+    // @ts-ignore
+    for (let optionElement of optionElements) {
+      if (optionElement.checked) {
+        optionElement.checked = false;
+      }
+    }
   }
 }
