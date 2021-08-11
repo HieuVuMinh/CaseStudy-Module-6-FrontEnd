@@ -42,7 +42,7 @@ export class RecoverPasswordComponent implements OnInit {
         this.newConFirmForm = this.formBuilder.group({
           username: new FormControl(this.user.username),
           email: new FormControl(this.user.email),
-          newPassword: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,10}$')]),
+          newPassword: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,100}$')]),
           confirmPassword: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,10}$')]),
           nickname: new FormControl(this.user.nickname)
         });

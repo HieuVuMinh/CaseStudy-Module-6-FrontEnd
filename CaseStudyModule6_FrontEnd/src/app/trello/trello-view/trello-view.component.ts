@@ -49,6 +49,7 @@ export class TrelloViewComponent implements OnInit {
   commentCard: CommentCard = {}
   reply: Reply = {}
 
+  user: User = {};
   previousColumn: Column = {
     cards: [],
     id: -1,
@@ -60,6 +61,7 @@ export class TrelloViewComponent implements OnInit {
   columnsDto: Column[] = [];
   tags: Tag[] = [];
   members: DetailedMember[] = [];
+  columnId = -1;
   commentId = -1;
   replyId = -1;
   columnForm: FormGroup = new FormGroup({
@@ -289,8 +291,14 @@ export class TrelloViewComponent implements OnInit {
     });
   }
 
+  getUserById() {
+    // @ts-ignore
+    this.userService.getUserById(this.currentUser.id).subscribe(user => this.user = user);
+  }
+
   showUpdateCardModal(card: Card) {
     this.redirectService.showModal(card)
+    this.getUserById();
     // this.redirectService.card = card;
     // this.getAllAttachmentByCard();
     // this.redirectService.showCardModal();
@@ -336,6 +344,35 @@ export class TrelloViewComponent implements OnInit {
       // @ts-ignore
       this.redirectService.comments = comments;
     })
+  }
+
+// Modal Column
+  showDeleteColumnModal(id: any) {
+    // @ts-ignore
+    document.getElementById("deleteColumnModal").classList.add("is-active")
+    this.columnId = id;
+  }
+
+  deleteColumn() {
+    for (let column of this.board.columns) {
+      if (column.id == this.columnId) {
+        // @ts-ignore
+        this.columnService.deleteById(column.id).subscribe()
+
+        let deleteId = this.board.columns.indexOf(column);
+        this.board.columns.splice(deleteId, 1);
+        this.saveChanges();
+        this.closeDeleteColumnModal();
+        this.toastService.showMessageSuccess("Delete success!", "is-success")
+        let notification = "Delete column: " + column.title
+        this.createNoticeInBoard(notification)
+      }
+    }
+  }
+
+  closeDeleteColumnModal() {
+    // @ts-ignore
+    document.getElementById("deleteColumnModal").classList.remove("is-active")
   }
 
 // Modal comment
@@ -499,21 +536,6 @@ export class TrelloViewComponent implements OnInit {
     let buttonShowFormCreateId = 'show-form-create-new-card-' + id;
     // @ts-ignore
     document.getElementById(buttonShowFormCreateId).classList.remove('is-hidden');
-  }
-
-  deleteColumn(id: any) {
-    for (let column of this.board.columns) {
-      if (column.id == id) {
-        // @ts-ignore
-        this.columnService.deleteById(column.id).subscribe()
-
-        let deleteId = this.board.columns.indexOf(column);
-        this.board.columns.splice(deleteId, 1);
-        this.saveChanges();
-        let notification = "Delete column: " + column.title
-        this.createNoticeInBoard(notification)
-      }
-    }
   }
 
   addNewTag() {
@@ -945,6 +967,8 @@ export class TrelloViewComponent implements OnInit {
       this.reply.member?.user.username = member.username
       // @ts-ignore
       this.reply.member?.user.nickname = member.nickname
+      // @ts-ignore
+      this.reply.member?.user.image = member.image
 
       for (let com of this.redirectService.comments) {
         if (com.id == commentId) {
@@ -956,4 +980,5 @@ export class TrelloViewComponent implements OnInit {
       })
     })
   }
+
 }
