@@ -739,11 +739,11 @@ export class TrelloViewComponent implements OnInit {
             this.newAttachment.source = url;
             this.newAttachment.name = `${this.selectedFile.name}`;
             this.attachmentService.addNewFile(this.newAttachment).subscribe(() => {
-                alert("Success");
+                this.toastService.showMessageSuccess("Upload success", 'is-success');
                 this.getAllAttachmentByCard();
               },
               () => {
-                alert("Fail")
+                this.toastService.showMessageSuccess("Fail !", 'is-danger');
               });
           });
         })).subscribe();
@@ -808,11 +808,11 @@ export class TrelloViewComponent implements OnInit {
   deleteAttachment() {
     this.hiddenDeleteAttachmentConfirm();
     this.attachmentService.deleteAttachmentById(this.selectedAttachment.id).subscribe(() => {
-        alert('Delete attachment success');
+        this.toastService.showMessageSuccess("Delete success", 'is-success');
         this.getAllAttachmentByCard();
       },
       () => {
-        alert('Delete fail');
+        this.toastService.showMessageSuccess("Fail !", 'is-danger');
       });
     this.createNoticeCard(`deleted attachment "${this.selectedAttachment.name}" from card "${this.selectedAttachment.card?.title}"`, this.redirectService.card)
   }
