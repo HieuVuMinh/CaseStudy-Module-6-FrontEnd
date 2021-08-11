@@ -341,7 +341,35 @@ export class TrelloViewComponent implements OnInit {
     this.commentId = id;
   }
 
+
+  deleteAllReply(comment: CommentCard) {
+    // @ts-ignore
+    for (let reply of comment.replies){
+      // @ts-ignore
+      this.replyService.deleteReplyById(reply.id).subscribe()
+    }
+  }
+
+  deleteAllComment() {
+    for (let comment of this.commentDto){
+      this.deleteAllReply(comment)
+      this.commentCardService.deleteComment(comment.id).subscribe()
+    }
+  }
+
   deleteComment() {
+    let newCommentCard: CommentCard = {};
+    for (let comment of this.commentDto) {
+      if (comment.id == this.commentId){
+        newCommentCard = comment;
+        break;
+      }
+    }
+    // @ts-ignore
+    for (let reply of newCommentCard.replies){
+      // @ts-ignore
+      this.replyService.deleteReplyById(reply.id).subscribe()
+    }
     this.commentCardService.deleteComment(this.commentId).subscribe(() => {
         alert("Success!")
         this.getAllCommentByCardId();
@@ -467,14 +495,17 @@ export class TrelloViewComponent implements OnInit {
     document.getElementById(buttonShowFormCreateId).classList.remove('is-hidden');
   }
 
-  closeColumn(id: any) {
+  deleteColumn(id: any) {
     for (let column of this.board.columns) {
       if (column.id == id) {
-        let deleteId = this.board.columns.indexOf(column);
-        this.board.columns.splice(deleteId, 1);
-        this.saveChanges();
-        let notification = "Delete column: " + column.title
-        this.createNoticeInBoard(notification)
+        // @ts-ignore
+        this.columnService.deleteById(column.id).subscribe()
+
+        // let deleteId = this.board.columns.indexOf(column);
+        // this.board.columns.splice(deleteId, 1);
+        // this.saveChanges();
+        // let notification = "Delete column: " + column.title
+        // this.createNoticeInBoard(notification)
       }
     }
   }
@@ -662,6 +693,7 @@ export class TrelloViewComponent implements OnInit {
   }
 
   deleteCard() {
+    this.deleteAllComment();
     this.cardService.deleteById(this.selectedCard.id).subscribe(() => {
       this.hiddenDeleteConfirm();
       this.closeModalUpdateCard();
