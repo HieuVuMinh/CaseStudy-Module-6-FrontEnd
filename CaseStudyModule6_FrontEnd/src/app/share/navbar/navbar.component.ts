@@ -54,6 +54,9 @@ export class NavbarComponent implements OnInit {
     this.id = this.authenticationService.getCurrentUserValue().id;
     this.userService.getUserById(this.id).subscribe(user => {
       this.user = user;
+      if(this.user.image==null){
+        this.user.image = "https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png";
+      }
       this.imgSrc = this.user.image;
     })
   }
@@ -67,12 +70,10 @@ export class NavbarComponent implements OnInit {
         finalize(() => {
           fileRef.getDownloadURL().subscribe(url => {
             this.imgSrc = url;
-            this.selectedImage.source = url;
-            // console.log("this.user.image: "+this.user.image);
-            // console.log("this.id: "+this.id);
-            console.log(this.user);
+            this.user.image = url;
             this.userService.updateById(this.id, this.user).subscribe(() => {
                 this.toastService.showMessageSuccess("Update success", 'is-success');
+                this.closeModalUpdate();
               },
               () => {
                 this.toastService.showMessageSuccess("Fail !", 'is-danger');
