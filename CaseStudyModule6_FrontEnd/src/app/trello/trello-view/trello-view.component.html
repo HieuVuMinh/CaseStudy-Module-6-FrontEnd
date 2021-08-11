@@ -88,11 +88,11 @@
 </div>
 
 <!--Modal update card-->
-<div id="modal-update-card" class="modal">
+<div id="modal-update-card" class="modal" [ngClass]="redirectService.modalClass">
   <div class="modal-background" (click)="closeModalUpdateCard()"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <input class="input modal-card-title" type="text" placeholder="Title" [(ngModel)]="selectedCard.title">
+      <input class="input modal-card-title" type="text" placeholder="Title" [(ngModel)]="redirectService.card.title">
     </header>
     <section class="modal-card-body">
       <div class="columns columns-card-body">
@@ -100,13 +100,13 @@
           <div>
             <ul>
               <li>
-                <span *ngFor="let tag of selectedCard.tags" class="tag is-light" [ngClass]="tag.color"
+                <span *ngFor="let tag of redirectService.card.tags" class="tag is-light" [ngClass]="tag.color"
                       (click)="removeTagFromCard(tag)">
                   {{tag.name}}
                 </span>
               </li>
               <li>
-                <span *ngFor="let user of selectedCard.users" class="tag is-light" (click)="removeUserFromCard(user)">
+                <span *ngFor="let user of redirectService.card.users" class="tag is-light" (click)="removeUserFromCard(user)">
                   @{{user.username}}
                 </span>
               </li>
@@ -115,7 +115,7 @@
 <!--          Content modal update-->
           <div class="model-card-body-content">
             <input class="input modal-card-content" type="text" placeholder="Content..."
-                   [(ngModel)]="selectedCard.content">
+                   [(ngModel)]="redirectService.card.content">
           </div>
 
           <!--Comment-->
@@ -136,7 +136,7 @@
                     <div class="level-left">
                       <div class="level-item">
                         <button class="button is-primary is-light submitComment is-hidden"
-                                id="submitComment-{{this.selectedCard.id}}" type="submit">Submit
+                                id="submitComment-{{this.redirectService.card.id}}" type="submit">Submit
                         </button>
                       </div>
                     </div>
@@ -146,7 +146,7 @@
             </article>
           </div>
           <!--comment body-->
-          <span *ngFor="let comment of commentDto">
+          <span *ngFor="let comment of redirectService.comments">
             <div class="model-card-body-content comment-body" *ngIf="canEdit">
               <article class="media media-comment-body">
                 <figure class="media-left">
@@ -297,7 +297,7 @@
         </div>
         </div>
       <!--          Show file upload-->
-      <div *ngFor="let attachment of attachmentList" class="media-attachment-body">
+      <div *ngFor="let attachment of redirectService.attachments" class="media-attachment-body">
         <span class="media link-file">
         <a target="_blank" href="{{attachment.source}}">{{attachment.name}}</a>
         </span>

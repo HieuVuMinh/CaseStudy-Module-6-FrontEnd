@@ -10,6 +10,7 @@ import {AngularFireStorage} from "@angular/fire/storage";
 import {finalize} from "rxjs/operators";
 import {BoardService} from "../../service/board/board.service";
 import {SearchResult} from "../../model/search-result";
+import {RedirectService} from "../../service/redirect/redirect.service";
 
 @Component({
   selector: 'app-navbar',
@@ -33,7 +34,8 @@ export class NavbarComponent implements OnInit {
               private userService: UserService,
               public notificationService: NotificationService,
               private storage: AngularFireStorage,
-              private boardService: BoardService) {
+              private boardService: BoardService,
+              private redirectService: RedirectService) {
     this.authenticationService.currentUserSubject.subscribe(user => {
       this.currentUser = user
     });
@@ -185,9 +187,10 @@ export class NavbarComponent implements OnInit {
     }
   }
 
-  clearSearch() {
+  clearSearch(searchResult: SearchResult) {
     this.searchString = '';
     this.searchResults = [];
+    this.redirectService.showModal(searchResult.card);
   }
 
   private createPreview(content: string, searchString: string): string[] {
