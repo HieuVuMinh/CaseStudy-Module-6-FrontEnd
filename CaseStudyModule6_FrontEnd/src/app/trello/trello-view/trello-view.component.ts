@@ -30,6 +30,7 @@ import {Reply} from "../../model/reply";
 import {ReplyService} from "../../service/reply/reply.service";
 import {ToastService} from "../../service/toast/toast.service";
 
+import {RedirectService} from "../../service/redirect/redirect.service";
 
 @Component({
   selector: 'app-trello-view',
@@ -55,14 +56,12 @@ export class TrelloViewComponent implements OnInit {
     title: ""
   };
   repliesDto: Reply[] = [];
-  commentDto: CommentCard[] = [];
   cardsDto: Card[] = [];
   columnsDto: Column[] = [];
   tags: Tag[] = [];
   members: DetailedMember[] = [];
   commentId = -1;
   replyId = -1;
-  selectedCard: Card = {content: "", id: -1, position: -1, title: ""};
   columnForm: FormGroup = new FormGroup({
     title: new FormControl('', Validators.required),
   })
@@ -106,7 +105,6 @@ export class TrelloViewComponent implements OnInit {
   fileSrc: any | undefined = null;
   receiver: User[] = [];
 
-  attachmentList: Attachment[] = [];
 
   selectedAttachment: Attachment = {};
 
@@ -125,24 +123,25 @@ export class TrelloViewComponent implements OnInit {
               private commentCardService: CommentCardService,
               private notificationService: NotificationService,
               private activityLogService: ActivityLogService,
+              public redirectService: RedirectService,
               private toastService: ToastService) {
   }
 
   ngOnInit(): void {
     this.getBoardIdByUrl();
   }
+
   findAllActivityByBoardId() {
     if (this.board.id != null) {
       this.activityLogService.findAllByBoardId(this.boardId).subscribe(activities => {
         this.activityLogService.activities = activities;
-        for (let notification of activities){
-          if (!notification.status){
+        for (let notification of activities) {
+          if (!notification.status) {
             this.activityLogService.unreadNotice++;
           }
         }
       })
     }
-
   }
 
   getBoardIdByUrl() {
@@ -291,16 +290,15 @@ export class TrelloViewComponent implements OnInit {
   }
 
   showUpdateCardModal(card: Card) {
-    this.selectedCard = card;
-    this.getAllAttachmentByCard();
-    // @ts-ignore
-    document.getElementById('modal-update-card').classList.add('is-active');
-    this.getAllCommentByCardId()
+    this.redirectService.showModal(card)
+    // this.redirectService.card = card;
+    // this.getAllAttachmentByCard();
+    // this.redirectService.showCardModal();
+    // this.getAllCommentByCardId();
   }
 
   closeModalUpdateCard() {
-    // @ts-ignore
-    document.getElementById('modal-update-card').classList.remove('is-active');
+    this.redirectService.hideCardModal();
     this.hiddenDeleteAttachmentConfirm();
     this.closeDeleteCommentModal();
     this.hiddenDeleteConfirm();
@@ -314,13 +312,17 @@ export class TrelloViewComponent implements OnInit {
   addComment() {
     let member: DetailedMember = {boardId: 0, canEdit: false, id: 0, userId: 0, username: ""}
     for (let m of this.members) {
-      if (m.userId == this.currentUser.id){
+      if (m.userId == this.currentUser.id) {
         member = m;
       }
     }
     // @ts-ignore
     let memberDto: Member = {board: {id: member.id}, canEdit: member.canEdit, id: member.id, user: {id: member.userId}}
-    let commentCard: CommentCard = {content: this.commentForm.value.content, card: this.selectedCard, member: memberDto};
+    let commentCard: CommentCard = {
+      content: this.commentForm.value.content,
+      card: this.redirectService.card,
+      member: memberDto
+    };
     this.commentForm = new FormGroup({
       content: new FormControl('')
     });
@@ -330,9 +332,9 @@ export class TrelloViewComponent implements OnInit {
   }
 
   getAllCommentByCardId() {
-    this.commentCardService.findAllByCardId(this.selectedCard.id).subscribe(comments => {
+    this.commentCardService.findAllByCardId(this.redirectService.card.id).subscribe(comments => {
       // @ts-ignore
-      this.commentDto = comments;
+      this.redirectService.comments = comments;
     })
   }
 
@@ -343,7 +345,35 @@ export class TrelloViewComponent implements OnInit {
     this.commentId = id;
   }
 
+
+  deleteAllReply(comment: CommentCard) {
+    // @ts-ignore
+    for (let reply of comment.replies){
+      // @ts-ignore
+      this.replyService.deleteReplyById(reply.id).subscribe()
+    }
+  }
+
+  deleteAllComment() {
+    for (let comment of this.redirectService.comments){
+      this.deleteAllReply(comment)
+      this.commentCardService.deleteComment(comment.id).subscribe()
+    }
+  }
+
   deleteComment() {
+    let newCommentCard: CommentCard = {};
+    for (let comment of this.redirectService.comments) {
+      if (comment.id == this.commentId){
+        newCommentCard = comment;
+        break;
+      }
+    }
+    // @ts-ignore
+    for (let reply of newCommentCard.replies){
+      // @ts-ignore
+      this.replyService.deleteReplyById(reply.id).subscribe()
+    }
     this.commentCardService.deleteComment(this.commentId).subscribe(() => {
         alert("Success!")
         this.getAllCommentByCardId();
@@ -367,28 +397,28 @@ export class TrelloViewComponent implements OnInit {
 
   deleteReply() {
     let commentCard1: CommentCard = {};
-    for (let comment of this.commentDto) {
-      if (comment.id == this.commentId){
+    for (let comment of this.redirectService.comments) {
+      if (comment.id == this.commentId) {
         commentCard1 = comment;
         break;
       }
     }
     // @ts-ignore
     for (let reply of commentCard1.replies) {
-      if (reply.id == this.replyId){
+      if (reply.id == this.replyId) {
         let deleteReplyId = commentCard1.replies?.indexOf(reply);
         // @ts-ignore
         commentCard1.replies?.splice(deleteReplyId, 1);
       }
     }
-    for (let comment of this.commentDto) {
-      if (comment.id == this.commentId){
+    for (let comment of this.redirectService.comments) {
+      if (comment.id == this.commentId) {
         comment = commentCard1;
         break;
       }
     }
-    this.commentCardService.updateAllComment(this.commentDto).subscribe(() =>{
-      this.replyService.deleteReplyById(this.replyId).subscribe(()=>{
+    this.commentCardService.updateAllComment(this.redirectService.comments).subscribe(() => {
+      this.replyService.deleteReplyById(this.replyId).subscribe(() => {
         alert("success!")
       })
       this.closeDeleteReplyModal()
@@ -471,9 +501,12 @@ export class TrelloViewComponent implements OnInit {
     document.getElementById(buttonShowFormCreateId).classList.remove('is-hidden');
   }
 
-  closeColumn(id: any) {
+  deleteColumn(id: any) {
     for (let column of this.board.columns) {
       if (column.id == id) {
+        // @ts-ignore
+        this.columnService.deleteById(column.id).subscribe()
+
         let deleteId = this.board.columns.indexOf(column);
         this.board.columns.splice(deleteId, 1);
         this.saveChanges();
@@ -495,14 +528,13 @@ export class TrelloViewComponent implements OnInit {
         name: ""
       }
     });
-
   }
 
   addTagToCard(tag: Tag) {
     this.updateSelectedCard();
     let isValid = true;
     // @ts-ignore
-    for (let existingTag of this.selectedCard.tags) {
+    for (let existingTag of this.redirectService.card.tags) {
       if (existingTag.id == tag.id) {
         isValid = false;
         break;
@@ -510,8 +542,8 @@ export class TrelloViewComponent implements OnInit {
     }
     if (isValid) {
       // @ts-ignore
-      this.selectedCard.tags.push(tag);
-      this.createNoticeInBoard(`add tag "${tag.name}" to card "${this.selectedCard.title}"`)
+      this.redirectService.card.tags.push(tag);
+      this.createNoticeInBoard(`add tag "${tag.name}" to card "${this.redirectService.card.title}"`)
     }
     this.saveChanges();
   }
@@ -519,23 +551,23 @@ export class TrelloViewComponent implements OnInit {
   removeTagFromCard(tag: Tag) {
     this.updateSelectedCard()
     // @ts-ignore
-    for (let existingTag of this.selectedCard.tags) {
+    for (let existingTag of this.redirectService.card.tags) {
       if (existingTag.id == tag.id) {
         // @ts-ignore
-        let deleteIndex = this.selectedCard.tags.indexOf(existingTag);
+        let deleteIndex = this.redirectService.card.tags.indexOf(existingTag);
         // @ts-ignore
-        this.selectedCard.tags.splice(deleteIndex, 1);
+        this.redirectService.card.tags.splice(deleteIndex, 1);
       }
     }
     this.saveChanges();
-    this.createNoticeInBoard(`remove tag "${tag.name}" from card "${this.selectedCard.title}"`)
+    this.createNoticeInBoard(`remove tag "${tag.name}" from card "${this.redirectService.card.title}"`)
   }
 
   private updateSelectedCard() {
     for (let column of this.board.columns) {
       for (let card of column.cards) {
-        if (card.id == this.selectedCard.id) {
-          this.selectedCard = card;
+        if (card.id == this.redirectService.card.id) {
+          this.redirectService.card = card;
         }
       }
     }
@@ -607,12 +639,12 @@ export class TrelloViewComponent implements OnInit {
 
   displaySubmitCommentButton() {
     // @ts-ignore
-    document.getElementById("submitComment-" + this.selectedCard.id).classList.remove('is-hidden')
+    document.getElementById("submitComment-" + this.redirectService.card.id).classList.remove('is-hidden')
   }
 
   showSubmitCommentButton() {
     // @ts-ignore
-    document.getElementById("submitComment-" + this.selectedCard.id).classList.add('is-hidden')
+    document.getElementById("submitComment-" + this.redirectService.card.id).classList.add('is-hidden')
   }
 
   updateMembers(event: DetailedMember[]) {
@@ -655,7 +687,7 @@ export class TrelloViewComponent implements OnInit {
     this.updateSelectedCard();
     let isValid = true;
     // @ts-ignore
-    for (let existingUser of this.selectedCard.users) {
+    for (let existingUser of this.redirectService.card.users) {
       if (existingUser.id == member.userId) {
         isValid = false;
         break;
@@ -667,21 +699,22 @@ export class TrelloViewComponent implements OnInit {
         username: member.username,
       }
       // @ts-ignore
-      this.selectedCard.users.push(user);
-      this.createNoticeInBoard(`mounted "${user.nickname}" with tag "${this.selectedCard.title}"`)
+      this.redirectService.card.users.push(user);
+      this.createNoticeInBoard(`mounted "${user.nickname}" with tag "${this.redirectService.card.title}"`)
     }
     this.saveChanges();
 
   }
 
   deleteCard() {
-    this.cardService.deleteById(this.selectedCard.id).subscribe(() => {
+    this.deleteAllComment();
+    this.cardService.deleteById(this.redirectService.card.id).subscribe(() => {
       this.hiddenDeleteConfirm();
       this.closeModalUpdateCard();
       this.getPage();
       this.toastService.showMessageSuccess("Delete success", 'is-success');
     });
-    this.createNoticeInBoard(`deleted card "${this.selectedCard.title}"`)
+    this.createNoticeInBoard(`deleted card "${this.redirectService.card.title}"`)
   }
 
   uploadFile() {
@@ -692,7 +725,7 @@ export class TrelloViewComponent implements OnInit {
         // @ts-ignore
         this.newAttachment.member = member;
         isMember = true;
-        this.newAttachment.card = this.selectedCard;
+        this.newAttachment.card = this.redirectService.card;
         break;
       }
     }
@@ -742,6 +775,7 @@ export class TrelloViewComponent implements OnInit {
     // @ts-ignore
     document.getElementById('form-upload-file').classList.remove('is-hidden');
   }
+
   hiddenDeleteConfirm() {
     // @ts-ignore
     document.getElementById('delete-card-modal').classList.remove('is-active');
@@ -754,8 +788,8 @@ export class TrelloViewComponent implements OnInit {
   }
 
   getAllAttachmentByCard() {
-    this.attachmentService.getAttachmentByCard(this.selectedCard.id).subscribe(attachmentList => {
-        this.attachmentList = attachmentList;
+    this.attachmentService.getAttachmentByCard(this.redirectService.card.id).subscribe(attachmentList => {
+        this.redirectService.attachments = attachmentList;
       }
     )
   }
@@ -782,6 +816,7 @@ export class TrelloViewComponent implements OnInit {
       });
     this.createNoticeInBoard(`deleted attachment "${this.selectedAttachment.name}" from card "${this.selectedAttachment.card?.title}"`)
   }
+
   createNoticeInBoard(activityText: string) {
       let activity: ActivityLog = {
         title: "Board: " + this.board.title,
@@ -797,12 +832,12 @@ export class TrelloViewComponent implements OnInit {
   removeUserFromCard(user: User) {
     this.updateSelectedCard()
     // @ts-ignore
-    for (let existingUser of this.selectedCard.users) {
+    for (let existingUser of this.redirectService.card.users) {
       if (existingUser.id == user.id) {
         // @ts-ignore
-        let deleteIndex = this.selectedCard.users.indexOf(existingUser);
+        let deleteIndex = this.redirectService.card.users.indexOf(existingUser);
         // @ts-ignore
-        this.selectedCard.users.splice(deleteIndex, 1);
+        this.redirectService.card.users.splice(deleteIndex, 1);
       }
     }
     this.saveChanges();
@@ -882,7 +917,7 @@ export class TrelloViewComponent implements OnInit {
   addReply(commentId: any) {
     let member: DetailedMember = {boardId: 0, canEdit: false, id: 0, userId: 0, username: ""}
     for (let m of this.members) {
-      if (m.userId == this.currentUser.id){
+      if (m.userId == this.currentUser.id) {
         member = m;
       }
     }
@@ -899,13 +934,13 @@ export class TrelloViewComponent implements OnInit {
       // @ts-ignore
       this.reply.member?.user.nickname = member.nickname
 
-      for (let com of this.commentDto){
-        if (com.id == commentId){
+      for (let com of this.redirectService.comments) {
+        if (com.id == commentId) {
           com.replies?.push(this.reply);
           break;
         }
       }
-      this.commentCardService.updateAllComment(this.commentDto).subscribe(() =>{
+      this.commentCardService.updateAllComment(this.redirectService.comments).subscribe(() => {
       })
     })
   }
