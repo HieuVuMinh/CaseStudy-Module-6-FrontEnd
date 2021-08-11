@@ -346,6 +346,7 @@ export class TrelloViewComponent implements OnInit {
         alert("Success!")
         this.getAllCommentByCardId();
         this.closeDeleteCommentModal()
+        this.createNoticeInBoard(`deleted comment`)
       }
     )
   }
@@ -408,6 +409,7 @@ export class TrelloViewComponent implements OnInit {
         this.previousColumn = column;
         this.board.columns.push(this.previousColumn);
         this.updateBoard()
+        this.createNoticeInBoard(`added column "${column.title}"`)
       })
     }
   }
@@ -485,11 +487,13 @@ export class TrelloViewComponent implements OnInit {
       // @ts-ignore
       this.board.tags.push(this.newTag);
       this.saveChanges();
+      this.createNoticeInBoard(`add new tag ${tag.name}`)
       this.newTag = {
         color: "is-primary",
         name: ""
       }
     });
+
   }
 
   addTagToCard(tag: Tag) {
@@ -505,6 +509,7 @@ export class TrelloViewComponent implements OnInit {
     if (isValid) {
       // @ts-ignore
       this.selectedCard.tags.push(tag);
+      this.createNoticeInBoard(`add tag "${tag.name}" to card "${this.selectedCard.title}"`)
     }
     this.saveChanges();
   }
@@ -521,6 +526,7 @@ export class TrelloViewComponent implements OnInit {
       }
     }
     this.saveChanges();
+    this.createNoticeInBoard(`remove tag "${tag.name}" from card "${this.selectedCard.title}"`)
   }
 
   private updateSelectedCard() {
@@ -622,11 +628,14 @@ export class TrelloViewComponent implements OnInit {
             let deleteIndex = card.users.indexOf(user);
             // @ts-ignore
             card.users.splice(deleteIndex, 1);
+            // @ts-ignore
+            this.createNoticeInBoard(`deleted member "${card.users[deleteIndex].nickname}" from card "${card.title}"`)
           }
         }
       }
     }
     this.saveChanges();
+
   }
 
   private isBoardMember(user: User): boolean {
@@ -657,8 +666,10 @@ export class TrelloViewComponent implements OnInit {
       }
       // @ts-ignore
       this.selectedCard.users.push(user);
+      this.createNoticeInBoard(`mounted "${user.nickname}" with tag "${this.selectedCard.title}"`)
     }
     this.saveChanges();
+
   }
 
   deleteCard() {
@@ -667,6 +678,7 @@ export class TrelloViewComponent implements OnInit {
       this.closeModalUpdateCard();
       this.getPage();
     });
+    this.createNoticeInBoard(`deleted card "${this.selectedCard.title}"`)
   }
 
   uploadFile() {
@@ -765,11 +777,12 @@ export class TrelloViewComponent implements OnInit {
       () => {
         alert('Delete fail');
       });
+    this.createNoticeInBoard(`deleted attachment "${this.selectedAttachment.name}" from card "${this.selectedAttachment.card?.title}"`)
   }
   createNoticeInBoard(activityText: string) {
       let activity: ActivityLog = {
         title: "Board: " + this.board.title,
-        content: this.currentUser.username + " " + activityText + " in " + this.board.title + " " + this.notificationService.getTime(),
+        content: `${this.currentUser.username} ${activityText} at ${this.notificationService.getTime()}`,
         url: "/trello/boards/" + this.board.id,
         status: false,
         board: this.board
@@ -790,6 +803,7 @@ export class TrelloViewComponent implements OnInit {
       }
     }
     this.saveChanges();
+    this.createNoticeInBoard(``)
   }
 
   filterBoard(event: number[][]) {
