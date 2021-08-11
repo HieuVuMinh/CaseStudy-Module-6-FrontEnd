@@ -123,7 +123,7 @@ export class NavbarComponent implements OnInit {
 
   openModalUpdate() {
     // @ts-ignore
-    document.getElementById('modal-update-user').classList.add('is-active')
+    document.getElementById("modal-update-user").classList.add('is-active')
   }
 
   closeModalUpdate() {
