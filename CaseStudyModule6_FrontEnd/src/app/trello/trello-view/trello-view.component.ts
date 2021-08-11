@@ -574,6 +574,7 @@ export class TrelloViewComponent implements OnInit {
 
   removeTagFromCard(tag: Tag) {
     this.updateSelectedCard()
+    let tagName = tag.name;
     // @ts-ignore
     for (let existingTag of this.redirectService.card.tags) {
       if (existingTag.id == tag.id) {
@@ -584,7 +585,7 @@ export class TrelloViewComponent implements OnInit {
       }
     }
     this.saveChanges();
-    this.createNoticeCard(`remove tag "${tag.name}" from card "${this.redirectService.card.title}"`, this.redirectService.card)
+    this.createNoticeCard(`remove tag "${tagName}" from card "${this.redirectService.card.title}"`, this.redirectService.card)
   }
 
   private updateSelectedCard() {
