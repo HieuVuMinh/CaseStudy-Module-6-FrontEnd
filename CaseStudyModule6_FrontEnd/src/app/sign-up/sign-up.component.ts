@@ -6,7 +6,6 @@ import {UserService} from "../service/user/user.service";
 import firebase from "firebase";
 import {User} from "../model/user";
 import {ToastService} from "../service/toast/toast.service";
-
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.component.html',

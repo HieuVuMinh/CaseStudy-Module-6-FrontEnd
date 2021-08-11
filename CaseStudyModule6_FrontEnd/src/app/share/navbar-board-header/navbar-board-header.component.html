@@ -143,7 +143,7 @@
                      (keyup)="searchUsers()">
               <div *ngIf="userResult.length" class="dropdown-content">
                 <a *ngFor="let result of userResult" class="dropdown-item" (click)="addMember(result)">
-                  <img *ngIf="!result.image" src="assets/img/nicki-eliza.jpg" class="img-circle is-48x48">
+                  <img *ngIf="!result.image" src="https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png" class="img-circle is-48x48">
                   <img *ngIf="result.image" [src]="result.image" class="img-circle is-48x48">
                   @{{result.username}} <span *ngIf="result.nickname">({{result.nickname}})</span>
                 </a>
