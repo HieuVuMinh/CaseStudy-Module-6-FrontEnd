@@ -1,4 +1,5 @@
 import {Board} from "./board";
+import {Card} from "./card";
 
 export interface ActivityLog {
   id?: number;
@@ -7,4 +8,5 @@ export interface ActivityLog {
   url?: string;
   status?: boolean;
   board?: Board;
+  card?: Card;
 }

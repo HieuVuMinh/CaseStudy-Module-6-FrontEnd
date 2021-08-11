@@ -85,7 +85,6 @@
           </button>
           <div style="position: relative">
             <div id="menu-btn-dropdown" class="is-hidden" style="position: absolute; top: 25px">
-              <button class="button is-info is-light">Activity Log</button>
               <button *ngIf="canEdit" class="button is-danger is-light" (click)="toggleDeleteBoardModal()">Remove Board</button>
             </div>
           </div>
@@ -101,8 +100,10 @@
           <div class="icon-item" >
             <div class="dropdown is-hoverable is-right">
               <div class="dropdown-trigger">
-                <a class="icon-link"><i class="fas fa-bell"></i></a>
-                <span class="header__cart-notice">{{activityLogService.unreadNotice}}</span>
+                <button class="button is-primary" (click)="toggleMenu()">
+                  <i class="fas fa-list"></i>
+                  Activity
+                </button>
               </div>
               <div class="dropdown-menu" id="dropdown-menu5" role="menu">
                 <div class="dropdown-content" style="padding: 0">
@@ -113,7 +114,15 @@
                       </header>
                       <ul class="header__notify-list">
                         <li class="header__notify-item" *ngFor="let activity of activityLogService.activities"  [class.mark-read]="activity.status">
-                          <a  class="header__notify-link" routerLink="{{activity.url}}" >
+                          <a  class="header__notify-link" routerLink="{{activity.url}}" *ngIf="activity.card" (click)="redirectService.showModal(activity.card)">
+                            <img src="https://dizibrand.com/wp-content/uploads/2019/07/trello-la-gi-dizibrand-1.png" alt=""
+                                 class="header__notify-img">
+                            <div class="header__notify-info">
+                              <span class="header__notify-name">{{activity.title}}</span>
+                              <span class="header__notify-description">{{activity.content}}</span>
+                            </div>
+                          </a>
+                          <a  class="header__notify-link" routerLink="{{activity.url}}" *ngIf="!activity.card">
                             <img src="https://dizibrand.com/wp-content/uploads/2019/07/trello-la-gi-dizibrand-1.png" alt=""
                                  class="header__notify-img">
                             <div class="header__notify-info">

@@ -15,6 +15,7 @@ import {Tag} from "../../model/tag";
 import {ActivityLogService} from "../../service/ActivityLog/activity-log.service";
 import {ActivityLog} from "../../model/activity-log";
 import {UserToken} from "../../model/user-token";
+import {RedirectService} from "../../service/redirect/redirect.service";
 
 @Component({
   selector: 'app-navbar-board-header',
@@ -44,7 +45,8 @@ export class NavbarBoardHeaderComponent implements OnInit {
               private boardService: BoardService,
               private router: Router,
               public notificationService: NotificationService,
-              public activityLogService: ActivityLogService) {
+              public activityLogService: ActivityLogService,
+              public redirectService: RedirectService) {
   }
 
   ngOnInit(): void {

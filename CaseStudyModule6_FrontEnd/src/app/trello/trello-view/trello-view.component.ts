@@ -479,7 +479,7 @@ export class TrelloViewComponent implements OnInit {
         }
       }
       let notification = "Add new card: " + card.title
-      this.createNoticeInBoard(notification)
+      this.createNoticeCard(notification, card)
     })
   }
 
@@ -543,7 +543,7 @@ export class TrelloViewComponent implements OnInit {
     if (isValid) {
       // @ts-ignore
       this.redirectService.card.tags.push(tag);
-      this.createNoticeInBoard(`add tag "${tag.name}" to card "${this.redirectService.card.title}"`)
+      this.createNoticeCard(`add tag "${tag.name}" to card "${this.redirectService.card.title}"`, this.redirectService.card)
     }
     this.saveChanges();
   }
@@ -560,7 +560,7 @@ export class TrelloViewComponent implements OnInit {
       }
     }
     this.saveChanges();
-    this.createNoticeInBoard(`remove tag "${tag.name}" from card "${this.redirectService.card.title}"`)
+    this.createNoticeCard(`remove tag "${tag.name}" from card "${this.redirectService.card.title}"`, this.redirectService.card)
   }
 
   private updateSelectedCard() {
@@ -700,7 +700,7 @@ export class TrelloViewComponent implements OnInit {
       }
       // @ts-ignore
       this.redirectService.card.users.push(user);
-      this.createNoticeInBoard(`mounted "${user.nickname}" with tag "${this.redirectService.card.title}"`)
+      this.createNoticeCard(`add user "${user.username}" to card "${this.redirectService.card.title}"`, this.redirectService.card)
     }
     this.saveChanges();
 
@@ -814,7 +814,7 @@ export class TrelloViewComponent implements OnInit {
       () => {
         alert('Delete fail');
       });
-    this.createNoticeInBoard(`deleted attachment "${this.selectedAttachment.name}" from card "${this.selectedAttachment.card?.title}"`)
+    this.createNoticeCard(`deleted attachment "${this.selectedAttachment.name}" from card "${this.selectedAttachment.card?.title}"`, this.redirectService.card)
   }
 
   createNoticeInBoard(activityText: string) {
@@ -826,6 +826,18 @@ export class TrelloViewComponent implements OnInit {
         board: this.board
       }
       this.activityLogService.saveNotification(activity, this.boardId)
+
+  }
+  createNoticeCard(activityText: string, card: Card) {
+    let activity: ActivityLog = {
+      title: "Board: " + this.board.title,
+      content: `${this.currentUser.username} ${activityText} at ${this.notificationService.getTime()}`,
+      url: "/trello/boards/" + this.board.id,
+      status: false,
+      board: this.board,
+      card: card
+    }
+    this.activityLogService.saveNotification(activity, this.boardId)
 
   }
 
