@@ -10,7 +10,6 @@
   <div class="board">
     <div class="board-wrapper">
       <div class="board-columns">
-
         <div cdkDropList
              cdkDropListGroup
              cdkDropListOrientation="horizontal" class="board-columns"
@@ -21,14 +20,13 @@
               <i class="far fa-trash-alt"></i>
             </div>
             <div class="column-title" cdkDragHandle>
-              <input class="input title-column" type="text" style="border: none; position: revert"
+              <input class="input title-column" type="text"
                      (keydown)="onKeydown($event, column)"
                      [(ngModel)]="this.board.columns[i].title"
                      value="{{column.title}}">
             </div>
             <!--            content-->
             <div class="tasks-container"
-                 style="min-height: 410px"
                  id="{{column.id}}"
                  cdkDropList
                  [cdkDropListData]="column.cards"
@@ -37,7 +35,7 @@
                 <ul>
                   <li><span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
                   </li>
-                  <li><span style="padding-left: 5px">{{item.title}}</span></li>
+                  <li><span class="item-title">{{item.title}}</span></li>
                   <li><span *ngFor="let user of item.users" class="tag is-light">@{{user.username}}</span>
                   </li>
                 </ul>
@@ -61,7 +59,7 @@
                 </form>
               </div>
               <div id="show-form-create-new-card-{{column.id}}" class="show-form-create-new-card">
-                <button class="button is-light" (click)="showInputAddNewCard(column.id)"> + Add new card</button>
+                <button class="button button-add-new-card is-light" (click)="showInputAddNewCard(column.id)"> + Add new card</button>
               </div>
             </div>
           </div>
@@ -81,7 +79,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -224,7 +221,7 @@
           </div>
           <!--tag-->
           <div id="tag-section">
-            <button class="button is-small" (click)="toggleTagForm()">Tags</button>
+            <button class="button is-small" style="margin-top: 5px" (click)="toggleTagForm()">Tags</button>
             <br>
             <div id="tag-form" class="is-hidden">
               <span style="font-size: small">Tags:</span>
@@ -281,7 +278,7 @@
                     <div class="file has-name">
                       <label class="file-label">
                         <input class="file-input" type="file" (change)="showPreview($event)">
-                        <span class="file-label" style="border: 1px solid #DDDDDD; height: 32px" (change)="showPreview($event)">
+                        <span class="file-label span-upload-file-card" (change)="showPreview($event)">
                                Upload file
                         </span>
                       </label>
@@ -293,8 +290,8 @@
           </div>
         </div>
         </div>
-      <!--          Show file upload-->
-      <div *ngFor="let attachment of redirectService.attachments" class="media-attachment-body">
+      <!-- Show file upload-->
+      <div *ngFor="let attachment of redirectService.attachments" class="media-attachment-body" style="margin-left: 40px">
         <span class="media link-file">
         <a target="_blank" href="{{attachment.source}}">{{attachment.name}}</a>
         </span>
@@ -304,9 +301,9 @@
       </div>
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-success" (click)="updateCurrentCard()">Save changes</button>
-      <button class="button" (click)="closeModalUpdateCard()">Cancel</button>
-      <button class="button is-danger" (click)="showDeleteCardModal()">Delete</button>
+      <button class="button is-success is-light" (click)="updateCurrentCard()">Save changes</button>
+      <button class="button is-light" (click)="closeModalUpdateCard()">Cancel</button>
+      <button class="button is-danger is-light" (click)="showDeleteCardModal()">Delete</button>
     </footer>
   </div>
 </div>

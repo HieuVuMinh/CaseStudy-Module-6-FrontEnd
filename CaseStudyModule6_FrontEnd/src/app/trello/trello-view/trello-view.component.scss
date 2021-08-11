@@ -287,6 +287,7 @@ h1.app-name {
   border: transparent;
   outline: transparent;
   background-color: whitesmoke;
+  font-weight: bold;
 }
 
 .modal-card-content {
@@ -344,6 +345,48 @@ h1.app-name {
 }
 .reply-button{
   text-decoration: none;
+}
+
+.title-column {
+  height: 80px;
+  background-color: #f0eeed;
+  text-align: center;
+  font-weight: bold;
+  border: none;
+  position: revert;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.tasks-container {
+ min-height: 300px;
+}
+
+.item-title {
+  padding-left: 5px;
+}
+
+.task {
+  margin: 3px 7px 20px;
+}
+
+.button-add-new-card{
+  margin: 0px 7px 20px 7px;
+}
+
+.span-upload-file-card {
+  border: 1px solid #DDDDDD;
+  height: 32px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 2px;
+  font-size: 80%;
+  padding-top: 5px;
+  margin-top: 5px;
+}
+
+.span-upload-file-card:hover {
+  border: 1.5px solid #AAAAAA;
 }
 
 
