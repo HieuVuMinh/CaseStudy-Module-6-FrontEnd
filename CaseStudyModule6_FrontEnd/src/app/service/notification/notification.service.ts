@@ -37,7 +37,6 @@ export class NotificationService {
   }
   saveNotification(notification: Notification) {
     this.createNotification(notification).subscribe( () => {
-      this.unreadNotice++;
       // @ts-ignore
       this.findAllByUser(this.currentUser.id).subscribe( notifications => this.notification = notifications )
     })

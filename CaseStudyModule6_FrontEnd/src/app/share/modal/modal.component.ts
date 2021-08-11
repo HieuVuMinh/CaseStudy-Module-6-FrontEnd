@@ -7,6 +7,11 @@ import {BoardService} from "../../service/board/board.service";
 import {MemberService} from "../../service/member/member.service";
 import {Member} from "../../model/member";
 import {Router} from "@angular/router";
+import {ActivityLog} from "../../model/activity-log";
+import {NotificationService} from "../../service/notification/notification.service";
+import {ActivityLogService} from "../../service/ActivityLog/activity-log.service";
+import {Notification} from "../../model/notification";
+import {AuthenticationService} from "../../service/authentication/authentication.service";
 
 @Component({
   selector: 'app-modal',
@@ -30,7 +35,9 @@ export class ModalComponent implements OnInit {
               private userService: UserService,
               private boardService: BoardService,
               private memberService: MemberService,
-              private router: Router) {
+              private router: Router,
+              private notificationService:NotificationService,
+              private authenticationService:AuthenticationService) {
   }
 
   ngOnInit(): void {
@@ -85,6 +92,15 @@ export class ModalComponent implements OnInit {
     this.board.owner.id = this.modalService.currentUser.id;
     this.boardService.addNewBoard(this.board).subscribe(board => {
         this.board = board;
+      let notification: Notification = {
+        title: `Board:${this.board.title}`,
+        content: `${this.authenticationService.getCurrentUserValue().username} create board at ${this.notificationService.getTime()}`,
+        url: `/trello/boards/${this.board.id}`,
+        status: false,
+        receiver: this.members
+      }
+
+      this.notificationService.saveNotification(notification)
         this.loadDto();
       }
     )
@@ -122,4 +138,5 @@ export class ModalComponent implements OnInit {
     this.members = [];
     this.membersDto = [];
   }
+
 }
