@@ -192,7 +192,7 @@
               <!--reply input-->
               <div class="model-card-body-content" >
               <article class="media" style="margin-left: 45px;">
-                <form [formGroup]="replyForm" (ngSubmit)="addReply(comment.id)">
+                <form [formGroup]="replyForm" (ngSubmit)="addReply(comment.id, comment)">
                   <div class="media-content">
                     <div class="field">
                       <p class="control">

@@ -249,7 +249,7 @@ export class WorkspaceMemberComponent implements OnInit {
         receiver: receivers
       }
 
-      this.notificationService.createNotification(notification).subscribe()
+      this.notificationService.saveNotification(notification)
     } else if (role == 'Member') {
       let notification: Notification = {
         title: this.workspace.title,
@@ -259,8 +259,8 @@ export class WorkspaceMemberComponent implements OnInit {
         receiver: receivers
       }
 
-      this.notificationService.createNotification(notification).subscribe()
-      receivers = []
+      this.notificationService.saveNotification(notification)
+
     }
   }
 

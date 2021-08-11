@@ -930,7 +930,7 @@ export class TrelloViewComponent implements OnInit {
     }
   }
 
-  addReply(commentId: any) {
+  addReply(commentId: any, comment: CommentCard) {
     let member: DetailedMember = {boardId: 0, canEdit: false, id: 0, userId: 0, username: ""}
     for (let m of this.members) {
       if (m.userId == this.currentUser.id) {
@@ -957,7 +957,9 @@ export class TrelloViewComponent implements OnInit {
         }
       }
       this.commentCardService.updateAllComment(this.redirectService.comments).subscribe(() => {
-        this.createNoticeInBoard(`reply comment`)
+        if (comment.card) {
+          this.createNoticeCard(`reply ${reply.content} to comment ${comment.content}`, comment.card)
+        }
       })
     })
   }
