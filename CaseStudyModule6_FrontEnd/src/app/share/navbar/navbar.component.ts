@@ -9,6 +9,7 @@ import {Notification} from "../../model/notification";
 import {AngularFireStorage} from "@angular/fire/storage";
 import {finalize} from "rxjs/operators";
 import {BoardService} from "../../service/board/board.service";
+import {ToastService} from "../../service/toast/toast.service";
 import {SearchResult} from "../../model/search-result";
 import {RedirectService} from "../../service/redirect/redirect.service";
 
@@ -35,7 +36,8 @@ export class NavbarComponent implements OnInit {
               public notificationService: NotificationService,
               private storage: AngularFireStorage,
               private boardService: BoardService,
-              private redirectService: RedirectService) {
+              private redirectService: RedirectService,
+              private toastService: ToastService) {
     this.authenticationService.currentUserSubject.subscribe(user => {
       this.currentUser = user
     });
@@ -70,10 +72,10 @@ export class NavbarComponent implements OnInit {
             // console.log("this.id: "+this.id);
             console.log(this.user);
             this.userService.updateById(this.id, this.user).subscribe(() => {
-                alert("Success");
+                this.toastService.showMessageSuccess("Update success", 'is-success');
               },
               () => {
-                alert("Fail")
+                this.toastService.showMessageSuccess("Fail !", 'is-danger');
               });
           });
         })).subscribe();

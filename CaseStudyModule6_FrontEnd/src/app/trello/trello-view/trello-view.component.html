@@ -15,7 +15,7 @@
              cdkDropListGroup
              cdkDropListOrientation="horizontal" class="board-columns"
              (cdkDropListDropped)="dropColumn($event)">
-          <div cdkDragLockAxis="x" class="board-column"
+          <div cdkDragLockAxis="x" class="board-column" style="overflow: auto"
                *ngFor="let column of board.columns; index as i" cdkDrag>
             <div class="window-close" (click)="deleteColumn(column.id)">
               <i class="far fa-trash-alt"></i>
