@@ -771,6 +771,7 @@ export class TrelloViewComponent implements OnInit {
     } else {
       this.selectedFile = null;
     }
+    this.uploadFile();
   }
 
   showFormUploadFile() {

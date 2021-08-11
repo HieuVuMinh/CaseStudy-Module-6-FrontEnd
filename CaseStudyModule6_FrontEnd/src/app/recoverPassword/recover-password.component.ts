@@ -49,7 +49,7 @@ export class RecoverPasswordComponent implements OnInit {
           nickname: new FormControl(this.user.nickname)
         });
       } else {
-        this.toastService.showMessageSuccess('Incorrect','is-warning');
+        this.toastService.showMessageSuccess('Incorrect', 'is-warning');
       }
     })
   }
@@ -65,8 +65,8 @@ export class RecoverPasswordComponent implements OnInit {
         password: new FormControl(this.newConFirmForm.value.newPassword),
         nickname: new FormControl(this.user.nickname)
       })
-      this.userService.updateById(id, this.finalConfirmForm.value).subscribe(()=> {
-        this.toastService.showMessageSuccess('Change success!','is-success');
+      this.userService.updateById(id, this.finalConfirmForm.value).subscribe(() => {
+        this.toastService.showMessageSuccess('Change success!', 'is-success');
         this.router.navigateByUrl('/login')
       })
     }
@@ -75,6 +75,7 @@ export class RecoverPasswordComponent implements OnInit {
   get newPassword() {
     return this.newConFirmForm.get('newPassword');
   }
+
   get newConfirmPassword() {
     return this.newConFirmForm.get('confirmPassword');
   }

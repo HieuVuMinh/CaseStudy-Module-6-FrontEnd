@@ -274,24 +274,21 @@
           <!--end tag -->
           <!--          Upload file-->
           <div class="content">
-            <form #uploadFileCard="ngForm" (ngSubmit)="uploadFile()">
+            <form #uploadFileCard="ngForm" (ngSubmit)="showPreview($event)">
               <div class="update-info">
                 <div class="level options">
                   <div class="checkbox level-left">
                     <div class="file has-name">
                       <label class="file-label">
                         <input class="file-input" type="file" (change)="showPreview($event)">
-                        <span class="file-cta">
-                                        <span class="file-label" (change)="showPreview($event)">
-                                          Upload file
-                                        </span>
-                                      </span>
+                        <span class="file-label" style="border: 1px solid #DDDDDD; height: 32px" (change)="showPreview($event)">
+                               Upload file
+                        </span>
                       </label>
                     </div>
                   </div>
                 </div>
               </div>
-              <button class="button is-success is-light">Update</button>
             </form>
           </div>
         </div>
