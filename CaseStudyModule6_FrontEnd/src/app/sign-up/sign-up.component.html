@@ -3,11 +3,6 @@
   <div class="form-container sign-up-container">
     <form [formGroup]="registerForm" (ngSubmit)="register()">
       <h1>Create Account</h1>
-      <div class="social-container">
-        <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-        <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-      </div>
       <span>or use your email for registration</span>
 <!--      username-->
       <input type="text" formControlName="username" placeholder="User Name" (click)="existence()"/>
@@ -45,7 +40,7 @@
           Email must be required!
         </div>
         <div *ngIf="email?.errors?.pattern" class="col alert alert-danger">
-          Email is invalid. Must have type: "abc@gmail.com"
+          Email is invalid. Must have type: "abc@abc.com"
         </div>
       </div>
       <!--      nickName-->

@@ -14,7 +14,7 @@
              cdkDropListGroup
              cdkDropListOrientation="horizontal" class="board-columns"
              (cdkDropListDropped)="dropColumn($event)">
-          <div cdkDragLockAxis="x" class="board-column" style="overflow: auto"
+          <div cdkDragLockAxis="x" class="board-column"
                *ngFor="let column of board.columns; index as i" cdkDrag>
             <div class="window-close" (click)="showDeleteColumnModal(column.id)">
               <i class="far fa-trash-alt"></i>
@@ -171,7 +171,7 @@
               <div *ngFor="let reply of comment.replies" class="model-card-body-content model-card-body-content-reply">
               <article class="media" style="margin-left: 45px;">
                 <figure class="media-left">
-                  <img [src]="reply.member?.user?.image" class="user-img img-circle"/>
+                  <img [src]="reply.member?.user?.image" class="user-img img-circle" />
                 </figure>
                 <div class="media-content">
                   <div class="content">
@@ -181,8 +181,8 @@
                     </p>
                   </div>
                 </div>
-                <div class="media-right button-delete-reply" *ngIf="canEdit">
-                  <button class="delete" (click)="showDeleteReplyModal(reply.id)"></button>
+                <div class="media-right button-delete-reply"  *ngIf="canEdit">
+                  <button  class="delete button-x" (click)="showDeleteReplyModal(reply.id)"></button>
                 </div>
               </article>
             </div>
@@ -206,7 +206,7 @@
         </div>
         <div class="column is-one-quarter">
           <div class="member-section">
-            <button class="button is-small" (click)="toggleMemberForm()">Members</button>
+            <button class="button members-button" (click)="toggleMemberForm()">Members</button>
             <div id="member-form" class="is-hidden">
               <span style="font-size: small">Add members:</span>
               <ul>
@@ -221,7 +221,7 @@
           </div>
           <!--tag-->
           <div id="tag-section">
-            <button class="button is-small" style="margin-top: 5px" (click)="toggleTagForm()">Tags</button>
+            <button class="button tags-button" (click)="toggleTagForm()">Tags</button>
             <br>
             <div id="tag-form" class="is-hidden">
               <span style="font-size: small">Tags:</span>
@@ -288,6 +288,7 @@
               </div>
             </form>
           </div>
+
         </div>
         </div>
       <!-- Show file upload-->

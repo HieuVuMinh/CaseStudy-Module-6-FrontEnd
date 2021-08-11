@@ -75,4 +75,8 @@ export class TrelloHomeComponent implements OnInit {
   scrollTo(el: HTMLElement) {
     el.scrollIntoView();
   }
+
+  scrollTop(top: HTMLDivElement) {
+    top.scrollIntoView();
+  }
 }

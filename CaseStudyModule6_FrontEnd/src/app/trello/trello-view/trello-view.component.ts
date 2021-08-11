@@ -496,6 +496,7 @@ export class TrelloViewComponent implements OnInit {
   updateCurrentCard() {
     this.saveChanges();
     this.closeModalUpdateCard();
+    this.toastService.showMessageSuccess('Every thing updated', 'is-success');
   }
 
   addNewCard(id: any, length: any, addNewCardForm: NgForm) {
