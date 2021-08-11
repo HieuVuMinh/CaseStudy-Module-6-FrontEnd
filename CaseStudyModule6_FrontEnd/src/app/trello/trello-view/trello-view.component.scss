@@ -348,17 +348,21 @@ h1.app-name {
 }
 
 .title-column {
-  height: 80px;
-  background-color: #f0eeed;
-  text-align: center;
+  height: 40px;
+  background: rgb(228 243 250);
   font-weight: bold;
   border: none;
   position: revert;
   margin-top: 5px;
   margin-bottom: 5px;
+  box-shadow: none;
 }
 
+.title-column:focus {
+  background-color: white;
+}
 .tasks-container {
+  overflow: auto;
  min-height: 300px;
 }
 
@@ -372,6 +376,7 @@ h1.app-name {
 
 .button-add-new-card{
   margin: 0px 7px 20px 7px;
+  background-color: rgba(0, 0, 0, -0.9);
 }
 
 .span-upload-file-card {
