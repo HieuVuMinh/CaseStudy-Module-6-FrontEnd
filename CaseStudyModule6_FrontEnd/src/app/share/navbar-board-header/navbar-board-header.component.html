@@ -17,7 +17,7 @@
           {{board.title}}
         </button>
         <button class="button is-primary">
-          <img *ngIf="!board.owner.image" src="assets/img/nicki-eliza.jpg" class="img-circle is-48x48"/>
+          <img *ngIf="!board.owner.image" src="https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png" class="img-circle is-48x48"/>
           <img *ngIf="board.owner.image" [src]="board.owner.image" class="img-circle is-48x48"/>
           {{board.owner.username}}
         </button>
@@ -32,7 +32,7 @@
                class="user-preview" style="position: relative"
                [ngClass]="{'is-hidden': i >= 5}">
               <img *ngIf="member.image" [src]="member.image" class="img-circle"/>
-              <img *ngIf="!member.image" src="assets/img/nicki-eliza.jpg" class="img-circle"/>
+              <img *ngIf="!member.image" src="https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png" class="img-circle"/>
               <span id="user-preview-text-{{member.userId}}"
                     class="user-preview-text is-hidden tag is-info is-light"
                     style="position: absolute; top: 20px; left:5px; float: top">
@@ -49,15 +49,14 @@
 
       </div>
     </div>
-
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
           <div style="position: relative">
-            <div id="filter-btn-dropdown" class="columns has-background-white is-hidden" style="position: absolute; top: 40px; border-radius: 5px; z-index: 1">
-              <div class="column is-one-fifth">
-                <button class="button is-small" (click)="filterBoard()">Sort</button>
-                <button class="button is-small" (click)="clearFilterBoard()">Clear</button>
+            <div id="filter-btn-dropdown" class="columns has-background-white is-hidden" >
+              <div class="column is-one-fifth" style="width: 22%;">
+                <button class="button small-button" (click)="filterBoard()">Sort</button>
+                <button class="button small-button" (click)="clearFilterBoard()">Clear</button>
               </div>
               <div class="column" style="width: max-content">
                 Tags
