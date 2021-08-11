@@ -22,6 +22,10 @@ export class ColumnService {
     return this.httpClient.put<Column[]>(`${API_URL}columns`, columns);
   }
 
+  deleteById(id: any): Observable<Column> {
+    return this.httpClient.delete<Column>(`${API_URL}columns/${id}`)
+  }
+
   deleteAllById(ids: number[]): Observable<Column[]> {
     return this.httpClient.post<Column[]>(`${API_URL}columns/delete`, ids);
   }
