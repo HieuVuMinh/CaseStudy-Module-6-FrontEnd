@@ -22,6 +22,10 @@
 
   <div class="container column is-10">
     <!--    Board-->
+<!--    test-->
+    <div *ngFor="let board of socketService.boards">
+      {{board.id}}
+    </div>
     <div class="title-board">
       <h1><i class="far fa-clipboard"></i>Your Boards</h1>
     </div>

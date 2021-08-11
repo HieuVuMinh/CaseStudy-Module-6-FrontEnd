@@ -7,6 +7,7 @@ import {BoardService} from "../../service/board/board.service";
 import {MemberService} from "../../service/member/member.service";
 import {Member} from "../../model/member";
 import {Router} from "@angular/router";
+import {SocketService} from "../../service/socket/socket.service";
 
 @Component({
   selector: 'app-modal',
@@ -30,7 +31,8 @@ export class ModalComponent implements OnInit {
               private userService: UserService,
               private boardService: BoardService,
               private memberService: MemberService,
-              private router: Router) {
+              private router: Router,
+              private socketService: SocketService) {
   }
 
   ngOnInit(): void {
@@ -83,11 +85,12 @@ export class ModalComponent implements OnInit {
     this.modalService.close();
     //create new board
     this.board.owner.id = this.modalService.currentUser.id;
-    this.boardService.addNewBoard(this.board).subscribe(board => {
-        this.board = board;
-        this.loadDto();
-      }
-    )
+    this.socketService.createBoardUsingSocket(this.board);
+    // this.boardService.addNewBoard(this.board).subscribe(board => {
+    //     this.board = board;
+    //     this.loadDto();
+    //   }
+    // )
   }
 
   private loadDto() {

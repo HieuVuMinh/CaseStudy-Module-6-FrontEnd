@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Board} from "../../model/board";
 import {UserToken} from "../../model/user-token";
 import {AuthenticationService} from "../../service/authentication/authentication.service";
@@ -8,13 +8,14 @@ import {Workspace} from "../../model/workspace";
 import {ModalService} from "../../service/modal/modal.service";
 import {WorkspaceService} from "../../service/workspace.service";
 import {Router} from "@angular/router";
+import {SocketService} from "../../service/socket/socket.service";
 
 @Component({
   selector: 'app-trello-home',
   templateUrl: './trello-home.component.html',
   styleUrls: ['./trello-home.component.scss']
 })
-export class TrelloHomeComponent implements OnInit {
+export class TrelloHomeComponent implements OnInit, OnDestroy {
   currentUser: UserToken = {};
   yourBoards: Board[] = [];
   sharedBoards: Board[] = [];
@@ -24,10 +25,12 @@ export class TrelloHomeComponent implements OnInit {
               private boardService: BoardService,
               private modalService: ModalService,
               private workspaceService: WorkspaceService,
-              private router: Router) {
+              private router: Router,
+              public socketService: SocketService) {
   }
 
   ngOnInit(): void {
+    this.socketService.connect();
     this.currentUser = this.authenticationService.getCurrentUserValue();
     this.getYourBoards();
     this.getSharedBoards();
@@ -74,5 +77,9 @@ export class TrelloHomeComponent implements OnInit {
 
   scrollTo(el: HTMLElement) {
     el.scrollIntoView();
+  }
+
+  ngOnDestroy(): void {
+    this.socketService.disconnect();
   }
 }
