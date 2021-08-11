@@ -5,6 +5,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserService} from "../service/user/user.service";
 import firebase from "firebase";
 import {User} from "../model/user";
+import {ToastService} from "../service/toast/toast.service";
 
 @Component({
   selector: 'app-sign-up',
@@ -26,7 +27,8 @@ export class SignUpComponent implements OnInit {
 
   constructor(private registerService: RegisterService,
               private userService: UserService,
-              private router: Router) {
+              private router: Router,
+              private toastService: ToastService) {
   }
 
   ngOnInit(): void {
@@ -57,7 +59,7 @@ export class SignUpComponent implements OnInit {
         }
         if (!nameExisted && !emailExisted) {
           this.registerService.createUser(this.registerForm.value).subscribe(() => {
-            alert("Create success!")
+            this.toastService.showMessageSuccess("Create account success", 'is-success');
             this.registerForm = new FormGroup({
               username: new FormControl('', [Validators.required, Validators.minLength(6)]),
               password: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,10}$')]),
@@ -68,10 +70,8 @@ export class SignUpComponent implements OnInit {
           });
         }
       })
-
-
     } else {
-      alert("Inform must be filed!")
+      this.toastService.showMessageSuccess("Inform must be filed!", 'is-warning');
     }
   }
 
@@ -95,6 +95,4 @@ export class SignUpComponent implements OnInit {
   get email() {
     return this.registerForm.get('email');
   }
-
-
 }

@@ -3,6 +3,7 @@ import {Form, FormBuilder, FormControl, FormGroup, Validators} from "@angular/fo
 import {UserService} from "../service/user/user.service";
 import {User} from "../model/user";
 import {Router} from "@angular/router";
+import {ToastService} from "../service/toast/toast.service";
 
 @Component({
   selector: 'app-forgot-password',
@@ -27,7 +28,8 @@ export class RecoverPasswordComponent implements OnInit {
 
   constructor(private userService: UserService,
               private formBuilder: FormBuilder,
-              private router: Router) {
+              private router: Router,
+              private toastService: ToastService) {
 
   }
 
@@ -47,7 +49,7 @@ export class RecoverPasswordComponent implements OnInit {
           nickname: new FormControl(this.user.nickname)
         });
       } else {
-        alert("Incorrect!")
+        this.toastService.showMessageSuccess('Incorrect','is-warning');
       }
     })
   }
@@ -64,7 +66,7 @@ export class RecoverPasswordComponent implements OnInit {
         nickname: new FormControl(this.user.nickname)
       })
       this.userService.updateById(id, this.finalConfirmForm.value).subscribe(()=> {
-        alert("Change success!")
+        this.toastService.showMessageSuccess('Change success!','is-success');
         this.router.navigateByUrl('/login')
       })
     }

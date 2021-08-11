@@ -375,8 +375,8 @@ export class TrelloViewComponent implements OnInit {
       this.replyService.deleteReplyById(reply.id).subscribe()
     }
     this.commentCardService.deleteComment(this.commentId).subscribe(() => {
-        alert("Success!")
-        this.getAllCommentByCardId();
+      this.toastService.showMessageSuccess("Comment deleted",'is-success');
+      this.getAllCommentByCardId();
         this.closeDeleteCommentModal()
         this.createNoticeInBoard(`deleted comment`)
       }
@@ -419,7 +419,7 @@ export class TrelloViewComponent implements OnInit {
     }
     this.commentCardService.updateAllComment(this.redirectService.comments).subscribe(() => {
       this.replyService.deleteReplyById(this.replyId).subscribe(() => {
-        alert("success!")
+        this.toastService.showMessageSuccess("Reply deleted",'is-success');
       })
       this.closeDeleteReplyModal()
     })
