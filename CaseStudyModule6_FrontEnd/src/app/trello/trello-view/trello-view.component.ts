@@ -608,6 +608,8 @@ export class TrelloViewComponent implements OnInit {
         let deleteIndex = this.board.tags.indexOf(tag);
         // @ts-ignore
         this.board.tags.splice(deleteIndex, 1);
+        // @ts-ignore
+        this.createNoticeInBoard(`deleted tag ${this.board.tags[deleteIndex].name}`)
       }
     }
     this.saveChanges();
@@ -663,7 +665,7 @@ export class TrelloViewComponent implements OnInit {
             // @ts-ignore
             card.users.splice(deleteIndex, 1);
             // @ts-ignore
-            this.createNoticeInBoard(`deleted member "${card.users[deleteIndex].nickname}" from card "${card.title}"`)
+            this.createNoticeInBoard(`deleted member "${card.users[deleteIndex].username}" from card "${card.title}"`)
           }
         }
       }
@@ -850,10 +852,12 @@ export class TrelloViewComponent implements OnInit {
         let deleteIndex = this.redirectService.card.users.indexOf(existingUser);
         // @ts-ignore
         this.redirectService.card.users.splice(deleteIndex, 1);
+        // @ts-ignore
+        this.createNoticeInBoard(`deleted user ${this.redirectService.card.users[deleteIndex].username} from card ${this.redirectService.card.title}`, this.redirectService.card)
       }
     }
     this.saveChanges();
-    this.createNoticeInBoard(``)
+
   }
 
   filterBoard(event: number[][]) {
@@ -953,6 +957,7 @@ export class TrelloViewComponent implements OnInit {
         }
       }
       this.commentCardService.updateAllComment(this.redirectService.comments).subscribe(() => {
+        this.createNoticeInBoard(`reply comment`)
       })
     })
   }
