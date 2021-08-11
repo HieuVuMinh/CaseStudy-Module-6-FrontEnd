@@ -20,11 +20,23 @@
 
   <div id="search-section">
     <div style="position: relative" id="search-results">
-      <div *ngIf="boardResults.length" style="position: absolute; top: 40px; width: 200px; z-index: 1" class="dropdown-content">
-        <a routerLink="/trello/boards/{{boardResult.id}}" (click)="clearSearch()" *ngFor="let boardResult of this.boardResults" class="dropdown-item">
+      <div *ngIf="searchResults.length" style="position: absolute; top: 40px; width: 300px; z-index: 1" class="dropdown-content">
+        <span class="dropdown-item" style="font-weight: bold">CARDS:</span>
+        <a routerLink="/trello/boards/{{searchResult.board.id}}" (click)="clearSearch()" *ngFor="let searchResult of this.searchResults" class="dropdown-item">
           <ul>
-            <li><span style="font-weight: bold">{{boardResult.title}}</span></li>
-            <li><span>@{{boardResult.owner.username}}</span></li>
+            <li>
+              <span class="search-result-primary">{{searchResult.card.title}}</span>
+              <span> in </span><span class="search-result-secondary">{{searchResult.column.title}}</span>
+            </li>
+            <li>
+              <span> on </span><span class="search-result-secondary">{{searchResult.board.title}}</span>
+              <span> by @</span><span class="search-result-secondary">{{searchResult.board.owner.username}}</span>
+            </li>
+            <li>
+              <span class="search-result-preview-secondary">"{{searchResult.preview[0]}}</span>
+              <span class="search-result-preview-primary">{{searchResult.preview[1]}}</span>
+              <span class="search-result-preview-secondary">{{searchResult.preview[2]}}"</span>
+            </li>
           </ul>
         </a>
       </div>

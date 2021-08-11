@@ -8,8 +8,8 @@ import {NotificationService} from "../../service/notification/notification.servi
 import {Notification} from "../../model/notification";
 import {AngularFireStorage} from "@angular/fire/storage";
 import {finalize} from "rxjs/operators";
-import {Board} from "../../model/board";
 import {BoardService} from "../../service/board/board.service";
+import {SearchResult} from "../../model/search-result";
 
 @Component({
   selector: 'app-navbar',
@@ -23,7 +23,7 @@ export class NavbarComponent implements OnInit {
   selectedImage: any | undefined = null;
   isSubmitted = false;
   id: any = {};
-  boardResults: Board[] = [];
+  searchResults: SearchResult[] = [];
   searchString: string = '';
 
 
@@ -108,8 +108,8 @@ export class NavbarComponent implements OnInit {
     if (this.currentUser?.id != null) {
       this.notificationService.findAllByUser(this.currentUser.id).subscribe(notifications => {
         this.notificationService.notification = notifications
-        for (let notification of notifications){
-          if (!notification.status){
+        for (let notification of notifications) {
+          if (!notification.status) {
             this.notificationService.unreadNotice++;
           }
         }
@@ -131,34 +131,70 @@ export class NavbarComponent implements OnInit {
     this.closeModalUpdate();
   }
 
-  markReadNotification(notification: Notification){
+  markReadNotification(notification: Notification) {
     if (notification.id != null && !notification.status) {
       notification.status = true;
       this.notificationService.updateNotification(notification.id, notification).subscribe(() => this.notificationService.unreadNotice--)
     }
   }
 
-  markAllAsRead(){
+  markAllAsRead() {
     if (this.currentUser.id != null) {
-      this.notificationService.markAllAsRead(this.currentUser.id).subscribe(() =>{
+      this.notificationService.markAllAsRead(this.currentUser.id).subscribe(() => {
         this.notificationService.unreadNotice = 0
         // @ts-ignore
-        this.notificationService.findAllByUser(this.currentUser.id).subscribe( notifications => this.notificationService.notification = notifications)
-      } )
+        this.notificationService.findAllByUser(this.currentUser.id).subscribe(notifications => this.notificationService.notification = notifications)
+      })
     }
   }
 
   search() {
     // @ts-ignore
     if (this.searchString == '') {
-      this.boardResults = [];
+      this.searchResults = [];
     } else {
-      this.boardService.findAllByKeyword(this.searchString, this.currentUser.id).subscribe(boards => this.boardResults = boards);
+      //find all boards by current user
+      //search through cards of board to find matching with keyword
+      //load into searchResults
+      this.searchResults = [];
+      this.boardService.findAllAvailableToSearcher(this.currentUser.id).subscribe(boards => {
+        for (let board of boards) {
+          for (let column of board.columns) {
+            for (let card of column.cards) {
+              let keywordInCardTitle = card.title.toLowerCase().includes(this.searchString.toLowerCase());
+              let keywordInCardContent = card.content.toLowerCase().includes(this.searchString.toLowerCase());
+              if (keywordInCardTitle || keywordInCardContent) {
+                let searchResult: SearchResult = {
+                  board: board,
+                  column: column,
+                  card: card,
+                  preview: []
+                }
+                if (keywordInCardTitle) {
+                  searchResult.preview = this.createPreview(card.title, this.searchString);
+                } else if (keywordInCardContent) {
+                  searchResult.preview = this.createPreview(card.content, this.searchString);
+                }
+                this.searchResults.push(searchResult);
+                if (this.searchResults.length == 5) return;
+              }
+            }
+          }
+        }
+      });
     }
   }
 
   clearSearch() {
     this.searchString = '';
-    this.boardResults = [];
+    this.searchResults = [];
+  }
+
+  private createPreview(content: string, searchString: string): string[] {
+    let index = content.toLowerCase().indexOf(searchString.toLowerCase());
+    let beforeKeyword: string = content.substring(0, index);
+    let keyword: string = content.substring(index, index + searchString.length);
+    let afterKeyword: string = content.substring(index + searchString.length, content.length);
+    return [beforeKeyword, keyword, afterKeyword]
   }
 }
