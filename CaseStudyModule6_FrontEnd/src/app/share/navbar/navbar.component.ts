@@ -12,6 +12,7 @@ import {BoardService} from "../../service/board/board.service";
 import {ToastService} from "../../service/toast/toast.service";
 import {SearchResult} from "../../model/search-result";
 import {RedirectService} from "../../service/redirect/redirect.service";
+import {NavbarService} from "../../service/navbar/navbar.service";
 
 @Component({
   selector: 'app-navbar',
@@ -37,7 +38,8 @@ export class NavbarComponent implements OnInit {
               private storage: AngularFireStorage,
               private boardService: BoardService,
               private redirectService: RedirectService,
-              private toastService: ToastService) {
+              private toastService: ToastService,
+              public navbarService: NavbarService) {
     this.authenticationService.currentUserSubject.subscribe(user => {
       this.currentUser = user
     });
