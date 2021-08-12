@@ -12,6 +12,7 @@ import {BoardService} from "../../service/board/board.service";
 import {ToastService} from "../../service/toast/toast.service";
 import {SearchResult} from "../../model/search-result";
 import {RedirectService} from "../../service/redirect/redirect.service";
+import {NavbarService} from "../../service/navbar/navbar.service";
 
 @Component({
   selector: 'app-navbar',
@@ -37,13 +38,15 @@ export class NavbarComponent implements OnInit {
               private storage: AngularFireStorage,
               private boardService: BoardService,
               private redirectService: RedirectService,
-              private toastService: ToastService) {
+              private toastService: ToastService,
+              public navbarService: NavbarService) {
     this.authenticationService.currentUserSubject.subscribe(user => {
       this.currentUser = user
     });
   }
 
   ngOnInit(): void {
+    this.navbarService.getUser();
     if (this.currentUser) {
       this.findAllNotificationByUserId();
     }
@@ -51,14 +54,16 @@ export class NavbarComponent implements OnInit {
   }
 
   getUserById() {
-    this.id = this.authenticationService.getCurrentUserValue().id;
-    this.userService.getUserById(this.id).subscribe(user => {
-      this.user = user;
-      if(this.user.image==null){
-        this.user.image = "https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png";
-      }
-      this.imgSrc = this.user.image;
-    })
+    if (this.authenticationService.getCurrentUserValue() != null) {
+      this.id = this.authenticationService.getCurrentUserValue().id;
+      this.userService.getUserById(this.id).subscribe(user => {
+        this.user = user;
+        if(this.user.image==null){
+          this.user.image = "https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png";
+        }
+        this.imgSrc = this.user.image;
+      })
+    }
   }
 
   updateUserInfo() {
@@ -158,11 +163,8 @@ export class NavbarComponent implements OnInit {
     if (this.searchString == '') {
       this.searchResults = [];
     } else {
-      //find all boards by current user
-      //search through cards of board to find matching with keyword
-      //load into searchResults
-      this.searchResults = [];
       this.boardService.findAllAvailableToSearcher(this.currentUser.id).subscribe(boards => {
+        let searchResults = [];
         for (let board of boards) {
           for (let column of board.columns) {
             for (let card of column.cards) {
@@ -180,12 +182,13 @@ export class NavbarComponent implements OnInit {
                 } else if (keywordInCardContent) {
                   searchResult.preview = this.createPreview(card.content, this.searchString);
                 }
-                this.searchResults.push(searchResult);
-                if (this.searchResults.length == 5) return;
+                searchResults.push(searchResult);
+                if (searchResults.length == 5) break;
               }
             }
           }
         }
+        this.searchResults = searchResults;
       });
     }
   }
