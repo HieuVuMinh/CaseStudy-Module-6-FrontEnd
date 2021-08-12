@@ -44,9 +44,7 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.currentUser) {
-      this.findAllNotificationByUserId();
-    }
+    this.findAllNotificationByUserId();
     this.getUserById();
   }
 
