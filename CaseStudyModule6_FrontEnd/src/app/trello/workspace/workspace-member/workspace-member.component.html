@@ -1,42 +1,5 @@
-<div class="navbar-end" *ngIf="roleUserInWorkspace || currentUser.id == workspace.owner?.id">
-  <div class="navbar-item">
-    <div class="buttons" style="margin-right: 200px">
-      <div class="dropdown is-active">
-        <div class="dropdown-trigger">
-          <input #searchUser class="input is-link" type="text" placeholder="Invite user"
-                 (keyup)="findAllUserByUsername(searchUser.value)">
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu" role="menu" *ngIf="searchUser.value">
-          <div class="dropdown-content">
-            <div *ngFor="let user of users" class="dropdown-item" (click)="selectUser(searchUser, user)">
-              <span *ngIf="workspace.owner.id != user.id">
-              @{{user.username}}({{user.nickname}})
-            </span>
-            </div>
-
-          </div>
-        </div>
-      </div>
-      <button class="button is-primary" (click)="addMemberWorkspace()" style="width: 100px">
-        <i class="fas fa-user-plus"></i>
-        Invite
-      </button>
-      <div class="dropdown is-active">
-        <div class="dropdown-menu" role="menu" *ngIf="addUserList.length !=0" style="top: -24px">
-          <div class="dropdown-content">
-            <span *ngFor="let user of addUserList" class="dropdown-item user-invite"
-                  (click)="removeUserAdded(addUserList.indexOf(user))">
-              @{{user.username}}({{user.nickname}})
-            </span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
 <div>
-  <section class="main-content columns is-fullheight" >
+  <section class="main-content columns is-fullheight"  style="margin-top: 40px">
 
     <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile" style="">
       <ul class="menu-list">
@@ -62,8 +25,8 @@
                     <h2 style="font-size: 16px">Delete workspace?</h2>
                   </div>
                   <div class="buttons" style="margin-top: 10px;justify-content: center">
-                    <button class="button is-danger" (click)="deleteWorkspace(workspace.id)">Yes</button>
-                    <button class="button is-info" (click)="hideModalDelete()">No</button>
+                    <button class="button is-danger is-light" (click)="deleteWorkspace(workspace.id)">Yes</button>
+                    <button class="button is-info is-light" (click)="hideModalDelete()">No</button>
                   </div>
 
                 </div>
@@ -75,6 +38,44 @@
     </aside>
 
     <div class="container column is-10">
+      <div class="navbar-end" *ngIf="roleUserInWorkspace || currentUser.id == workspace.owner?.id">
+        <div class="navbar-item">
+          <div class="buttons" style="margin-right: 200px">
+            <div class="dropdown is-active">
+              <div class="dropdown-trigger">
+                <input #searchUser class="input is-link" type="text" placeholder="Invite user"
+                       (keyup)="findAllUserByUsername(searchUser.value)">
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu" role="menu" *ngIf="searchUser.value">
+                <div class="dropdown-content">
+                  <div *ngFor="let user of users" class="dropdown-item" (click)="selectUser(searchUser, user)">
+              <span *ngIf="workspace.owner.id != user.id">
+              @{{user.username}}({{user.nickname}})
+            </span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <button class="button is-primary" (click)="addMemberWorkspace()" style="width: 100px">
+              <i class="fas fa-user-plus"></i>
+              Invite
+            </button>
+            <div class="dropdown is-active">
+              <div class="dropdown-menu" role="menu" *ngIf="addUserList.length !=0" style="top: -24px">
+                <div class="dropdown-content">
+            <span *ngFor="let user of addUserList" class="dropdown-item user-invite"
+                  (click)="removeUserAdded(addUserList.indexOf(user))">
+              @{{user.username}}({{user.nickname}})
+            </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
       <div class="title-board">
         <input #searchMember class="input is-link" type="text" placeholder="Find Member" (keyup)="findMemberWorkspaceByKeyword(searchMember.value)">
       </div>
