@@ -127,9 +127,10 @@ export class NavbarBoardHeaderComponent implements OnInit {
   }
 
   removeSelectedMember() {
+    let username = this.selectedMember.username;
     this.memberService.deleteMember(this.selectedMember.id).subscribe(() => {
       // @ts-ignore
-      this.createNoticeInBoard(`delete ${this.selectedMember.user.username}`)
+      this.createNoticeInBoard(`delete ${username}`)
       this.getMembers();
       this.closeModal();
     });
