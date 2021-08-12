@@ -5,6 +5,7 @@ import {Router} from "@angular/router";
 import {NotificationService} from "../service/notification/notification.service";
 import {User} from "../model/user";
 import {NavbarService} from "../service/navbar/navbar.service";
+import {ToastService} from "../service/toast/toast.service";
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,8 @@ export class LoginComponent implements OnInit {
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
               private navbarService: NavbarService,
-              private notificationService:NotificationService) {
+              private notificationService: NotificationService,
+              private toastService: ToastService) {
   }
 
   ngOnInit(): void {
@@ -29,9 +31,12 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.authenticationService.login(this.loginForm.get('username')?.value, this.loginForm.get('password')?.value).subscribe(() => {
-      this.navbarService.getUser();
-      this.router.navigateByUrl('/trello');
-    });
+        this.navbarService.getUser();
+        this.router.navigateByUrl('/trello');
+      },
+      () => {
+        this.toastService.showMessageSuccess("Username or account is incorrect", "is-warning");
+      });
   }
 
   register() {
