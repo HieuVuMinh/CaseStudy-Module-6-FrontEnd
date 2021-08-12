@@ -61,7 +61,7 @@ export class NavbarComponent implements OnInit {
         if(this.user.image==null){
           this.user.image = "https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png";
         }
-        this.imgSrc = this.navbarService.user.image;
+        this.imgSrc = this.user.image;
       })
     }
   }
@@ -132,6 +132,7 @@ export class NavbarComponent implements OnInit {
   openModalUpdate() {
     // @ts-ignore
     document.getElementById("modal-update-user").classList.add('is-active')
+    this.getUserById()
   }
 
   closeModalUpdate() {
