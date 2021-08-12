@@ -177,7 +177,7 @@ export class WorkspaceMemberComponent implements OnInit {
       }
       let notification: Notification = {
         title: this.workspace.title,
-        content: this.currentUser.username + " Remove you from group  to the workspace at " + this.notificationService.getTime(),
+        content: this.currentUser.username + " delte you from group  to the workspace at " + this.notificationService.getTime(),
         url: "/trello",
         status: false,
         receiver: receivers
@@ -223,7 +223,7 @@ export class WorkspaceMemberComponent implements OnInit {
   deleteWorkspace(id: number) {
     this.workspaceService.delete(id).subscribe(() => {
       this.router.navigateByUrl(`/trello`)
-      this.createNotification(`deleted workspace ${this.workspace.title}`)
+      this.createNotification(`delete workspace ${this.workspace.title}`)
     })
   }
 

@@ -77,12 +77,11 @@
     </div>
     <div class="section-board">
       <div *ngFor="let workspaceShare of workspaces">
-        <div class="card" routerLink="/trello/workspaces/{{workspaceShare.id}}"
-             *ngIf="workspaceShare.owner.id != currentUser.id">
+        <div class="card" routerLink="/trello/workspaces/{{workspaceShare.id}}" *ngIf="workspaceShare.owner.id != currentUser.id">
           <div class="card-header"><p class="card-header-title">{{workspaceShare.title}}</p></div>
           <div class="card-content">
-            <span style="font-size: small"><b>Id: </b>{{workspace.id}}</span> <br>
-            <span style="font-size: small"><b>Owner: </b>{{workspace.owner.username}}</span>
+            <span style="font-size: small"><b>Id: </b>{{workspaceShare.id}}</span> <br>
+            <span style="font-size: small"><b>Owner: </b>{{workspaceShare.owner.username}}</span>
           </div>
         </div>
       </div>
