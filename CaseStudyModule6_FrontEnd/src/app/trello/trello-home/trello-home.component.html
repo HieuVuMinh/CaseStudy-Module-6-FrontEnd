@@ -1,15 +1,9 @@
 <section class="main-content columns is-fullheight">
-
-  <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile">
+  <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile is-hidden">
     <ul class="menu-list">
       <li>
-        <a href="#" class="is-active">
+        <a class="is-active" (click)="scrollTop(top)">
           <span class="icon"><i class="fab fa-trello logo-icon"></i></span> Board
-        </a>
-      </li>
-      <li>
-        <a  class="">
-          <span class="icon"><i class="fa fa-table"></i></span> Template
         </a>
       </li>
       <li>
@@ -20,7 +14,7 @@
     </ul>
   </aside>
 
-  <div class="container column is-10">
+  <div class="container column is-10" #top>
     <!--    Board-->
     <div class="title-board">
       <h1><i class="far fa-clipboard"></i>Your Boards</h1>
@@ -95,7 +89,7 @@
 </section>
 
 <div  class="modal" id="create-workspace">
-  <div class="modal-background" ></div>
+  <div class="modal-background" (click)="hideAddWorkspaceModal()"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title">Creating new board</p>

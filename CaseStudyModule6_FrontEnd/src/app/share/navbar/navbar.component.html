@@ -1,23 +1,7 @@
 <div class="nav">
-    <span class="icon-item">
-      <a href="#" class="icon-link"><i class="fas fa-bars"></i></a>
-    </span>
   <span class="icon-item">
       <a routerLink="/trello" class="icon-link"><i class="fas fa-home"></i></a>
-    </span>
-  <span class="icon-item">
-      <a routerLink="/trello" class="icon-link">
-        <svg class="fa-board" focusable="false" viewBox="0 0 24 24"
-             xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046
-           20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5ZM5 6C5 5.44772 5.44772 5 6 5H10C10.5523 5 11 5.44772 11 6V16C11 16.5523
-           10.5523 17 10 17H6C5.44772 17 5 16.5523 5 16V6ZM14 5C13.4477 5 13 5.44772 13 6V12C13 12.5523 13.4477 13 14 13H18C18.5523
-            13 19 12.5523 19 12V6C19 5.44772 18.5523 5 18 5H14Z" fill="currentColor">
-          </path>
-        </svg>
-      </a>
-    </span>
-
+  </span>
   <div id="search-section">
     <div style="position: relative" id="search-results">
       <div *ngIf="searchResults.length" style="position: absolute; top: 40px; width: 300px; z-index: 1"
@@ -50,13 +34,6 @@
     <div class="nav-item-start">
       <h1><i class="fab fa-trello logo-icon"></i>Trello Hope</h1>
     </div>
-  </div>
-
-  <div class="icon-item" *ngIf="currentUser">
-    <a href="#" class="icon-link"><i class="fas fa-plus"></i></a>
-  </div>
-  <div class="icon-item" *ngIf="currentUser">
-    <a href="#" class="icon-link"><i class="fab fa-plus"></i></a>
   </div>
   <div class="icon-item" *ngIf="currentUser">
     <div class="dropdown is-hoverable is-right">
@@ -96,38 +73,27 @@
   <div class="icon-item" *ngIf="currentUser">
     <div class="dropdown is-hoverable is-right">
       <div class="dropdown-trigger">
-        <a href="#" class="icon-link" aria-haspopup="true" aria-controls="dropdown-menu4">
-          <img *ngIf="!user.image" src="https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png"
-               class="img-circle"/>
-          <img *ngIf="user.image" [src]="user.image" class="img-circle"/>
+        <a class="icon-link" aria-haspopup="true" aria-controls="dropdown-menu4">
+          <img [src]="navbarService.user.image" class="img-circle"/>
         </a>
       </div>
       <div class="dropdown-menu" id="dropdown-menu4" role="menu">
         <div class="dropdown-content">
           <div href="#" class="dropdown-item">
             <div>
-              <img *ngIf="!user.image"
-                   src="https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png"
-                   class="img-circle"/>
-              <img *ngIf="user.image" [src]="user.image" class="img-circle"/>
+              <img [src]="navbarService.user.image" class="img-circle"/>
             </div>
             <div class="user">
               <div class="username">
-                {{currentUser.username}}
+                {{navbarService.user.username}}
               </div>
               <span class="nickname">
-                {{user.nickname}}
+                {{navbarService.user.nickname}}
               </span>
             </div>
           </div>
           <a (click)="openModalUpdate()" class="dropdown-item">
             Modifiers
-          </a>
-          <a routerLink="/information" class="dropdown-item">
-            Components
-          </a>
-          <a class="dropdown-item">
-            Layout
           </a>
           <hr class="dropdown-divider">
           <a class="dropdown-item" (click)="logout()">
@@ -140,57 +106,42 @@
 </div>
 
 <!--Modal update user-->
-<div class="modal" id="modal-update-user">
-  <div class="modal-background" (click)="closeModalUpdate()"></div>
-  <div class="modal-card" id="updateForm">
+<div class="modal modal-update-user" id="modal-update-user">
+  <div class="modal-background"></div>
+  <div class="modal-card modal-card-user" id="updateForm">
     <div class="login-card">
-      <div class="card-title">
-        <h1>INFORMATION</h1>
-      </div>
-      <td class="update-image">
-        <img *ngIf="user.image" [src]="imgSrc" (click)="preview.click()">
-        <img *ngIf="!user.image" src="https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png"/>
-      </td>
+      <header class="modal-card-head">
+        <p class="modal-card-title">Information</p>
+        <button class="delete" aria-label="close" (click)="closeModalUpdate()"></button>
+      </header>
+      <td class="update-image"><img class="img-user" [src]="imgSrc" (click)="preview.click()"></td>
       <div class="content">
         <form #updateForm="ngForm" (ngSubmit)="updateUserInfo()">
           <div class="update-info">
-            <div class="level options">
-              <div class="checkbox level-left">
-                <div class="update-info">
-                  <div class="file has-name">
-                    <div class="file">
-                      <label class="file-label">
-                        <input class="file-input" type="file" #preview (change)="showPreview($event)">
-                        <span class="file-cta">
-      <span class="file-icon">
-        <i class="fas fa-upload"></i>
-      </span>
-      <span class="file-label">
-        Choose a file…
-      </span>
-                          </span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
+<!--upload file-->
+            <div class="file">
+              <label class="file-label">
+                <input class="file-input" type="file" #preview (change)="showPreview($event)">
+                <span class="file-cta">
+                  <span class="file-icon">
+                    <i class="fas fa-upload"></i>
+                  </span>
+                  <span class="file-label">
+                    Choose a file…
+                  </span>
+                </span>
+              </label>
             </div>
-            <span class="tag is-info is-light">Nickname</span>
-            <input type="text" class="input" name="nickname" #nickname="ngModel" required
+<!--            user name-->
+            <input type="text" class="input input-user-name" name="nickname" #nickname="ngModel" required
                    [(ngModel)]="user.nickname" placeholder="Nick name">
             <td *ngIf="updateForm.invalid && updateForm.touched && isSubmitted">
               <p class="notification" *ngIf="nickname.errors?.required">Can not blank</p>
             </td>
           </div>
-          <div class="button-update">
-            <table>
-              <td>
-                <button class="button is-danger is-light" (click)="closeModalUpdate()">Cancel</button>
-              </td>
-              <td>
-                <button class="button is-success is-light">Update</button>
-              </td>
-            </table>
+          <div class="div-update">
+            <button class="button is-success is-light button-update">Update</button>
+            <button class="button is-danger is-light button-cancel" (click)="closeModalUpdate()">Cancel</button>
           </div>
         </form>
       </div>

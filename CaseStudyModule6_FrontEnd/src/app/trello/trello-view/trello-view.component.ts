@@ -115,7 +115,7 @@ export class TrelloViewComponent implements OnInit {
               private columnService: ColumnService,
               private cardService: CardService,
               private memberService: MemberService,
-              private authenticationService: AuthenticationService,
+              public authenticationService: AuthenticationService,
               private router: Router,
               private attachmentService: AttachmentService,
               private storage: AngularFireStorage,
@@ -318,9 +318,10 @@ export class TrelloViewComponent implements OnInit {
 
 // comment
   addComment() {
+    let currentUserId = this.authenticationService.getCurrentUserValue().id;
     let member: DetailedMember = {boardId: 0, canEdit: false, id: 0, userId: 0, username: ""}
     for (let m of this.members) {
-      if (m.userId == this.currentUser.id) {
+      if (m.userId == currentUserId) {
         member = m;
       }
     }
@@ -496,6 +497,7 @@ export class TrelloViewComponent implements OnInit {
   updateCurrentCard() {
     this.saveChanges();
     this.closeModalUpdateCard();
+    this.toastService.showMessageSuccess('Every thing updated', 'is-success');
   }
 
   addNewCard(id: any, length: any, addNewCardForm: NgForm) {
@@ -572,6 +574,7 @@ export class TrelloViewComponent implements OnInit {
 
   removeTagFromCard(tag: Tag) {
     this.updateSelectedCard()
+    let tagName = tag.name;
     // @ts-ignore
     for (let existingTag of this.redirectService.card.tags) {
       if (existingTag.id == tag.id) {
@@ -582,7 +585,7 @@ export class TrelloViewComponent implements OnInit {
       }
     }
     this.saveChanges();
-    this.createNoticeCard(`remove tag "${tag.name}" from card "${this.redirectService.card.title}"`, this.redirectService.card)
+    this.createNoticeCard(`remove tag "${tagName}" from card "${this.redirectService.card.title}"`, this.redirectService.card)
   }
 
   private updateSelectedCard() {
@@ -871,12 +874,13 @@ export class TrelloViewComponent implements OnInit {
     // @ts-ignore
     for (let existingUser of this.redirectService.card.users) {
       if (existingUser.id == user.id) {
+        let username = user.username;
         // @ts-ignore
         let deleteIndex = this.redirectService.card.users.indexOf(existingUser);
         // @ts-ignore
         this.redirectService.card.users.splice(deleteIndex, 1);
         // @ts-ignore
-        this.createNoticeInBoard(`deleted user ${this.redirectService.card.users[deleteIndex].username} from card ${this.redirectService.card.title}`, this.redirectService.card)
+        this.createNoticeInBoard(`deleted user ${username} from card ${this.redirectService.card.title}`, this.redirectService.card)
       }
     }
     this.saveChanges();

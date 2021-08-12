@@ -4,6 +4,7 @@ import {AuthenticationService} from "../service/authentication/authentication.se
 import {Router} from "@angular/router";
 import {NotificationService} from "../service/notification/notification.service";
 import {User} from "../model/user";
+import {NavbarService} from "../service/navbar/navbar.service";
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
+              private navbarService: NavbarService,
               private notificationService:NotificationService) {
   }
 
@@ -26,22 +28,10 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this.authenticationService.login(this.loginForm.get('username')?.value, this.loginForm.get('password')?.value).subscribe(user => {
+    this.authenticationService.login(this.loginForm.get('username')?.value, this.loginForm.get('password')?.value).subscribe(() => {
+      this.navbarService.getUser();
       this.router.navigateByUrl('/trello');
-      this.findAllNotificationByUserId(user);
     });
-  }
-  findAllNotificationByUserId(user: User) {
-    if (user.id != null) {
-      this.notificationService.findAllByUser(user.id).subscribe(notifications => {
-        this.notificationService.notification = notifications
-        for (let notification of notifications) {
-          if (!notification.status) {
-            this.notificationService.unreadNotice++;
-          }
-        }
-      })
-    }
   }
 
   register() {

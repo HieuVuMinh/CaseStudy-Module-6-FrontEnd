@@ -13,6 +13,7 @@ import {UserToken} from "../../../model/user-token";
 import {AuthenticationService} from "../../../service/authentication/authentication.service";
 import {Notification} from "../../../model/notification";
 import {NotificationService} from "../../../service/notification/notification.service";
+import {ToastService} from "../../../service/toast/toast.service";
 
 @Component({
   selector: 'app-workspace-board',
@@ -47,7 +48,8 @@ export class WorkspaceBoardComponent implements OnInit {
               private router: Router,
               private memberService: MemberService,
               private authenticationService: AuthenticationService,
-              private notificationService: NotificationService) {
+              private notificationService: NotificationService,
+              private toastService: ToastService) {
 
   }
 
@@ -156,6 +158,7 @@ export class WorkspaceBoardComponent implements OnInit {
     this.boardService.deleteAllByWorkspace(board).subscribe()
     this.workspaceService.delete(id).subscribe(() => this.router.navigateByUrl(`/trello`))
     this.createNotification(`deleted workspace ${this.workspace.title}`)
+    this.toastService.showMessageSuccess("Delete Success!", "is-success")
   }
 
   createNotification(notificationText: string) {
