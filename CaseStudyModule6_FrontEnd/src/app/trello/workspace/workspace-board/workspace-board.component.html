@@ -1,6 +1,6 @@
 <section class="main-content columns is-fullheight" style="margin-top: 40px">
 
-  <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile">
+  <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile" style="width: 14%; padding: 5px 40px 8px;">
     <ul class="menu-list">
       <li>
         <a routerLink="/trello/workspaces/{{workspace.id}}" class="is-active" >
@@ -37,7 +37,7 @@
   </aside>
 
 
-  <div class="container column is-10">
+  <div class="container column is-10" style="padding: 0px 13px 13px 0px;">
     <div class="title-board">
       <h1><i class="far fa-clipboard"></i>Boards</h1>
     </div>
@@ -51,8 +51,8 @@
         <div class="card-header"><p class="card-header-title">{{board.title}}</p></div>
         <div class="card-content">
           <div class="content">
-            id: {{board.id}}<br>
-            owner: {{board.owner.username}}
+            <span style="font-size: small"><b>Id: </b>{{board.id}}</span> <br>
+            <span style="font-size: small"><b>Owner: </b>{{board.owner.username}}</span>
           </div>
         </div>
       </div>
@@ -86,7 +86,7 @@
         <div class="column is-one-third">
           <label class="label">Owner</label>
           <div class="control">
-            <div class="button is-dark user-button">{{currentUser.username}}</div>
+            <div class="button is-info user-button  is-light">{{currentUser.username}}</div>
           </div>
         </div>
       </div>
