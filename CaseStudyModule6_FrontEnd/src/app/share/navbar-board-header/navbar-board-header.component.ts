@@ -144,7 +144,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
   makeSelectedMemberObserver() {
     this.selectedMember.canEdit = false;
     this.updateSelectedMember();
-    this.createNoticeInBoard("remove edit permissions of " + this.selectedMember.username)
+    this.createNoticeInBoard("delete edit permissions of " + this.selectedMember.username)
   }
 
   updateSelectedMember() {
@@ -164,7 +164,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
   updateBoardTitle() {
     if (this.board.id != null) {
       this.boardService.updateBoard(this.board.id, this.board).subscribe(board => this.board = board);
-      this.createNoticeInBoard("Update title ")
+      this.createNoticeInBoard("update title ")
     }
 
   }
@@ -222,7 +222,7 @@ export class NavbarBoardHeaderComponent implements OnInit {
     if (this.board.id != null) {
       this.boardService.deleteById(this.board.id).subscribe(() => this.router.navigateByUrl('/trello'));
     }
-    this.createNoticeInBoard("Delete")
+    this.createNoticeInBoard("delete board")
   }
   createNoticeInBoard(activityText: string) {
     let activity: ActivityLog = {

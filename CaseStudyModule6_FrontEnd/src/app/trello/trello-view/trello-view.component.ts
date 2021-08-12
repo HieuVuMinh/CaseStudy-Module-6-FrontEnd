@@ -200,7 +200,7 @@ export class TrelloViewComponent implements OnInit {
     moveItemInArray(this.board.columns, event.previousIndex, event.currentIndex);
     this.saveChanges();
     if (event.previousIndex != event.currentIndex) {
-      this.createNoticeInBoard(`Change position column ${this.board.columns[event.previousIndex].title} with ${this.board.columns[event.currentIndex].title}`)
+      this.createNoticeInBoard(`change position column ${this.board.columns[event.previousIndex].title} with ${this.board.columns[event.currentIndex].title}`)
     }
 
   }
@@ -365,7 +365,7 @@ export class TrelloViewComponent implements OnInit {
         this.saveChanges();
         this.closeDeleteColumnModal();
         this.toastService.showMessageSuccess("Delete success!", "is-success")
-        let notification = "Delete column: " + column.title
+        let notification = "delete column: " + column.title
         this.createNoticeInBoard(notification)
       }
     }
@@ -416,7 +416,7 @@ export class TrelloViewComponent implements OnInit {
       this.toastService.showMessageSuccess("Comment deleted",'is-success');
       this.getAllCommentByCardId();
         this.closeDeleteCommentModal()
-        this.createNoticeInBoard(`deleted comment`)
+        this.createNoticeInBoard(`delete comment`)
       }
     )
   }
@@ -479,7 +479,7 @@ export class TrelloViewComponent implements OnInit {
         this.previousColumn = column;
         this.board.columns.push(this.previousColumn);
         this.updateBoard()
-        this.createNoticeInBoard(`added column "${column.title}"`)
+        this.createNoticeInBoard(`add column "${column.title}"`)
       })
     }
   }
@@ -517,7 +517,7 @@ export class TrelloViewComponent implements OnInit {
           break;
         }
       }
-      let notification = "Add new card: " + card.title
+      let notification = "add new card: " + card.title
       this.createNoticeCard(notification, card)
     })
   }
@@ -585,7 +585,7 @@ export class TrelloViewComponent implements OnInit {
       }
     }
     this.saveChanges();
-    this.createNoticeCard(`remove tag "${tagName}" from card "${this.redirectService.card.title}"`, this.redirectService.card)
+    this.createNoticeCard(`delete tag "${tagName}" from card "${this.redirectService.card.title}"`, this.redirectService.card)
   }
 
   private updateSelectedCard() {
@@ -634,7 +634,7 @@ export class TrelloViewComponent implements OnInit {
         // @ts-ignore
         this.board.tags.splice(deleteIndex, 1);
         // @ts-ignore
-        this.createNoticeInBoard(`deleted tag ${this.board.tags[deleteIndex].name}`)
+        this.createNoticeInBoard(`delete tag ${this.board.tags[deleteIndex].name}`)
       }
     }
     this.saveChanges();
@@ -690,7 +690,7 @@ export class TrelloViewComponent implements OnInit {
             // @ts-ignore
             card.users.splice(deleteIndex, 1);
             // @ts-ignore
-            this.createNoticeInBoard(`deleted member "${card.users[deleteIndex].username}" from card "${card.title}"`)
+            this.createNoticeInBoard(`delete member "${card.users[deleteIndex].username}" from card "${card.title}"`)
           }
         }
       }
@@ -741,7 +741,7 @@ export class TrelloViewComponent implements OnInit {
       this.getPage();
       this.toastService.showMessageSuccess("Delete success", 'is-success');
     });
-    this.createNoticeInBoard(`deleted card "${this.redirectService.card.title}"`)
+    this.createNoticeInBoard(`delete card "${this.redirectService.card.title}"`)
   }
 
   uploadFile() {
@@ -842,7 +842,7 @@ export class TrelloViewComponent implements OnInit {
       () => {
         this.toastService.showMessageSuccess("Fail !", 'is-danger');
       });
-    this.createNoticeCard(`deleted attachment "${this.selectedAttachment.name}" from card "${this.selectedAttachment.card?.title}"`, this.redirectService.card)
+    this.createNoticeCard(`delete attachment "${this.selectedAttachment.name}" from card "${this.selectedAttachment.card?.title}"`, this.redirectService.card)
   }
 
   createNoticeInBoard(activityText: string) {
@@ -880,7 +880,7 @@ export class TrelloViewComponent implements OnInit {
         // @ts-ignore
         this.redirectService.card.users.splice(deleteIndex, 1);
         // @ts-ignore
-        this.createNoticeInBoard(`deleted user ${username} from card ${this.redirectService.card.title}`, this.redirectService.card)
+        this.createNoticeInBoard(`delete user ${username} from card ${this.redirectService.card.title}`, this.redirectService.card)
       }
     }
     this.saveChanges();
