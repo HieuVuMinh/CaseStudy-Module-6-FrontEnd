@@ -68,11 +68,11 @@ export class TrelloViewComponent implements OnInit {
     title: new FormControl('', Validators.required),
   })
   commentForm: FormGroup = new FormGroup({
-    content: new FormControl(''),
+    content: new FormControl('', Validators.required),
     cardId: new FormControl()
   })
   replyForm: FormGroup = new FormGroup({
-    content: new FormControl('')
+    content: new FormControl('', Validators.required)
   })
   currentUser: UserToken = {};
   canEdit: boolean = false;
@@ -327,17 +327,23 @@ export class TrelloViewComponent implements OnInit {
     }
     // @ts-ignore
     let memberDto: Member = {board: {id: member.id}, canEdit: member.canEdit, id: member.id, user: {id: member.userId}}
-    let commentCard: CommentCard = {
-      content: this.commentForm.value.content,
-      card: this.redirectService.card,
-      member: memberDto
-    };
-    this.commentForm = new FormGroup({
-      content: new FormControl('')
-    });
-    this.commentCardService.save(commentCard).subscribe(() => {
-      this.getAllCommentByCardId();
-    })
+    if (this.commentForm.valid) {
+      let commentCard: CommentCard = {
+        content: this.commentForm.value.content,
+        card: this.redirectService.card,
+        member: memberDto
+      };
+      this.commentForm = new FormGroup({
+        content: new FormControl('', Validators.required)
+      });
+      this.commentCardService.save(commentCard).subscribe(() => {
+        this.getAllCommentByCardId();
+      })
+    }
+  }
+
+  get content() {
+    return this.commentForm.get('content');
   }
 
   getAllCommentByCardId() {
@@ -386,14 +392,14 @@ export class TrelloViewComponent implements OnInit {
 
   deleteAllReply(comment: CommentCard) {
     // @ts-ignore
-    for (let reply of comment.replies){
+    for (let reply of comment.replies) {
       // @ts-ignore
       this.replyService.deleteReplyById(reply.id).subscribe()
     }
   }
 
   deleteAllComment() {
-    for (let comment of this.redirectService.comments){
+    for (let comment of this.redirectService.comments) {
       this.deleteAllReply(comment)
       this.commentCardService.deleteComment(comment.id).subscribe()
     }
@@ -402,19 +408,19 @@ export class TrelloViewComponent implements OnInit {
   deleteComment() {
     let newCommentCard: CommentCard = {};
     for (let comment of this.redirectService.comments) {
-      if (comment.id == this.commentId){
+      if (comment.id == this.commentId) {
         newCommentCard = comment;
         break;
       }
     }
     // @ts-ignore
-    for (let reply of newCommentCard.replies){
+    for (let reply of newCommentCard.replies) {
       // @ts-ignore
       this.replyService.deleteReplyById(reply.id).subscribe()
     }
     this.commentCardService.deleteComment(this.commentId).subscribe(() => {
-      this.toastService.showMessageSuccess("Comment deleted",'is-success');
-      this.getAllCommentByCardId();
+        this.toastService.showMessageSuccess("Comment deleted", 'is-success');
+        this.getAllCommentByCardId();
         this.closeDeleteCommentModal()
         this.createNoticeInBoard(`delete comment`)
       }
@@ -457,7 +463,7 @@ export class TrelloViewComponent implements OnInit {
     }
     this.commentCardService.updateAllComment(this.redirectService.comments).subscribe(() => {
       this.replyService.deleteReplyById(this.replyId).subscribe(() => {
-        this.toastService.showMessageSuccess("Reply deleted",'is-success');
+        this.toastService.showMessageSuccess("Reply deleted", 'is-success');
       })
       this.closeDeleteReplyModal()
     })
@@ -846,16 +852,17 @@ export class TrelloViewComponent implements OnInit {
   }
 
   createNoticeInBoard(activityText: string) {
-      let activity: ActivityLog = {
-        title: "Board: " + this.board.title,
-        content: `${this.currentUser.username} ${activityText} at ${this.notificationService.getTime()}`,
-        url: "/trello/boards/" + this.board.id,
-        status: false,
-        board: this.board
-      }
-      this.activityLogService.saveNotification(activity, this.boardId)
+    let activity: ActivityLog = {
+      title: "Board: " + this.board.title,
+      content: `${this.currentUser.username} ${activityText} at ${this.notificationService.getTime()}`,
+      url: "/trello/boards/" + this.board.id,
+      status: false,
+      board: this.board
+    }
+    this.activityLogService.saveNotification(activity, this.boardId)
 
   }
+
   createNoticeCard(activityText: string, card: Card) {
     let activity: ActivityLog = {
       title: "Board: " + this.board.title,
@@ -957,6 +964,10 @@ export class TrelloViewComponent implements OnInit {
     }
   }
 
+  get replyContent() {
+    return this.commentForm.get("content");
+  }
+
   addReply(commentId: any, comment: CommentCard) {
     let member: DetailedMember = {boardId: 0, canEdit: false, id: 0, userId: 0, username: ""}
     for (let m of this.members) {
@@ -966,31 +977,32 @@ export class TrelloViewComponent implements OnInit {
     }
     // @ts-ignore
     let memberDto: Member = {board: {id: member.id}, canEdit: member.canEdit, id: member.id, user: {id: member.userId}}
-    let reply: Reply = {content: this.replyForm.value.content, member: memberDto}
-    this.replyForm = new FormGroup({
-      content: new FormControl('')
-    })
-    this.replyService.saveReply(reply).subscribe(reply => {
-      this.reply = reply;
-      // @ts-ignore
-      this.reply.member?.user.username = member.username
-      // @ts-ignore
-      this.reply.member?.user.nickname = member.nickname
-      // @ts-ignore
-      this.reply.member?.user.image = member.image
-
-      for (let com of this.redirectService.comments) {
-        if (com.id == commentId) {
-          com.replies?.push(this.reply);
-          break;
-        }
-      }
-      this.commentCardService.updateAllComment(this.redirectService.comments).subscribe(() => {
-        if (comment.card) {
-          this.createNoticeCard(`reply ${reply.content} to comment ${comment.content}`, comment.card)
-        }
+    if (this.replyForm.valid) {
+      let reply: Reply = {content: this.replyForm.value.content, member: memberDto}
+      this.replyForm = new FormGroup({
+        content: new FormControl('', Validators.required)
       })
-    })
-  }
+      this.replyService.saveReply(reply).subscribe(reply => {
+        this.reply = reply;
+        // @ts-ignore
+        this.reply.member?.user.username = member.username
+        // @ts-ignore
+        this.reply.member?.user.nickname = member.nickname
+        // @ts-ignore
+        this.reply.member?.user.image = member.image
 
+        for (let com of this.redirectService.comments) {
+          if (com.id == commentId) {
+            com.replies?.push(this.reply);
+            break;
+          }
+        }
+        this.commentCardService.updateAllComment(this.redirectService.comments).subscribe(() => {
+          if (comment.card) {
+            this.createNoticeCard(`reply ${reply.content} to comment ${comment.content}`, comment.card)
+          }
+        })
+      })
+    }
+  }
 }
