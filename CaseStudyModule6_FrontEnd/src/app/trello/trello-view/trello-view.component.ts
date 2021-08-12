@@ -880,7 +880,7 @@ export class TrelloViewComponent implements OnInit {
         // @ts-ignore
         this.redirectService.card.users.splice(deleteIndex, 1);
         // @ts-ignore
-        this.createNoticeInBoard(`deleted user ${username} from card ${this.redirectService.card.title}`, this.redirectService.card)
+        this.createNoticeInBoard(`delete user ${username} from card ${this.redirectService.card.title}`, this.redirectService.card)
       }
     }
     this.saveChanges();

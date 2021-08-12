@@ -81,7 +81,7 @@ export class WorkspaceBoardComponent implements OnInit {
         this.updateWorkspace(board)
         this.board = board;
         // @ts-ignore
-      this.createNotificationAddBoard(`Added board ${board.title} in workspace ${this.workspace.title}`, board.id);
+      this.createNotificationAddBoard(`add board ${board.title} in workspace ${this.workspace.title}`, board.id);
       for (let member of this.workspace.members) {
         let memberDto: Member = {
           board: this.board,
@@ -157,7 +157,7 @@ export class WorkspaceBoardComponent implements OnInit {
     let board: Board[] = this.workspace.boards;
     this.boardService.deleteAllByWorkspace(board).subscribe()
     this.workspaceService.delete(id).subscribe(() => this.router.navigateByUrl(`/trello`))
-    this.createNotification(`deleted workspace ${this.workspace.title}`)
+    this.createNotification(`delete workspace ${this.workspace.title}`)
     this.toastService.showMessageSuccess("Delete Success!", "is-success")
   }
 
