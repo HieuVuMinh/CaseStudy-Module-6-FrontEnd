@@ -58,7 +58,7 @@ export class NavbarComponent implements OnInit {
       this.id = this.authenticationService.getCurrentUserValue().id;
       this.userService.getUserById(this.id).subscribe(user => {
         this.user = user;
-        if(this.user.image==null){
+        if (this.user.image == null) {
           this.user.image = "https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png";
         }
         this.imgSrc = this.user.image;
@@ -166,33 +166,35 @@ export class NavbarComponent implements OnInit {
     if (this.searchString == '') {
       this.searchResults = [];
     } else {
-      this.boardService.findAllAvailableToSearcher(this.currentUser.id).subscribe(boards => {
-        let searchResults = [];
-        for (let board of boards) {
-          for (let column of board.columns) {
-            for (let card of column.cards) {
-              let keywordInCardTitle = card.title.toLowerCase().includes(this.searchString.toLowerCase());
-              let keywordInCardContent = card.content.toLowerCase().includes(this.searchString.toLowerCase());
-              if (keywordInCardTitle || keywordInCardContent) {
-                let searchResult: SearchResult = {
-                  board: board,
-                  column: column,
-                  card: card,
-                  preview: []
+      if (this.currentUser != null) {
+        this.boardService.findAllAvailableToSearcher(this.currentUser.id).subscribe(boards => {
+          let searchResults = [];
+          for (let board of boards) {
+            for (let column of board.columns) {
+              for (let card of column.cards) {
+                let keywordInCardTitle = card.title.toLowerCase().includes(this.searchString.toLowerCase());
+                let keywordInCardContent = card.content.toLowerCase().includes(this.searchString.toLowerCase());
+                if (keywordInCardTitle || keywordInCardContent) {
+                  let searchResult: SearchResult = {
+                    board: board,
+                    column: column,
+                    card: card,
+                    preview: []
+                  }
+                  if (keywordInCardTitle) {
+                    searchResult.preview = this.createPreview(card.title, this.searchString);
+                  } else if (keywordInCardContent) {
+                    searchResult.preview = this.createPreview(card.content, this.searchString);
+                  }
+                  searchResults.push(searchResult);
+                  if (searchResults.length == 5) break;
                 }
-                if (keywordInCardTitle) {
-                  searchResult.preview = this.createPreview(card.title, this.searchString);
-                } else if (keywordInCardContent) {
-                  searchResult.preview = this.createPreview(card.content, this.searchString);
-                }
-                searchResults.push(searchResult);
-                if (searchResults.length == 5) break;
               }
             }
           }
-        }
-        this.searchResults = searchResults;
-      });
+          this.searchResults = searchResults;
+        });
+      }
     }
   }
 
