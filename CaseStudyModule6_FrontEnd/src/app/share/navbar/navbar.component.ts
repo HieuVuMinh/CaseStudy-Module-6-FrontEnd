@@ -61,7 +61,7 @@ export class NavbarComponent implements OnInit {
         if(this.user.image==null){
           this.user.image = "https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png";
         }
-        this.imgSrc = this.user.image;
+        this.imgSrc = this.navbarService.user.image;
       })
     }
   }
@@ -69,6 +69,7 @@ export class NavbarComponent implements OnInit {
   updateUserInfo() {
     this.isSubmitted = true;
     if (this.selectedImage != null) {
+      // @ts-ignore
       const filePath = `${this.selectedImage.name.split('.').slice(0, -1).join('.')}_${new Date().getTime()}`;
       const fileRef = this.storage.ref(filePath);
       this.storage.upload(filePath, this.selectedImage).snapshotChanges().pipe(
@@ -78,6 +79,7 @@ export class NavbarComponent implements OnInit {
             this.user.image = url;
             this.userService.updateById(this.id, this.user).subscribe(() => {
                 this.toastService.showMessageSuccess("Update success", 'is-success');
+                this.navbarService.getUser();
                 this.closeModalUpdate();
               },
               () => {
