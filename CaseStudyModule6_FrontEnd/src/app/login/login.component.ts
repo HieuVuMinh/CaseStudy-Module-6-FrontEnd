@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
               private navbarService: NavbarService,
-              private notificationService:NotificationService,
+              private notificationService: NotificationService,
               private toastService: ToastService) {
   }
 
@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
         this.router.navigateByUrl('/trello');
       },
       () => {
-      this.toastService.showMessageSuccess("Username or account is incorrect","is-warning");
+        this.toastService.showMessageSuccess("Username or account is incorrect", "is-warning");
       });
   }
 
