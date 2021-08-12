@@ -31,7 +31,8 @@
                  cdkDropList
                  [cdkDropListData]="column.cards"
                  (cdkDropListDropped)="dropCard($event, column)">
-              <div class="task" *ngFor="let item of column.cards" cdkDrag [cdkDragData]="item" (click)="showUpdateCardModal(item)">
+              <div class="task" *ngFor="let item of column.cards" cdkDrag [cdkDragData]="item"
+                   (click)="showUpdateCardModal(item)">
                 <ul>
                   <li><span *ngFor="let tag of item.tags" class="tag is-light" [ngClass]="tag.color">{{tag.name}}</span>
                   </li>
@@ -59,7 +60,9 @@
                 </form>
               </div>
               <div id="show-form-create-new-card-{{column.id}}" class="show-form-create-new-card">
-                <button class="button button-add-new-card is-light" (click)="showInputAddNewCard(column.id)"> + Add new card</button>
+                <button class="button button-add-new-card is-light" (click)="showInputAddNewCard(column.id)"> + Add new
+                  card
+                </button>
               </div>
             </div>
           </div>
@@ -103,13 +106,14 @@
                 </span>
               </li>
               <li>
-                <span *ngFor="let user of redirectService.card.users" class="tag is-light" (click)="removeUserFromCard(user)">
+                <span *ngFor="let user of redirectService.card.users" class="tag is-light"
+                      (click)="removeUserFromCard(user)">
                   @{{user.username}}
                 </span>
               </li>
             </ul>
           </div>
-<!--          Content modal update-->
+          <!--          Content modal update-->
           <div class="model-card-body-content">
             <input class="input modal-card-content" type="text" placeholder="Content..."
                    [(ngModel)]="redirectService.card.content">
@@ -127,6 +131,11 @@
                   <textarea (click)="displaySubmitCommentButton()" class="textarea" formControlName="content"
                             placeholder="Add a comment..."></textarea>
                     </p>
+                    <div class="col alert alert-danger" role="alert" *ngIf="(content?.dirty || content?.touched)">
+                      <div *ngIf="content?.errors?.required" style="color: red" class="col alert alert-danger">
+                        Content must be required!
+                      </div>
+                    </div>
                   </div>
                   <nav class="level">
                     <div class="level-left">
@@ -170,7 +179,7 @@
               <div *ngFor="let reply of comment.replies" class="model-card-body-content model-card-body-content-reply">
               <article class="media" style="margin-left: 45px;">
                 <figure class="media-left">
-                  <img [src]="reply.member?.user?.image" class="user-img img-circle" />
+                  <img [src]="reply.member?.user?.image" class="user-img img-circle"/>
                 </figure>
                 <div class="media-content">
                   <div class="content">
@@ -180,13 +189,13 @@
                     </p>
                   </div>
                 </div>
-                <div class="media-right button-delete-reply"  *ngIf="canEdit">
-                  <button  class="delete button-x" (click)="showDeleteReplyModal(reply.id)"></button>
+                <div class="media-right button-delete-reply" *ngIf="canEdit">
+                  <button class="delete button-x" (click)="showDeleteReplyModal(reply.id)"></button>
                 </div>
               </article>
             </div>
               <!--reply input-->
-              <div class="model-card-body-content" >
+              <div class="model-card-body-content">
               <article class="media" style="margin-left: 45px;">
                 <form [formGroup]="replyForm" (ngSubmit)="addReply(comment.id, comment)">
                   <div class="media-content">
@@ -195,6 +204,11 @@
                         <input class="input reply-input" type="text" formControlName="content" placeholder="Add a reply...">
                         <button class="button is-primary is-light submitComment " type="submit">Reply</button>
                       </p>
+                      <div class="col alert alert-danger" role="alert" *ngIf="(replyContent?.dirty || replyContent?.touched)">
+                        <div *ngIf="replyContent?.errors?.required" style="color: red" class="col alert alert-danger">
+                          Reply must be required!
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </form>
@@ -288,9 +302,10 @@
             </form>
           </div>
         </div>
-        </div>
+      </div>
       <!-- Show file upload-->
-      <div *ngFor="let attachment of redirectService.attachments" class="media-attachment-body" style="margin-left: 40px">
+      <div *ngFor="let attachment of redirectService.attachments" class="media-attachment-body"
+           style="margin-left: 40px">
         <span class="media link-file">
         <a target="_blank" href="{{attachment.source}}">{{attachment.name}}</a>
         </span>
