@@ -1,4 +1,4 @@
-<section class="main-content columns is-fullheight">
+<section class="main-content columns is-fullheight" xmlns="http://www.w3.org/1999/html">
   <aside class="column is-2 is-narrow-mobile is-fullheight section is-hidden-mobile is-hidden">
     <ul class="menu-list">
       <li>
@@ -14,7 +14,7 @@
     </ul>
   </aside>
 
-  <div class="container column is-10" #top>
+  <div class="container column is-10" #top style="padding: 10px 13px 13px 106px;">
     <!--    Board-->
     <div class="title-board">
       <h1><i class="far fa-clipboard"></i>Your Boards</h1>
@@ -29,8 +29,8 @@
         <div class="card-header"><p class="card-header-title">{{board.title}}</p></div>
         <div class="card-content">
           <div class="content">
-            id: {{board.id}}<br>
-            owner: {{board.owner}}
+             <span style="font-size: small"><b>Id: </b>{{board.id}}</span> <br>
+             <span style="font-size: small"><b>Owner: </b>{{board.owner}}</span>
           </div>
         </div>
       </div>
@@ -44,8 +44,8 @@
         <div class="card-header"><p class="card-header-title">{{board.title}}</p></div>
         <div class="card-content">
           <div class="content">
-            id: {{board.id}}<br>
-            owner: {{board.owner}}
+            <span style="font-size: small"><b>Id: </b>{{board.id}}</span> <br>
+            <span style="font-size: small"><b>Owner: </b>{{board.owner}}</span>
           </div>
         </div>
       </div>
@@ -65,7 +65,8 @@
         <div class="card" routerLink="/trello/workspaces/{{workspace.id}}" *ngIf="workspace.owner.id == currentUser.id">
           <div class="card-header"><p class="card-header-title">{{workspace.title}}</p></div>
           <div class="card-content">
-            <div class="content">Type: {{workspace.type}}</div>
+            <span style="font-size: small"><b>Id: </b>{{workspace.id}}</span> <br>
+            <span style="font-size: small"><b>Owner: </b>{{workspace.owner.username}}</span>
           </div>
         </div>
       </div>
@@ -80,7 +81,8 @@
              *ngIf="workspaceShare.owner.id != currentUser.id">
           <div class="card-header"><p class="card-header-title">{{workspaceShare.title}}</p></div>
           <div class="card-content">
-            <div class="content">Type: {{workspace.type}}</div>
+            <span style="font-size: small"><b>Id: </b>{{workspace.id}}</span> <br>
+            <span style="font-size: small"><b>Owner: </b>{{workspace.owner.username}}</span>
           </div>
         </div>
       </div>
@@ -106,12 +108,6 @@
           <div *ngIf="workspaceTitle.errors?.required" style="color: red">
             Title is required.
           </div>
-        </div>
-      </div>
-      <div class="field" style="position: relative">
-        <label class="label">Type</label>
-        <div class="control">
-          <input class="input" type="text" required [(ngModel)]="workspace.type" >
         </div>
       </div>
       <div class="field columns">
