@@ -46,7 +46,7 @@ export class RecoverPasswordComponent implements OnInit {
           email: new FormControl(this.user.email),
           newPassword: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,100}$')]),
           confirmPassword: new FormControl('', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,10}$')]),
-          nickname: new FormControl(this.user.nickname)
+          nickname: new FormControl(this.user.nickname),
         });
       } else {
         this.toastService.showMessageSuccess('Incorrect', 'is-warning');
@@ -57,15 +57,24 @@ export class RecoverPasswordComponent implements OnInit {
   changeNewPassword(id: any) {
     if (this.newConFirmForm.value.newPassword != this.newConFirmForm.value.confirmPassword) {
       this.isConfirmPassword = true;
-    } else {
       this.finalConfirmForm = new FormGroup({
         id: new FormControl(this.user.id),
         username: new FormControl(this.user.username),
         email: new FormControl(this.user.email),
         password: new FormControl(this.newConFirmForm.value.newPassword),
-        nickname: new FormControl(this.user.nickname)
+        nickname: new FormControl(this.user.nickname),
       })
-      this.userService.updateById(id, this.finalConfirmForm.value).subscribe(() => {
+    } else {
+      let user: User = {
+        id: this.user.id,
+        username: this.user.username,
+        password: this.newConFirmForm.value.newPassword,
+        email: this.user.email,
+        image: this.user.image,
+        nickname: this.user.nickname,
+        roles: this.user.roles,
+      }
+      this.userService.updateByIdRecover(id, user).subscribe(() => {
         this.toastService.showMessageSuccess('Changed password success!', 'is-success');
         this.router.navigateByUrl('/login')
       })

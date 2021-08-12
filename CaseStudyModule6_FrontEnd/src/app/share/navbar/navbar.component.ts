@@ -166,33 +166,35 @@ export class NavbarComponent implements OnInit {
     if (this.searchString == '') {
       this.searchResults = [];
     } else {
-      this.boardService.findAllAvailableToSearcher(this.currentUser.id).subscribe(boards => {
-        let searchResults = [];
-        for (let board of boards) {
-          for (let column of board.columns) {
-            for (let card of column.cards) {
-              let keywordInCardTitle = card.title.toLowerCase().includes(this.searchString.toLowerCase());
-              let keywordInCardContent = card.content.toLowerCase().includes(this.searchString.toLowerCase());
-              if (keywordInCardTitle || keywordInCardContent) {
-                let searchResult: SearchResult = {
-                  board: board,
-                  column: column,
-                  card: card,
-                  preview: []
+      if (this.currentUser != null) {
+        this.boardService.findAllAvailableToSearcher(this.currentUser.id).subscribe(boards => {
+          let searchResults = [];
+          for (let board of boards) {
+            for (let column of board.columns) {
+              for (let card of column.cards) {
+                let keywordInCardTitle = card.title.toLowerCase().includes(this.searchString.toLowerCase());
+                let keywordInCardContent = card.content.toLowerCase().includes(this.searchString.toLowerCase());
+                if (keywordInCardTitle || keywordInCardContent) {
+                  let searchResult: SearchResult = {
+                    board: board,
+                    column: column,
+                    card: card,
+                    preview: []
+                  }
+                  if (keywordInCardTitle) {
+                    searchResult.preview = this.createPreview(card.title, this.searchString);
+                  } else if (keywordInCardContent) {
+                    searchResult.preview = this.createPreview(card.content, this.searchString);
+                  }
+                  searchResults.push(searchResult);
+                  if (searchResults.length == 5) break;
                 }
-                if (keywordInCardTitle) {
-                  searchResult.preview = this.createPreview(card.title, this.searchString);
-                } else if (keywordInCardContent) {
-                  searchResult.preview = this.createPreview(card.content, this.searchString);
-                }
-                searchResults.push(searchResult);
-                if (searchResults.length == 5) break;
               }
             }
           }
-        }
-        this.searchResults = searchResults;
-      });
+          this.searchResults = searchResults;
+        });
+      }
     }
   }
 
