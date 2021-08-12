@@ -69,6 +69,7 @@ export class NavbarComponent implements OnInit {
   updateUserInfo() {
     this.isSubmitted = true;
     if (this.selectedImage != null) {
+      // @ts-ignore
       const filePath = `${this.selectedImage.name.split('.').slice(0, -1).join('.')}_${new Date().getTime()}`;
       const fileRef = this.storage.ref(filePath);
       this.storage.upload(filePath, this.selectedImage).snapshotChanges().pipe(
@@ -78,6 +79,7 @@ export class NavbarComponent implements OnInit {
             this.user.image = url;
             this.userService.updateById(this.id, this.user).subscribe(() => {
                 this.toastService.showMessageSuccess("Update success", 'is-success');
+                this.navbarService.getUser();
                 this.closeModalUpdate();
               },
               () => {
@@ -130,6 +132,7 @@ export class NavbarComponent implements OnInit {
   openModalUpdate() {
     // @ts-ignore
     document.getElementById("modal-update-user").classList.add('is-active')
+    this.getUserById()
   }
 
   closeModalUpdate() {

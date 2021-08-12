@@ -92,14 +92,6 @@ export class WorkspaceBoardComponent implements OnInit {
         }
         this.membersDto.push(memberDto)
       }
-      let memberDto: Member = {
-        board: this.board,
-        canEdit: false,
-        user: {
-          id: this.workspace.owner?.id
-        }
-      }
-      this.membersDto.push(memberDto)
       this.addNewMembers();
       }
     )

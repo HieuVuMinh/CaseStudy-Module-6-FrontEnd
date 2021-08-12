@@ -165,12 +165,15 @@ export class WorkspaceMemberComponent implements OnInit {
   public removeMembers(i: number) {
     let removeMemberBoard: MemberWorkspace[] = this.workspace.members.splice(i, 1)
     this.workspaceService.update(this.workspace.id, this.workspace).subscribe(() => {
-
       let receivers: User[] = [];
       for (let member of removeMemberBoard) {
         if (member.user) {
           receivers.push(member.user)
         }
+      }
+      // @ts-ignore
+      if (this.currentUser.id == removeMemberBoard[0].user.id){
+
       }
       let notification: Notification = {
         title: this.workspace.title,
